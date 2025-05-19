@@ -33,6 +33,10 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -72,4 +76,7 @@ dependencies {
 
     // swipe to refresh
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    //
+    implementation ("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 }

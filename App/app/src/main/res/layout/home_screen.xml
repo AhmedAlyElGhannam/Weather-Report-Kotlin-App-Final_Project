@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/background">
+    android:layout_height="match_parent">
 
     <!-- Background Image -->
     <ImageView
@@ -19,32 +17,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#991F2A44" />
-
-    <!-- Settings FAB (Bottom Right) -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/settingsFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_gear"
-        android:contentDescription="Open settings"
-        app:backgroundTint="@color/light_sky_ice_bef4fe"
-        app:tint="@color/soft_gray_mist_d9d9d9"
-        app:fabSize="normal" />
-
-    <!-- Saved Locations FAB (Bottom Left) -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/locationsFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|start"
-        android:layout_margin="16dp"
-        android:contentDescription="List of Saved Locations"
-        android:src="@drawable/ic_map_pin"
-        app:backgroundTint="@color/light_sky_ice_bef4fe"
-        app:tint="@color/soft_gray_mist_d9d9d9"
-        app:fabSize="normal" />
 
     <!-- SwipeRefreshLayout for pull-to-refresh -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -63,16 +35,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="28dp">
-
-                <!-- Search Bar -->
-                <androidx.appcompat.widget.SearchView
-                    android:id="@+id/searchView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:queryHint="Search location"
-                    app:iconifiedByDefault="false"
-                    app:searchIcon="@drawable/ic_search" />
 
                 <!-- Current Weather Section -->
                 <androidx.cardview.widget.CardView
