@@ -5,7 +5,7 @@ import com.example.weather_report.model.pojo.City
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class CityLocalDataSourceImpl(val dao : ICityDao) : ICityLocalDataSource {
+class CityLocalDataSourceImpl(private val dao : ICityDao) : ICityLocalDataSource {
     override suspend fun insertCity(city: City) {
         withContext(Dispatchers.IO) {
             dao.insertSingleCity(city)

@@ -13,11 +13,14 @@ interface IForecastItemDao {
     suspend fun getAllForecastItems() : List<ForecastItem>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertAllForecastItem(list : List<ForecastItem>)
+    suspend fun insertAllForecastItems(list : List<ForecastItem>)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertSingleForecastItem(forecastItem: ForecastItem)
 
     @Delete
     suspend fun deleteSingleForecastItem(forecastItem: ForecastItem)
+
+    @Query("DELETE FROM Forecast_Table")
+    suspend fun deleteAllForecastItems()
 }
