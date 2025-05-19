@@ -69,4 +69,7 @@ dependencies {
 
     // material components
     implementation("com.google.android.material:material:1.9.0")
+
+    // swipe to refresh
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }
