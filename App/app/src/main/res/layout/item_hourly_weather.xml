@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginEnd="20dp"
-    app:cardBackgroundColor="#331F2A44"
+    app:cardBackgroundColor="#551F2A44"
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp">
 
@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/interreg"
             android:text="23:00"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/cool_gray_mist_9f9e9e"
             android:textSize="18sp" />
 
         <ImageView
@@ -30,7 +30,7 @@
             android:layout_height="40dp"
             android:layout_marginTop="16dp"
             android:src="@drawable/ic_cloud"
-            app:tint="#55AAFF" />
+            app:tint="@color/light_sky_ice_bef4fe" />
 
         <TextView
             android:id="@+id/hourlyTempTextView"
@@ -39,7 +39,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="@font/interreg"
             android:text="32°C"
-            android:textColor="#BEF4FE"
+            android:textColor="@color/cool_gray_mist_9f9e9e"
             android:textSize="18sp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

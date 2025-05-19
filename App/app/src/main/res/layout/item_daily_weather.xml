@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
-    app:cardBackgroundColor="#331F2A44"
+    app:cardBackgroundColor="#551F2A44"
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp">
 
@@ -21,16 +21,17 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:fontFamily="@font/interreg"
-            android:text="MON"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp" />
+            android:text="Monday"
+            android:textColor="@color/cool_gray_mist_9f9e9e"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
 
         <ImageView
             android:id="@+id/dailyWeatherIcon"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_cloud"
-            app:tint="#55AAFF" />
+            app:tint="@color/light_sky_ice_bef4fe" />
 
         <TextView
             android:id="@+id/dailyTempTextView"
@@ -40,7 +41,7 @@
             android:fontFamily="@font/interreg"
             android:gravity="end"
             android:text="↑ 38° ↓ 22°"
-            android:textColor="#BEF4FE"
+            android:textColor="@color/cool_gray_mist_9f9e9e"
             android:textSize="18sp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
