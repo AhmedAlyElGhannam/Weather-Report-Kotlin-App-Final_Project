@@ -1,4 +1,4 @@
-package com.example.mvvm.model.local
+package com.example.weather_report.model.local
 
 import androidx.room.Dao
 import androidx.room.Delete

@@ -8,7 +8,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitHelper {
-    private const val BASE_URL = "api.openweathermap.org/data/2.5/"
+    private const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
     private const val API_KEY = BuildConfig.WEATHER_API_SUPER_DUPER_SECRET_KEY
 
     private val apiKeyInterceptor = ApiKeyInterceptor(API_KEY)

@@ -1,4 +1,4 @@
-package com.example.mvvm.model.local
+package com.example.weather_report.model.local
 
 import com.example.weather_report.model.local.ICityDao
 import com.example.weather_report.model.pojo.City

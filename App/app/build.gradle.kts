@@ -3,6 +3,7 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt")
 }
 
 android {
@@ -73,8 +74,9 @@ dependencies {
     implementation ("com.google.android.libraries.places:places:3.2.0")
 
     // Room Database for favorites
-    implementation ("androidx.room:room-runtime:2.5.2")
-    annotationProcessor ("androidx.room:room-compiler:2.5.2")
+    implementation ("androidx.room:room-ktx:2.6.1")
+    implementation ("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
 
     // WorkManager for alerts
     implementation ("androidx.work:work-runtime:2.8.1")
@@ -91,7 +93,12 @@ dependencies {
     // coordinator layout
     implementation ("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
-    //
+    // okhttp + interceptor
     implementation ("com.squareup.okhttp3:okhttp:4.9.3")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
+
+    // coroutines shenanigans
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
 }

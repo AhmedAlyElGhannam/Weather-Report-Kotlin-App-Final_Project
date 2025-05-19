@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class City(
     @PrimaryKey val id: Int,
     val name: String,
-    val coord: Coordinates,
+//    val coord: Coordinates,
     val country: String,
     val population: Int,
     val timezone: Int,

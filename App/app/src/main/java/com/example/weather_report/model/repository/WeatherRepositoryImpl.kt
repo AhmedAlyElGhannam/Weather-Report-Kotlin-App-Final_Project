@@ -1,10 +1,10 @@
 package com.example.weather_report.model.repository
 
-import com.example.mvvm.model.local.CityLocalDataSourceImpl
-import com.example.mvvm.model.local.ForecastItemLocalDataSourceImpl
-import com.example.mvvm.model.remote.WeatherRemoteDataSourceImpl
+import com.example.weather_report.model.local.CityLocalDataSourceImpl
+import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
 import com.example.weather_report.model.pojo.City
 import com.example.weather_report.model.pojo.ForecastItem
+import com.example.weather_report.model.remote.WeatherRemoteDataSourceImpl
 import com.example.weather_report.model.remote.WeatherResponse
 
 class WeatherRepositoryImpl private constructor(
