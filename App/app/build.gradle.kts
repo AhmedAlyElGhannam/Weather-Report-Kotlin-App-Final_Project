@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -7,12 +9,20 @@ android {
     namespace = "com.example.weather_report"
     compileSdk = 35
 
+    val properties = project.rootProject.file("local.properties").inputStream().use {
+        Properties().apply { load(it) }
+    }
+
     defaultConfig {
         applicationId = "com.example.weather_report"
         minSdk = 29
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "WEATHER_API_SUPER_DUPER_SECRET_KEY", "\"${properties.getProperty("WEATHER_API_SUPER_DUPER_SECRET_KEY")}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,6 +46,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -77,6 +88,10 @@ dependencies {
     // swipe to refresh
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
-    //
+    // coordinator layout
     implementation ("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+
+    //
+    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
 }
