@@ -65,5 +65,8 @@ dependencies {
     implementation ("androidx.work:work-runtime:2.8.1")
 
     // lottie
-    implementation ("com.airbnb.android:lottie:6.1.0")
+    implementation("com.airbnb.android:lottie:6.1.0")
+
+    // material components
+    implementation("com.google.android.material:material:1.9.0")
 }

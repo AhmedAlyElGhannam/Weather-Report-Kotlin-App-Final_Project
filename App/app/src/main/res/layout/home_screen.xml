@@ -4,13 +4,13 @@
     android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_background">
+    android:background="@drawable/background">
 
     <!-- Background Image -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:alpha="0.6"
+        android:alpha="1"
         android:scaleType="centerCrop"
         android:src="@drawable/background" />
 
@@ -18,7 +18,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#4D1F2A44" />
+        android:background="#991F2A44" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -48,25 +48,6 @@
                     android:orientation="vertical"
                     android:padding="28dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/assistant"
-                        android:text="Kerdasa, Giza Governorate, Egypt"
-                        android:textColor="#FFFFFF"
-                        android:textSize="24sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:fontFamily="@font/assistant"
-                        android:text="33°C"
-                        android:textColor="#BEF4FE"
-                        android:textSize="76sp"
-                        android:textStyle="bold" />
-
                     <com.airbnb.lottie.LottieAnimationView
                         android:id="@+id/weatherImg"
                         android:layout_width="100dp"
@@ -78,45 +59,79 @@
                         app:lottie_speed="1.2" />
 
                     <TextView
+                        android:id="@+id/tempTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:fontFamily="@font/assistant"
+                        android:text="33°C"
+                        android:textColor="@color/soft_gray_mist_d9d9d9"
+                        android:textSize="76sp"
+                        android:textStyle="bold" />
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:fontFamily="@font/interreg"
                         android:text="Cloudy"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/soft_gray_mist_d9d9d9"
                         android:textSize="26sp" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:orientation="horizontal">
+                        android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/highLowTempTxt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/interreg"
-                            android:paddingEnd="20dp"
                             android:text="↑ 38° ↓ 22°"
-                            android:textColor="#C0BECD"
+                            android:textColor="@color/soft_gray_mist_d9d9d9"
                             android:textSize="20sp" />
 
                         <TextView
+                            android:id="@+id/feelslikeTempTxt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
                             android:fontFamily="@font/interreg"
                             android:text="Feels like 31°"
-                            android:textColor="#C0BECD"
+                            android:textColor="@color/soft_gray_mist_d9d9d9"
                             android:textSize="20sp" />
                     </LinearLayout>
 
                     <TextView
+                        android:id="@+id/dateTxt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:fontFamily="@font/interreg"
-                        android:text="Sun, May 18 22:31"
-                        android:textColor="#C0BECD"
+                        android:text="Sun, May 18"
+                        android:textColor="@color/soft_gray_mist_d9d9d9"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/timeTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:fontFamily="@font/interreg"
+                        android:text="22:31"
+                        android:textColor="@color/soft_gray_mist_d9d9d9"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/locationTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:fontFamily="@font/interreg"
+                        android:text="Kerdasa, Giza Governorate, Egypt"
+                        android:textColor="@color/soft_gray_mist_d9d9d9"
                         android:textSize="18sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -131,17 +146,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/assistant"
+                    android:fontFamily="@font/interreg"
                     android:paddingBottom="20dp"
                     android:text="Weather Hourly"
-                    android:textColor="#FFFFFF"
-                    android:textSize="22sp"
+                    android:textColor="@color/soft_gray_mist_d9d9d9"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardBackgroundColor="#331F2A44"
+                    app:cardBackgroundColor="#551F2A44"
                     app:cardCornerRadius="24dp"
                     app:cardElevation="8dp">
 
@@ -165,17 +180,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/assistant"
+                    android:fontFamily="@font/interreg"
                     android:paddingBottom="20dp"
                     android:text="Daily Weather"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/soft_gray_mist_d9d9d9"
                     android:textSize="22sp"
                     android:textStyle="bold" />
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardBackgroundColor="#331F2A44"
+                    app:cardBackgroundColor="#551F2A44"
                     app:cardCornerRadius="24dp"
                     app:cardElevation="8dp">
 
@@ -190,221 +205,314 @@
             </LinearLayout>
 
             <!-- Additional Weather Details -->
-            <androidx.cardview.widget.CardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="#331F2A44"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="8dp">
+                android:orientation="vertical">
 
-                <GridLayout
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/interreg"
+                    android:paddingBottom="20dp"
+                    android:text="Additional Details"
+                    android:textColor="@color/soft_gray_mist_d9d9d9"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <!-- Humidity -->
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:alignmentMode="alignMargins"
-                    android:columnCount="3"
-                    android:padding="28dp"
-                    android:rowCount="2"
-                    android:useDefaultMargins="true">
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#551F2A44"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
 
-                    <!-- Humidity -->
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
                         android:padding="16dp">
 
                         <ImageView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:src="@drawable/ic_humidity"
-                            app:tint="#55AAFF" />
+                            app:tint="@color/light_sky_ice_bef4fe" />
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:fontFamily="@font/interreg"
-                            android:text="27%"
-                            android:textColor="#BEF4FE"
-                            android:textSize="20sp" />
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/interreg"
-                            android:text="Humidity"
-                            android:textColor="#C0BECD"
-                            android:textSize="16sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/interreg"
+                                android:text="27%"
+                                android:textColor="@color/soft_gray_mist_d9d9d9"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/interreg"
+                                android:text="Humidity"
+                                android:textColor="@color/soft_gray_mist_d9d9d9"
+                                android:textSize="16sp" />
+                        </LinearLayout>
                     </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
-                    <!-- Pressure -->
+                <!-- Pressure -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#551F2A44"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
                         android:padding="16dp">
 
                         <ImageView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:src="@drawable/ic_pressure"
-                            app:tint="#55AAFF" />
+                            app:tint="@color/light_sky_ice_bef4fe" />
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:fontFamily="@font/interreg"
-                            android:text="1012 hPa"
-                            android:textColor="#BEF4FE"
-                            android:textSize="20sp" />
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/interreg"
-                            android:text="Pressure"
-                            android:textColor="#C0BECD"
-                            android:textSize="16sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/interreg"
+                                android:text="1012 hPa"
+                                android:textColor="@color/soft_gray_mist_d9d9d9"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/interreg"
+                                android:text="Pressure"
+                                android:textColor="@color/soft_gray_mist_d9d9d9"
+                                android:textSize="16sp" />
+                        </LinearLayout>
                     </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
-                    <!-- Wind -->
+                <!-- Wind -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#551F2A44"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
                         android:padding="16dp">
 
                         <ImageView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:src="@drawable/ic_wind"
-                            app:tint="#55AAFF" />
+                            app:tint="@color/light_sky_ice_bef4fe" />
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:fontFamily="@font/interreg"
-                            android:text="15 km/h"
-                            android:textColor="#BEF4FE"
-                            android:textSize="20sp" />
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/interreg"
-                            android:text="Wind"
-                            android:textColor="#C0BECD"
-                            android:textSize="16sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/interreg"
+                                android:text="15 km/h"
+                                android:textColor="@color/soft_gray_mist_d9d9d9"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/interreg"
+                                android:text="Wind"
+                                android:textColor="@color/soft_gray_mist_d9d9d9"
+                                android:textSize="16sp" />
+                        </LinearLayout>
                     </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
-                    <!-- Temperature -->
+                <!-- Feels Like -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#551F2A44"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
                         android:padding="16dp">
 
                         <ImageView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:src="@drawable/ic_temp"
-                            app:tint="#55AAFF" />
+                            app:tint="@color/light_sky_ice_bef4fe" />
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:fontFamily="@font/interreg"
-                            android:text="31°C"
-                            android:textColor="#BEF4FE"
-                            android:textSize="20sp" />
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/interreg"
-                            android:text="Feels Like"
-                            android:textColor="#C0BECD"
-                            android:textSize="16sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/interreg"
+                                android:text="31°C"
+                                android:textColor="@color/soft_gray_mist_d9d9d9"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/interreg"
+                                android:text="Feels Like"
+                                android:textColor="@color/soft_gray_mist_d9d9d9"
+                                android:textSize="16sp" />
+                        </LinearLayout>
                     </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
-                    <!-- Cloud Cover -->
+                <!-- Cloud Cover -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#551F2A44"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
+
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
                         android:padding="16dp">
 
                         <ImageView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:src="@drawable/ic_cloud"
-                            app:tint="#55AAFF" />
+                            app:tint="@color/light_sky_ice_bef4fe" />
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:fontFamily="@font/interreg"
-                            android:text="70%"
-                            android:textColor="#BEF4FE"
-                            android:textSize="20sp" />
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/interreg"
-                            android:text="Cloud Cover"
-                            android:textColor="#C0BECD"
-                            android:textSize="16sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/interreg"
+                                android:text="70%"
+                                android:textColor="@color/soft_gray_mist_d9d9d9"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/interreg"
+                                android:text="Cloud Cover"
+                                android:textColor="@color/soft_gray_mist_d9d9d9"
+                                android:textSize="16sp" />
+                        </LinearLayout>
                     </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <!-- uv -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#551F2A44"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp">
 
-                    <!-- Visibility -->
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:gravity="center"
-                        android:orientation="vertical"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
                         android:padding="16dp">
 
                         <ImageView
                             android:layout_width="40dp"
                             android:layout_height="40dp"
-                            android:src="@drawable/ic_cloud"
-                            app:tint="#55AAFF" />
+                            android:src="@drawable/ic_uv"
+                            app:tint="@color/light_sky_ice_bef4fe" />
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:fontFamily="@font/interreg"
-                            android:text="10 km"
-                            android:textColor="#BEF4FE"
-                            android:textSize="20sp" />
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/interreg"
-                            android:text="Visibility"
-                            android:textColor="#C0BECD"
-                            android:textSize="16sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/interreg"
+                                android:text="0.0"
+                                android:textColor="@color/soft_gray_mist_d9d9d9"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="@font/interreg"
+                                android:text="UV Index"
+                                android:textColor="@color/soft_gray_mist_d9d9d9"
+                                android:textSize="16sp" />
+                        </LinearLayout>
                     </LinearLayout>
-                </GridLayout>
-            </androidx.cardview.widget.CardView>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </FrameLayout>
