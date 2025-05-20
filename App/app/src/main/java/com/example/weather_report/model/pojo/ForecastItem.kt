@@ -12,7 +12,6 @@ data class ForecastItem(
     val wind: Wind,
     val visibility: Int,
     val pop: Double,
-    val rain: Rain? = null,
     val sys: Sys,
     val dt_txt: String
 )

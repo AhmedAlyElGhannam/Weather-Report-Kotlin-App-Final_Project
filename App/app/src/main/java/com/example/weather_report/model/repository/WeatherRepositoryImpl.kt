@@ -5,7 +5,7 @@ import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
 import com.example.weather_report.model.pojo.City
 import com.example.weather_report.model.pojo.ForecastItem
 import com.example.weather_report.model.remote.WeatherRemoteDataSourceImpl
-import com.example.weather_report.model.remote.WeatherResponse
+import com.example.weather_report.model.remote.ForecastResponse
 
 class WeatherRepositoryImpl private constructor(
     private val local_city : CityLocalDataSourceImpl,
@@ -31,7 +31,7 @@ class WeatherRepositoryImpl private constructor(
         lat : Double,
         lon : Double,
         units : String
-    ) : WeatherResponse? {
+    ) : ForecastResponse? {
         return remote.makeNetworkCall(lat, lon, units)
     }
 

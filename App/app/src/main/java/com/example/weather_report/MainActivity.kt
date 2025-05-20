@@ -35,8 +35,8 @@ class MainActivity : AppCompatActivity() {
 
         GlobalScope.launch(Dispatchers.IO) {
             val res = repo.fetchWeatherDataRemotely(
-                lat = 30.0444,
-                lon = 31.2357,
+                lat = 39.0444,
+                lon = 69.2357,
                 units = UnitSystem.METRIC.value
             )
 

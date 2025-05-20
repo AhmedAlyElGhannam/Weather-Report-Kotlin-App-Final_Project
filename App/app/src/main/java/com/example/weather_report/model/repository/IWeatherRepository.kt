@@ -2,14 +2,14 @@ package com.example.weather_report.model.repository
 
 import com.example.weather_report.model.pojo.City
 import com.example.weather_report.model.pojo.ForecastItem
-import com.example.weather_report.model.remote.WeatherResponse
+import com.example.weather_report.model.remote.ForecastResponse
 
 interface IWeatherRepository {
     suspend fun fetchWeatherDataRemotely(
         lat : Double,
         lon : Double,
         units : String
-    ) : WeatherResponse?
+    ) : ForecastResponse?
 
     suspend fun fetchFavouriteCitiesLocally() : List<City>
 
