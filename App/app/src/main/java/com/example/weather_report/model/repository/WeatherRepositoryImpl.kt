@@ -4,6 +4,7 @@ import com.example.weather_report.model.local.CityLocalDataSourceImpl
 import com.example.weather_report.model.local.CurrentWeatherLocalDataSourceImpl
 import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
 import com.example.weather_report.model.pojo.City
+import com.example.weather_report.model.pojo.CurrentWeather
 import com.example.weather_report.model.pojo.ForecastItem
 import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
 import com.example.weather_report.model.remote.ForecastResponse
@@ -32,34 +33,46 @@ class WeatherRepositoryImpl private constructor(
     }
 
     override suspend fun fetchForecastDataRemotely(
-        lat : Double,
-        lon : Double,
-        units : String
+        lat: Double,
+        lon: Double,
+        units: String
     ) : ForecastResponse? {
         return remote.makeNetworkCallToGetForecast(lat, lon, units)
     }
 
     override suspend fun fetchCurrentWeatherDataRemotely(
-        lat : Double,
-        lon : Double,
-        units : String
+        lat: Double,
+        lon: Double,
+        units: String
     ) : WeatherResponse? {
         return remote.makeNetworkCallToGetCurrentWeather(lat, lon, units)
     }
 
-    override suspend fun fetchFavouriteCitiesLocally() : List<City> {
+    override suspend fun fetchFavouriteCitiesLocally(): List<City> {
         return local_city.getAllCities()
     }
 
-    override suspend fun deleteCityFromFavourites(city : City) {
+    override suspend fun deleteCityFromFavourites(city: City) {
         local_city.removeCity(city)
     }
 
-    override suspend fun addCityToFavourites(city : City) {
+    override suspend fun addCityToFavourites(city: City) {
         local_city.insertCity(city)
     }
 
-    override suspend fun fetchAllSavedLocationForecastDataLocally() : List<ForecastItem> {
+    override suspend fun getCityByID(id: Int): City? {
+        return local_city.getCityByID(id)
+    }
+
+    override suspend fun updateCityInfo(city: City) {
+        local_city.updateCityInfo(city)
+    }
+
+    override suspend fun isFavouriteCity(id: Int): Boolean {
+        return local_city.isFavouriteCity(id)
+    }
+
+    override suspend fun fetchAllSavedLocationForecastDataLocally(): List<ForecastItem> {
         return local_forecast.getAllForecastItems()
     }
 
@@ -67,7 +80,7 @@ class WeatherRepositoryImpl private constructor(
         local_forecast.deleteAllForecastItems()
     }
 
-    override suspend fun saveLocationForecastData(forecastItems : List<ForecastItem>) {
+    override suspend fun saveLocationForecastData(forecastItems: List<ForecastItem>) {
         local_forecast.insertAllForecastItems(forecastItems)
     }
 
@@ -77,5 +90,45 @@ class WeatherRepositoryImpl private constructor(
 
     override suspend fun deleteLocationSingleForecastData(forecastItem: ForecastItem) {
         local_forecast.removeForecastItem(forecastItem)
+    }
+
+    override suspend fun getForecastItemsByCityID(id: Int): List<ForecastItem> {
+        return local_forecast.getForcastItemsByCityID(id)
+    }
+
+    override suspend fun updateForecastItem(forecastItem: ForecastItem) {
+        local_forecast.updateForecastItem(forecastItem)
+    }
+
+    override suspend fun insertCurrentWeather(currentWeather: CurrentWeather) {
+        local_currWeather.insertCurrentWeather(currentWeather)
+    }
+
+    override suspend fun removeCurrentWeather(currentWeather: CurrentWeather) {
+        local_currWeather.removeCurrentWeather(currentWeather)
+    }
+
+    override suspend fun getAllCurrentWeather(): List<CurrentWeather> {
+        return local_currWeather.getAllCurrentWeather()
+    }
+
+    override suspend fun deleteAllCurrentWeather() {
+        local_currWeather.deleteAllCurrentWeather()
+    }
+
+    override suspend fun getCurrentWeatherByCityID(id: Int): CurrentWeather? {
+        return local_currWeather.getCurrentWeatherByCityID(id)
+    }
+
+    override suspend fun updateCurrentWeather(currentWeather: CurrentWeather) {
+        local_currWeather.updateCurrentWeather(currentWeather)
+    }
+
+    override suspend fun deleteCurrentWeatherByCityID(id: Int) {
+        local_currWeather.deleteCurrentWeatherByCityID(id)
+    }
+
+    override suspend fun doesCurrentWeatherExistForCity(id: Int): Boolean {
+        return local_currWeather.doesCurrentWeatherExistForCity(id)
     }
 }
