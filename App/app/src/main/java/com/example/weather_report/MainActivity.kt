@@ -40,6 +40,8 @@ class MainActivity : AppCompatActivity() {
                 units = UnitSystem.METRIC.value
             )
 
+            res?.city?.let { repo.addCityToFavourites(it) }
+
             withContext(Dispatchers.Main) {
                 Log.i("TAG", "onCreate: " + res.toString())
             }

@@ -4,10 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.weather_report.model.pojo.City
 import com.example.weather_report.model.pojo.ForecastItem
 
 @Database(entities = arrayOf(ForecastItem::class, City::class) , version = 1)
+@TypeConverters(Converters::class)
 abstract class LocalDB: RoomDatabase() {
     abstract fun getForecastItemDao() : IForecastItemDao
     abstract fun getCityDao() : ICityDao
