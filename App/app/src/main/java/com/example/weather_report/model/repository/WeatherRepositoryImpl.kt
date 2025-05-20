@@ -3,26 +3,30 @@ package com.example.weather_report.model.repository
 import com.example.weather_report.model.local.CityLocalDataSourceImpl
 import com.example.weather_report.model.local.CurrentWeatherLocalDataSourceImpl
 import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
+import com.example.weather_report.model.local.ICityLocalDataSource
+import com.example.weather_report.model.local.ICurrentWeatherLocalDataSource
+import com.example.weather_report.model.local.IForecastItemLocalDataSource
 import com.example.weather_report.model.pojo.City
 import com.example.weather_report.model.pojo.CurrentWeather
 import com.example.weather_report.model.pojo.ForecastItem
 import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
 import com.example.weather_report.model.pojo.ForecastResponse
 import com.example.weather_report.model.pojo.WeatherResponse
+import com.example.weather_report.model.remote.IWeatherAndForecastRemoteDataSource
 
 class WeatherRepositoryImpl private constructor(
-    private val local_city : CityLocalDataSourceImpl,
-    private val local_forecast : ForecastItemLocalDataSourceImpl,
-    private val local_currWeather : CurrentWeatherLocalDataSourceImpl,
-    private val remote : WeatherAndForecastRemoteDataSourceImpl
+    private val local_city : ICityLocalDataSource,
+    private val local_forecast : IForecastItemLocalDataSource,
+    private val local_currWeather : ICurrentWeatherLocalDataSource,
+    private val remote : IWeatherAndForecastRemoteDataSource
 ) : IWeatherRepository {
     companion object {
         private var repo : WeatherRepositoryImpl? = null
         fun getInstance(
-            _local_city : CityLocalDataSourceImpl,
-            _local_forecast : ForecastItemLocalDataSourceImpl,
-            _local_currWeather : CurrentWeatherLocalDataSourceImpl,
-            _remote : WeatherAndForecastRemoteDataSourceImpl
+            _local_city : ICityLocalDataSource,
+            _local_forecast : IForecastItemLocalDataSource,
+            _local_currWeather : ICurrentWeatherLocalDataSource,
+            _remote : IWeatherAndForecastRemoteDataSource
         ) : WeatherRepositoryImpl {
             return repo ?: synchronized(this) {
                 val temp = WeatherRepositoryImpl(_local_city, _local_forecast, _local_currWeather, _remote)
