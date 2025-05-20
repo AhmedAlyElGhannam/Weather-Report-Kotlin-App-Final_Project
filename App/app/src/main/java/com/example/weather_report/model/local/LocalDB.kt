@@ -14,6 +14,8 @@ import com.example.weather_report.model.pojo.ForecastItem
 abstract class LocalDB: RoomDatabase() {
     abstract fun getForecastItemDao() : IForecastItemDao
     abstract fun getCityDao() : ICityDao
+    abstract fun getCurrentWeatherDao() : ICurrentWeatherDao
+
 
     companion object {
         @Volatile

@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.weather_report.model.pojo.ForecastItem
 
 @Dao
@@ -23,4 +24,10 @@ interface IForecastItemDao {
 
     @Query("DELETE FROM Forecast_Table")
     suspend fun deleteAllForecastItems()
+
+    @Query("SELECT * FROM Forecast_Table WHERE cityId = :cityId ORDER BY dt ASC")
+    suspend fun getForecastItemsByCityId(cityId: Int): List<ForecastItem>
+
+    @Update
+    suspend fun updateForecastItem(forecastItem: ForecastItem)
 }

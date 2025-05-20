@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.weather_report.model.pojo.City
 
 @Dao
@@ -17,4 +18,13 @@ interface ICityDao {
 
     @Delete
     suspend fun deleteSingleCity(city : City)
+
+    @Query("SELECT * FROM City_Table WHERE id = :cityId")
+    suspend fun getCityById(cityId: Int): City?
+
+    @Update
+    suspend fun updateCity(city: City)
+
+    @Query("SELECT EXISTS(SELECT * FROM City_Table WHERE id = :cityId)")
+    suspend fun doesCityExist(cityId: Int): Boolean
 }

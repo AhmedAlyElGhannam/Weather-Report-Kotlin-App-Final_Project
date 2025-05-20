@@ -13,5 +13,6 @@ data class City(
     val population: Int,
     val timezone: Int,
     val sunrise: Long,
-    val sunset: Long
+    val sunset: Long,
+    var isCurrLocation : Boolean = false
 )
