@@ -7,8 +7,8 @@ import com.example.weather_report.model.pojo.City
 import com.example.weather_report.model.pojo.CurrentWeather
 import com.example.weather_report.model.pojo.ForecastItem
 import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
-import com.example.weather_report.model.remote.ForecastResponse
-import com.example.weather_report.model.remote.WeatherResponse
+import com.example.weather_report.model.pojo.ForecastResponse
+import com.example.weather_report.model.pojo.WeatherResponse
 
 class WeatherRepositoryImpl private constructor(
     private val local_city : CityLocalDataSourceImpl,
