@@ -1,11 +1,18 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt")
 }
 
 android {
     namespace = "com.example.weather_report"
     compileSdk = 35
+
+    val properties = project.rootProject.file("local.properties").inputStream().use {
+        Properties().apply { load(it) }
+    }
 
     defaultConfig {
         applicationId = "com.example.weather_report"
@@ -13,6 +20,10 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "WEATHER_API_SUPER_DUPER_SECRET_KEY", "\"${properties.getProperty("WEATHER_API_SUPER_DUPER_SECRET_KEY")}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,6 +47,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -62,8 +74,9 @@ dependencies {
     implementation ("com.google.android.libraries.places:places:3.2.0")
 
     // Room Database for favorites
-    implementation ("androidx.room:room-runtime:2.5.2")
-    annotationProcessor ("androidx.room:room-compiler:2.5.2")
+    implementation ("androidx.room:room-ktx:2.6.1")
+    implementation ("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
 
     // WorkManager for alerts
     implementation ("androidx.work:work-runtime:2.8.1")
@@ -77,6 +90,23 @@ dependencies {
     // swipe to refresh
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
-    //
+    // coordinator layout
     implementation ("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+
+    // okhttp + interceptor
+    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
+
+    // coroutines shenanigans
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+
+    // junit && mockk unit testing shenanigans
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("io.mockk:mockk:1.13.5")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+
+    // singleton reflection
+    testImplementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
 }
