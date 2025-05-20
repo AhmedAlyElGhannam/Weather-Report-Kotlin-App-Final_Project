@@ -101,4 +101,12 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+
+    // junit && mockk unit testing shenanigans
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("io.mockk:mockk:1.13.5")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+
+    // singleton reflection
+    testImplementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
 }
