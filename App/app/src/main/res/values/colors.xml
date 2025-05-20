@@ -24,4 +24,6 @@
     <color name="earthy_gray_dawn_7d6e6e">#7D6E6E</color>
     <color name="muted_stone_gray_8a7d80">#8A7D80</color>
     <color name="cool_gray_mist_9f9e9e">#9F9E9E</color>
+    <color name="semi_transparent_black">#80000000</color>
+    <color name="semi_transparent_90">#E6000000</color>
 </resources>

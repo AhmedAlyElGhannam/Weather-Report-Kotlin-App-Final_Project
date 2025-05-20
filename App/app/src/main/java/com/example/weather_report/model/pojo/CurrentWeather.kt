@@ -5,29 +5,31 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-
 @Entity(
-    tableName = "Forecast_Table",
-    primaryKeys = ["dt", "cityId"],
+    tableName = "Current_Weather_Table",
     foreignKeys = [
         ForeignKey(
             entity = City::class,
             parentColumns = ["id"],
-            childColumns = ["cityId"],
+            childColumns = ["id"],
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("cityId")]
+    indices = [Index("id")]
 )
-data class ForecastItem(
-    val dt: Long,
-    val main: MainWeather,
+data class CurrentWeather(
+    @PrimaryKey val id: Int,
+    val coord: Coordinates,
     val weather: List<Weather>,
-    val clouds: Clouds,
-    val wind: Wind,
+    val base: String,
+    val main: MainWeather,
     val visibility: Int,
-    val pop: Double,
+    val wind: Wind,
+    val clouds: Clouds,
+    val rain: Rain?,
+    val dt: Long,
     val sys: Sys,
-    val dt_txt: String,
-    val cityId : Int
+    val timezone: Int,
+    val name: String,
+    val cod: Int
 )
