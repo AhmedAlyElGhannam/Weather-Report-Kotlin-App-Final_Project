@@ -1,38 +1,50 @@
 package com.example.weather_report.model.repository
 
 import com.example.weather_report.model.local.CityLocalDataSourceImpl
+import com.example.weather_report.model.local.CurrentWeatherLocalDataSourceImpl
 import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
 import com.example.weather_report.model.pojo.City
 import com.example.weather_report.model.pojo.ForecastItem
-import com.example.weather_report.model.remote.WeatherRemoteDataSourceImpl
+import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
 import com.example.weather_report.model.remote.ForecastResponse
+import com.example.weather_report.model.remote.WeatherResponse
 
 class WeatherRepositoryImpl private constructor(
     private val local_city : CityLocalDataSourceImpl,
     private val local_forecast : ForecastItemLocalDataSourceImpl,
-    private val remote : WeatherRemoteDataSourceImpl
+    private val local_currWeather : CurrentWeatherLocalDataSourceImpl,
+    private val remote : WeatherAndForecastRemoteDataSourceImpl
 ) : IWeatherRepository {
     companion object {
         private var repo : WeatherRepositoryImpl? = null
         fun getInstance(
             _local_city : CityLocalDataSourceImpl,
             _local_forecast : ForecastItemLocalDataSourceImpl,
-            _remote : WeatherRemoteDataSourceImpl
+            _local_currWeather : CurrentWeatherLocalDataSourceImpl,
+            _remote : WeatherAndForecastRemoteDataSourceImpl
         ) : WeatherRepositoryImpl {
             return repo ?: synchronized(this) {
-                val temp = WeatherRepositoryImpl(_local_city, _local_forecast, _remote)
+                val temp = WeatherRepositoryImpl(_local_city, _local_forecast, _local_currWeather, _remote)
                 repo = temp
                 temp
             }
         }
     }
 
-    override suspend fun fetchWeatherDataRemotely(
+    override suspend fun fetchForecastDataRemotely(
         lat : Double,
         lon : Double,
         units : String
     ) : ForecastResponse? {
-        return remote.makeNetworkCall(lat, lon, units)
+        return remote.makeNetworkCallToGetForecast(lat, lon, units)
+    }
+
+    override suspend fun fetchCurrentWeatherDataRemotely(
+        lat : Double,
+        lon : Double,
+        units : String
+    ) : WeatherResponse? {
+        return remote.makeNetworkCallToGetCurrentWeather(lat, lon, units)
     }
 
     override suspend fun fetchFavouriteCitiesLocally() : List<City> {

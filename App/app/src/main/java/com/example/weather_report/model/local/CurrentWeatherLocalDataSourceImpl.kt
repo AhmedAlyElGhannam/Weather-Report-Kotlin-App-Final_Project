@@ -24,6 +24,32 @@ class CurrentWeatherLocalDataSourceImpl(private val dao: ICurrentWeatherDao) : I
     }
 
     override suspend fun deleteAllCurrentWeather() {
-        dao.deleteAllCurrentWeather()
+        withContext(Dispatchers.IO) {
+            dao.deleteAllCurrentWeather()
+        }
+    }
+
+    override suspend fun getCurrentWeatherByCityID(id : Int) : CurrentWeather? {
+        return withContext(Dispatchers.IO) {
+            dao.getCurrentWeatherByCityId(id)
+        }
+    }
+
+    override suspend fun updateCurrentWeather(currentWeather: CurrentWeather) {
+        withContext(Dispatchers.IO) {
+            dao.updateCurrentWeather(currentWeather)
+        }
+    }
+
+    override suspend fun deleteCurrentWeatherByCityID(id : Int) {
+        withContext(Dispatchers.IO) {
+            dao.deleteCurrentWeatherByCityId(id)
+        }
+    }
+
+    override suspend fun doesCurrentWeatherExistForCity(id : Int) : Boolean {
+        return withContext(Dispatchers.IO) {
+            dao.doesCurrentWeatherExistForCity(id)
+        }
     }
 }

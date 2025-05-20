@@ -24,10 +24,26 @@ class ForecastItemLocalDataSourceImpl(private val dao : IForecastItemDao) : IFor
     }
 
     override suspend fun insertAllForecastItems(forecastItems : List<ForecastItem>) {
-        dao.insertAllForecastItems(forecastItems)
+        withContext(Dispatchers.IO){
+            dao.insertAllForecastItems(forecastItems)
+        }
     }
 
     override suspend fun deleteAllForecastItems() {
-        dao.deleteAllForecastItems()
+        withContext(Dispatchers.IO){
+            dao.deleteAllForecastItems()
+        }
+    }
+
+    override suspend fun getForcastItemsByCityID(id : Int) : List<ForecastItem> {
+        return withContext(Dispatchers.IO) {
+            dao.getForecastItemsByCityId(id)
+        }
+    }
+
+    override suspend fun updateForecastItem(forecastItem: ForecastItem) {
+        withContext(Dispatchers.IO) {
+            dao.updateForecastItem(forecastItem)
+        }
     }
 }

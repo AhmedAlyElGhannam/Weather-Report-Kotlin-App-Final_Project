@@ -9,4 +9,6 @@ interface IForecastItemLocalDataSource {
     suspend fun getAllForecastItems(): List<ForecastItem>
     suspend fun insertAllForecastItems(forecastItems : List<ForecastItem>)
     suspend fun deleteAllForecastItems()
+    suspend fun getForcastItemsByCityID(id : Int) : List<ForecastItem>
+    suspend fun updateForecastItem(forecastItem: ForecastItem)
 }

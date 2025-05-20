@@ -7,4 +7,8 @@ interface ICurrentWeatherLocalDataSource {
     suspend fun removeCurrentWeather(currentWeather: CurrentWeather)
     suspend fun getAllCurrentWeather(): List<CurrentWeather>
     suspend fun deleteAllCurrentWeather()
+    suspend fun getCurrentWeatherByCityID(id : Int) : CurrentWeather?
+    suspend fun updateCurrentWeather(currentWeather: CurrentWeather)
+    suspend fun deleteCurrentWeatherByCityID(id : Int)
+    suspend fun doesCurrentWeatherExistForCity(id : Int) : Boolean
 }

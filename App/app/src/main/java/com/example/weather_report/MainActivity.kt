@@ -5,11 +5,12 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weather_report.databinding.HomeScreenBinding
 import com.example.weather_report.model.local.CityLocalDataSourceImpl
+import com.example.weather_report.model.local.CurrentWeatherLocalDataSourceImpl
 import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
 import com.example.weather_report.model.local.LocalDB
 import com.example.weather_report.model.remote.IWeatherService
 import com.example.weather_report.model.remote.RetrofitHelper
-import com.example.weather_report.model.remote.WeatherRemoteDataSourceImpl
+import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
 import com.example.weather_report.model.repository.WeatherRepositoryImpl
 import com.example.weather_report.utils.UnitSystem
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -30,11 +31,12 @@ class MainActivity : AppCompatActivity() {
         val repo : WeatherRepositoryImpl = WeatherRepositoryImpl.getInstance(
             CityLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCityDao()),
             ForecastItemLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getForecastItemDao()),
-            WeatherRemoteDataSourceImpl(RetrofitHelper.retrofit.create(IWeatherService::class.java))
+            CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCurrentWeatherDao()),
+            WeatherAndForecastRemoteDataSourceImpl(RetrofitHelper.retrofit.create(IWeatherService::class.java))
         )
 
         GlobalScope.launch(Dispatchers.IO) {
-            val res = repo.fetchWeatherDataRemotely(
+            val res = repo.fetchForecastDataRemotely(
                 lat = 39.0444,
                 lon = 69.2357,
                 units = UnitSystem.METRIC.value
@@ -42,8 +44,10 @@ class MainActivity : AppCompatActivity() {
 
             res?.city?.let { repo.addCityToFavourites(it) }
 
+
             withContext(Dispatchers.Main) {
-                Log.i("TAG", "onCreate: " + res.toString())
+                Log.i("TAG", "forecast: " + res.toString())
+                Log.i("TAG", "currWeather: " + res.toString())
             }
         }
     }
