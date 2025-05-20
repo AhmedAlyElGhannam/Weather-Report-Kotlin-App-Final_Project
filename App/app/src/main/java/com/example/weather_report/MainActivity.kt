@@ -13,6 +13,7 @@ import com.example.weather_report.model.remote.RetrofitHelper
 import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
 import com.example.weather_report.model.repository.WeatherRepositoryImpl
 import com.example.weather_report.utils.UnitSystem
+import com.example.weather_report.utils.WeatherResponseToWeatherLocalDataSourceMapper.toCurrentWeather
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -49,6 +50,10 @@ class MainActivity : AppCompatActivity() {
             )
 
             res_forecast?.city?.let { repo.addCityToFavourites(it) }
+
+            if (res_currWeather != null) {
+                repo.insertCurrentWeather(res_currWeather.toCurrentWeather())
+            }
 
             withContext(Dispatchers.Main) {
                 Log.i("TAG", "forecast: " + res_forecast.toString())
