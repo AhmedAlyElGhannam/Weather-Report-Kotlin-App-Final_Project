@@ -12,7 +12,7 @@ interface IWeatherService {
         @Query("units") units : String
     ) : Response<ForecastResponse?>?
 
-    @GET("current")
+    @GET("weather")
     suspend fun getWeather(
         @Query("lat") lat : Double,
         @Query("lon") lon : Double,

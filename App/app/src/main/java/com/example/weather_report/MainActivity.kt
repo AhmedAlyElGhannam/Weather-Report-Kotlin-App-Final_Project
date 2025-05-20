@@ -36,18 +36,23 @@ class MainActivity : AppCompatActivity() {
         )
 
         GlobalScope.launch(Dispatchers.IO) {
-            val res = repo.fetchForecastDataRemotely(
+            val res_forecast = repo.fetchForecastDataRemotely(
                 lat = 39.0444,
                 lon = 69.2357,
                 units = UnitSystem.METRIC.value
             )
 
-            res?.city?.let { repo.addCityToFavourites(it) }
+            val res_currWeather = repo.fetchCurrentWeatherDataRemotely(
+                lat = 39.0444,
+                lon = 69.2357,
+                units = UnitSystem.METRIC.value
+            )
 
+            res_forecast?.city?.let { repo.addCityToFavourites(it) }
 
             withContext(Dispatchers.Main) {
-                Log.i("TAG", "forecast: " + res.toString())
-                Log.i("TAG", "currWeather: " + res.toString())
+                Log.i("TAG", "forecast: " + res_forecast.toString())
+                Log.i("TAG", "currWeather: " + res_currWeather.toString())
             }
         }
     }
