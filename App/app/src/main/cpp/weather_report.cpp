@@ -5,21 +5,21 @@
 /******************************TEMP********************************/
 extern "C"
 JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_celciusToKelvin(
+Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_celsiusToKelvin(
         JNIEnv *env, jobject thiz, jdouble temp) {
     jdouble res = 0.0;
 
-    res = (temp * (9.0/5.0)) + 32.0;
+    res = temp + 273.15;
 
     return res;
 }
 extern "C"
 JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_celciusToFahrenheit(
+Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_celsiusToFahrenheit(
         JNIEnv *env, jobject thiz, jdouble temp) {
     jdouble res = 0.0;
 
-    res = temp + 273.15;
+    res = (temp * (9.0/5.0)) + 32.0;
 
     return res;
 }
@@ -85,3 +85,4 @@ Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_hec
 
     return res;
 }
+

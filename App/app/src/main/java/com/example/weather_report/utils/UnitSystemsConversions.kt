@@ -4,8 +4,8 @@ package com.example.weather_report.utils
 class UnitSystemsConversions {
     companion object {
         // temperature conversions from celcius to other units
-        public external fun celciusToKelvin(temp : Double) : Double
-        public external fun celciusToFahrenheit(temp : Double) : Double
+        public external fun celsiusToKelvin(temp : Double) : Double
+        public external fun celsiusToFahrenheit(temp : Double) : Double
 
         // wind speed conversions from m/s to other units
         public external fun meterPerSecondToKilometerPerHour(windSpeed : Double) : Double
