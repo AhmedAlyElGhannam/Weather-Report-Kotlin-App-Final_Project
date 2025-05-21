@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weather_report.databinding.HomeScreenBinding
+import com.example.weather_report.features.initialdialog.InitialSetupDialog
 import com.example.weather_report.model.local.CityLocalDataSourceImpl
 import com.example.weather_report.model.local.CurrentWeatherLocalDataSourceImpl
 import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
@@ -44,6 +45,9 @@ class MainActivity : AppCompatActivity() {
             CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCurrentWeatherDao()),
             WeatherAndForecastRemoteDataSourceImpl(RetrofitHelper.retrofit.create(IWeatherService::class.java))
         )
+
+        val dialog = InitialSetupDialog()
+        dialog.show(supportFragmentManager, "InitialSetupDialog")
 
         GlobalScope.launch(Dispatchers.IO) {
             val res_forecast = repo.fetchForecastDataRemotely(
