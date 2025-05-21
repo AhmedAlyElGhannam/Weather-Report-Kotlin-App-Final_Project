@@ -32,8 +32,7 @@ class InitialSetupDialog : DialogFragment() {
             else {
                 null
             }
-
-            val notificationsEnabled = binding.toggleNotifications.isEnabled
+            val notificationsEnabled = binding.toggleNotifications.isChecked
 
             Toast.makeText(context, "Location: $selectedOption, Notifications: $notificationsEnabled", Toast.LENGTH_SHORT).show()
             dismiss()
