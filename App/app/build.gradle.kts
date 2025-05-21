@@ -26,6 +26,11 @@ android {
         buildConfigField("String", "WEATHER_API_SUPER_DUPER_SECRET_KEY", "\"${properties.getProperty("WEATHER_API_SUPER_DUPER_SECRET_KEY")}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags += ""
+            }
+        }
     }
 
     buildTypes {
@@ -48,6 +53,12 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+    }
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
     }
 }
 
