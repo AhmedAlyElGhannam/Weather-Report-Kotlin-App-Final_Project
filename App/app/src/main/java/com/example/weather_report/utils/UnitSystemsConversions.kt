@@ -4,17 +4,17 @@ package com.example.weather_report.utils
 class UnitSystemsConversions {
     companion object {
         // temperature conversions from celcius to other units
-        public external fun celciusToKelvin()
-        public external fun celciusToFahrenheit()
+        public external fun celciusToKelvin(temp : Double) : Double
+        public external fun celciusToFahrenheit(temp : Double) : Double
 
         // wind speed conversions from m/s to other units
-        public external fun meterPerSecondToKilometerPerHour()
-        public external fun meterPerSecondToMilePerHour()
-        public external fun meterPerSecondToKilometerPerHour()
+        public external fun meterPerSecondToKilometerPerHour(windSpeed : Double) : Double
+        public external fun meterPerSecondToMilePerHour(windSpeed : Double) : Double
+        public external fun meterPerSecondToFeetPerSecond(windSpeed : Double) : Double
 
         // pressure conversions from hPa to other units
-        public external fun hectopascalToPsi()
-        public external fun hectopascalToAtm()
-        public external fun hectopascalToBar()
+        public external fun hectopascalToPsi(pressure : Double) : Double
+        public external fun hectopascalToAtm(pressure : Double) : Double
+        public external fun hectopascalToBar(pressure : Double) : Double
     }
 }
