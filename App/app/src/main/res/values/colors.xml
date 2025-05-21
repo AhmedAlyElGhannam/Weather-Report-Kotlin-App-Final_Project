@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <color name="deep_night_sky_1f1b30">#1F1B30</color>
     <color name="stormy_dusk_2e2857">#2E2857</color>
     <color name="light_cloud_purple_8c68b2">#8C68B2</color>

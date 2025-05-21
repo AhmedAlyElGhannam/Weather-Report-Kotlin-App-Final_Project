@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="24dp"
+    android:background="@drawable/dialog_background"
+    android:elevation="12dp"
+    android:theme="@style/ThemeOverlay.MaterialComponents.Dialog">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Initial Setup"
+        android:textColor="@color/soft_gray_mist_d9d9d9"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.03"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Location Section -->
+
+    <!-- Notifications Section -->
+
+    <!-- Toggle Button -->
+
+    <!-- Action Button -->
+
+
+    <TextView
+        android:id="@+id/location_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/interreg"
+        android:text="Location Settings"
+        android:textColor="@color/soft_gray_mist_d9d9d9"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_text" />
+
+    <RadioGroup
+        android:id="@+id/location_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="88dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/radio_gps"
+            style="@style/Widget.MaterialComponents.CompoundButton.RadioButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/radio_background_selector"
+            android:contentDescription="Select GPS location"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="GPS"
+            android:textColor="@drawable/radio_text_selector"
+            android:textSize="16sp"
+            app:buttonTint="?attr/colorPrimary"
+            app:rippleColor="?attr/colorControlHighlight" />
+
+        <com.google.android.material.radiobutton.MaterialRadioButton
+            android:id="@+id/radio_map"
+            style="@style/Widget.MaterialComponents.CompoundButton.RadioButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/radio_background_selector"
+            android:contentDescription="Select Map location"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="Map"
+            android:textColor="@drawable/radio_text_selector"
+            android:textSize="16sp"
+            app:buttonTint="?attr/colorPrimary"
+            app:rippleColor="?attr/colorControlHighlight" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/notifications_label"
+        android:layout_width="133dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="8dp"
+        android:text="Notifications"
+        android:textColor="@color/soft_gray_mist_d9d9d9"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="197dp"
+        tools:ignore="MissingConstraints" />
+
+    <ToggleButton
+        android:id="@+id/toggle_notifications"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="216dp"
+        android:background="@drawable/toggle_button_state"
+        android:text=""
+        android:textOff=""
+        android:textOn=""
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="184dp"
+        tools:ignore="MissingConstraints" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_ok"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="24dp"
+        android:paddingHorizontal="32dp"
+        android:text="Confirm"
+        android:textAllCaps="false"
+        android:textColor="@color/pure_snow_white_ffffff"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:backgroundTint="@color/light_cloud_purple_8c68b2"
+        app:cornerRadius="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toggle_notifications"
+        app:layout_constraintVertical_bias="1.0"
+        app:rippleColor="#80CBC4" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
