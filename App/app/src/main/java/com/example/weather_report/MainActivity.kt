@@ -55,6 +55,8 @@ class MainActivity : AppCompatActivity() {
                 repo.insertCurrentWeather(res_currWeather.toCurrentWeather())
                 if (res_forecast != null) {
                     repo.saveLocationForecastData(res_forecast.list.map { it.copy(cityId = res_forecast.city.id) })
+                    val dum_list = repo.getForecastItemsByCityID(res_forecast.city.id)
+                    Log.i("TAG", "onCreate: " + dum_list.toString())
                 }
 
             }
