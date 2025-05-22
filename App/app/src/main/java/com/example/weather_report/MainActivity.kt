@@ -1,9 +1,13 @@
 package com.example.weather_report
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.weather_report.databinding.ActivityMainBinding
 import com.example.weather_report.databinding.HomeScreenBinding
 import com.example.weather_report.features.initialdialog.InitialSetupDialog
 import com.example.weather_report.model.local.CityLocalDataSourceImpl
@@ -22,11 +26,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
 import java.util.Arrays
+import org.osmdroid.config.Configuration
+
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var binder : HomeScreenBinding
+    lateinit var binderHome : HomeScreenBinding
+    lateinit var binderMainActivity: ActivityMainBinding
 
     companion object {
         init {
@@ -34,10 +43,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.home_screen)
+        binderMainActivity = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binderMainActivity.root)
+
 
         val repo : WeatherRepositoryImpl = WeatherRepositoryImpl.getInstance(
             CityLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCityDao()),
@@ -48,6 +60,30 @@ class MainActivity : AppCompatActivity() {
 
         val dialog = InitialSetupDialog()
         dialog.show(supportFragmentManager, "InitialSetupDialog")
+
+
+        // setting up user agent
+        Configuration.getInstance().userAgentValue = packageName
+
+        val map = binderMainActivity.map
+        map.setTileSource(TileSourceFactory.MAPNIK)
+        map.setBuiltInZoomControls(true)
+        map.setMultiTouchControls(true)
+
+        map.controller.setZoom(15.0)
+        map.controller.setCenter(GeoPoint(48.8583, 2.2944)) // Eiffel Tower
+
+        map.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+                val projection = map.projection
+                val geoPoint = projection.fromPixels(event.x.toInt(), event.y.toInt()) as GeoPoint
+                val lat = geoPoint.latitude
+                val lon = geoPoint.longitude
+                Toast.makeText(this, "Lat: $lat, Lon: $lon", Toast.LENGTH_SHORT).show()
+            }
+            false
+        }
+
 
         GlobalScope.launch(Dispatchers.IO) {
             val res_forecast = repo.fetchForecastDataRemotely(

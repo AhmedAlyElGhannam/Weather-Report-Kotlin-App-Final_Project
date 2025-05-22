@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.navigation.fragment)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -120,4 +121,12 @@ dependencies {
 
     // singleton reflection
     testImplementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
+
+    // jetpack compose
+    implementation ("androidx.activity:activity-compose:1.8.0")
+    implementation ("androidx.navigation:navigation-compose:2.7.5")
+
+    // open street map
+    implementation ("org.osmdroid:osmdroid-android:6.1.16")
+
 }
