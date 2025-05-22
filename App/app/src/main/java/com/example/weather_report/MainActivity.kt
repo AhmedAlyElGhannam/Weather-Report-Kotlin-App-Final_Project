@@ -7,6 +7,8 @@ import android.util.Log
 import android.view.MotionEvent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
 import com.example.weather_report.databinding.ActivityMainBinding
 import com.example.weather_report.databinding.HomeScreenBinding
 import com.example.weather_report.features.initialdialog.InitialSetupDialog
@@ -30,6 +32,9 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import java.util.Arrays
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.MapEventsReceiver
+import org.osmdroid.views.overlay.MapEventsOverlay
+import org.osmdroid.views.overlay.Marker
 
 
 class MainActivity : AppCompatActivity() {
@@ -47,9 +52,13 @@ class MainActivity : AppCompatActivity() {
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        /*************************************************************************************************/
+
         binderMainActivity = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binderMainActivity.root)
 
+        /*************************************************************************************************/
 
         val repo : WeatherRepositoryImpl = WeatherRepositoryImpl.getInstance(
             CityLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCityDao()),
@@ -58,32 +67,62 @@ class MainActivity : AppCompatActivity() {
             WeatherAndForecastRemoteDataSourceImpl(RetrofitHelper.retrofit.create(IWeatherService::class.java))
         )
 
+        /*************************************************************************************************/
+
         val dialog = InitialSetupDialog()
         dialog.show(supportFragmentManager, "InitialSetupDialog")
 
+        /*************************************************************************************************/
 
-        // setting up user agent
+        var currentMarker: Marker? = null
+
+        // Set user agent
         Configuration.getInstance().userAgentValue = packageName
+        Configuration.getInstance().load(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext))
 
         val map = binderMainActivity.map
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setBuiltInZoomControls(true)
         map.setMultiTouchControls(true)
 
-        map.controller.setZoom(15.0)
-        map.controller.setCenter(GeoPoint(48.8583, 2.2944)) // Eiffel Tower
+        map.setMinZoomLevel(4.0)
+        map.setMaxZoomLevel(18.0)
 
-        map.setOnTouchListener { v, event ->
-            if (event.action == MotionEvent.ACTION_UP) {
-                val projection = map.projection
-                val geoPoint = projection.fromPixels(event.x.toInt(), event.y.toInt()) as GeoPoint
-                val lat = geoPoint.latitude
-                val lon = geoPoint.longitude
-                Toast.makeText(this, "Lat: $lat, Lon: $lon", Toast.LENGTH_SHORT).show()
+        map.controller.setZoom(4.0)
+
+        // Create the map event receiver
+        val mapEventsReceiver = object : MapEventsReceiver {
+            override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
+                // Remove old marker if it exists
+                currentMarker?.let {
+                    map.overlays.remove(it)
+                }
+
+                // Create a new marker
+                val marker = Marker(map)
+                marker.position = p
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                marker.title = "Pinned Location"
+                marker.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_map_pin_red)
+
+                // Add the new marker
+                map.overlays.add(marker)
+                currentMarker = marker // Track it
+                map.invalidate()
+
+                return true
             }
-            false
+
+            override fun longPressHelper(p: GeoPoint): Boolean {
+                return false
+            }
         }
 
+        // Add the event overlay only once
+        val overlayEvents = MapEventsOverlay(mapEventsReceiver)
+        map.overlays.add(overlayEvents)
+
+        /*************************************************************************************************/
 
         GlobalScope.launch(Dispatchers.IO) {
             val res_forecast = repo.fetchForecastDataRemotely(
@@ -113,19 +152,26 @@ class MainActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 Log.i("TAG", "forecast: " + res_forecast.toString())
                 Log.i("TAG", "currWeather: " + res_currWeather.toString())
-                // testing temp conversion
-                Log.i("TAG",
-                    "40C = ${UnitSystemsConversions.celsiusToKelvin(40.0)}K = ${UnitSystemsConversions.celsiusToFahrenheit(40.0)}F"
-                )
-                // testing wind speed conversion
-                Log.i("TAG",
-                    "10m/s = ${UnitSystemsConversions.meterPerSecondToKilometerPerHour(10.0)}km/h = ${UnitSystemsConversions.meterPerSecondToMilePerHour(10.0)}mph = ${UnitSystemsConversions.meterPerSecondToFeetPerSecond(10.0)}ft/s"
-                )
-                // testing pressure conversions
-                Log.i("TAG", "10000hpa = ${UnitSystemsConversions.hectopascalToAtm(10000.0)}atm = ${UnitSystemsConversions.hectopascalToPsi(10000.0)}psi = ${UnitSystemsConversions.hectopascalToBar(10000.0)}bar")
-                // for showing phone cpu arch
-                Log.i("TAG", "CPU Arch = ${Arrays.toString(Build.SUPPORTED_ABIS)}")
             }
         }
+
+        /*************************************************************************************************/
+
+        // testing temp conversion
+        Log.i("TAG",
+            "40C = ${UnitSystemsConversions.celsiusToKelvin(40.0)}K = ${UnitSystemsConversions.celsiusToFahrenheit(40.0)}F"
+        )
+        // testing wind speed conversion
+        Log.i("TAG",
+            "10m/s = ${UnitSystemsConversions.meterPerSecondToKilometerPerHour(10.0)}km/h = ${UnitSystemsConversions.meterPerSecondToMilePerHour(10.0)}mph = ${UnitSystemsConversions.meterPerSecondToFeetPerSecond(10.0)}ft/s"
+        )
+        // testing pressure conversions
+        Log.i("TAG", "10000hpa = ${UnitSystemsConversions.hectopascalToAtm(10000.0)}atm = ${UnitSystemsConversions.hectopascalToPsi(10000.0)}psi = ${UnitSystemsConversions.hectopascalToBar(10000.0)}bar")
+        // for showing phone cpu arch
+        Log.i("TAG", "CPU Arch = ${Arrays.toString(Build.SUPPORTED_ABIS)}")
+
+        /*************************************************************************************************/
+
+
     }
 }
