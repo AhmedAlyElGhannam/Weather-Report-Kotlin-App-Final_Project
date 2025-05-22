@@ -1,9 +1,20 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Weather_Report" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:statusBarColor">@color/semi_transparent_black</item>
+        <item name="navigationViewStyle">@style/Widget.App.NavigationView</item>
+        <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
+    <style name="Widget.App.NavigationView" parent="Widget.Material3.NavigationView">
+        <item name="itemIconTint">@animator/navigation_item_color</item>
+        <item name="itemTextColor">@animator/navigation_item_color</item>
+    </style>
+
+    <style name="Theme.App.AppBarOverlay" parent="ThemeOverlay.Material3.Dark.ActionBar" />
+
     <style name="Theme.Weather_Report" parent="Base.Theme.Weather_Report" />
+
 </resources>
+

@@ -6,18 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Background Image -->
-    <ImageView
-        android:id="@+id/backgroundImage"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:alpha="1"
-        android:scaleType="centerCrop"
-        android:src="@drawable/background"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+<!--    &lt;!&ndash; Background Image &ndash;&gt;-->
+<!--    <ImageView-->
+<!--        android:id="@+id/backgroundImage"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:alpha="1"-->
+<!--        android:scaleType="centerCrop"-->
+<!--        android:src="@drawable/background"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <!-- Semi-transparent Overlay -->
     <View

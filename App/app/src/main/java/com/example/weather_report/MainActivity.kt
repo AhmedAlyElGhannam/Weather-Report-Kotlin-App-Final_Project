@@ -40,6 +40,7 @@ import android.location.LocationManager
 import android.os.Looper
 import android.provider.Settings
 import android.view.View
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
@@ -58,8 +59,7 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity(), InitialChoiceCallback {
 
-    lateinit var binderHome : FragmentHomeScreenBinding
-    lateinit var bindingMap: FragmentMapBinding
+//    lateinit var bindingMap: FragmentMapBinding
     lateinit var bindingMainScreen : MainScreenBinding
 
     private lateinit var navController: NavController
@@ -97,6 +97,22 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
 
         drawerLayout = bindingMainScreen.drawerLayout
 
+        // Set up Toolbar
+        setSupportActionBar(bindingMainScreen.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+
+        // Initialize Drawer Toggle
+        val toggle = ActionBarDrawerToggle(
+            this,
+            bindingMainScreen.drawerLayout,
+            bindingMainScreen.toolbar,
+            R.string.navigation_drawer_open, // Add string resources
+            R.string.navigation_drawer_close
+        )
+        bindingMainScreen.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
         bindingMainScreen.navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {
@@ -132,85 +148,85 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
 
         /*************************************************************************************************/
 
-        // Set user agent
-        Configuration.getInstance().userAgentValue = packageName
-        Configuration.getInstance().load(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext))
-
-        val map = bindingMap.map
-        map.setTileSource(TileSourceFactory.MAPNIK)
-        map.setBuiltInZoomControls(true)
-        map.setMultiTouchControls(true)
-
-        map.minZoomLevel = 4.0
-        map.maxZoomLevel = 18.0
-
-        map.controller.setZoom(4.0)
-
-        // Create the map event receiver
-        val mapEventsReceiver = object : MapEventsReceiver {
-            override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
-                if (!::currentMarker.isInitialized) {
-                    // First time: create the marker
-                    currentMarker = Marker(map).apply {
-                        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                        title = "Pinned Location"
-                        icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_map_pin_red)
-                        map.overlays.add(this)
-                    }
-                }
-
-                // Update the marker position
-                currentMarker.position = p
-                map.invalidate()
-
-                return true
-            }
-
-            override fun longPressHelper(p: GeoPoint): Boolean {
-                return false
-            }
-        }
-
-        // Add the event overlay only once
-        val overlayEvents = MapEventsOverlay(mapEventsReceiver)
-        map.overlays.add(overlayEvents)
+//        // Set user agent
+//        Configuration.getInstance().userAgentValue = packageName
+//        Configuration.getInstance().load(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext))
+//
+//        val map = bindingMap.map
+//        map.setTileSource(TileSourceFactory.MAPNIK)
+//        map.setBuiltInZoomControls(true)
+//        map.setMultiTouchControls(true)
+//
+//        map.minZoomLevel = 4.0
+//        map.maxZoomLevel = 18.0
+//
+//        map.controller.setZoom(4.0)
+//
+//        // Create the map event receiver
+//        val mapEventsReceiver = object : MapEventsReceiver {
+//            override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
+//                if (!::currentMarker.isInitialized) {
+//                    // First time: create the marker
+//                    currentMarker = Marker(map).apply {
+//                        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+//                        title = "Pinned Location"
+//                        icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_map_pin_red)
+//                        map.overlays.add(this)
+//                    }
+//                }
+//
+//                // Update the marker position
+//                currentMarker.position = p
+//                map.invalidate()
+//
+//                return true
+//            }
+//
+//            override fun longPressHelper(p: GeoPoint): Boolean {
+//                return false
+//            }
+//        }
+//
+//        // Add the event overlay only once
+//        val overlayEvents = MapEventsOverlay(mapEventsReceiver)
+//        map.overlays.add(overlayEvents)
 
         /*************************************************************************************************/
 
-        bindingMap.btnProceed.setOnClickListener {
-            Log.i("TAG", "${currentMarker.position.latitude} && ${currentMarker.position.longitude}" )
-
-            lifecycleScope.launch(Dispatchers.IO) {
-                val res_forecast = repo.fetchForecastDataRemotely(
-                        lat = currentMarker.position.latitude,
-                        lon = currentMarker.position.longitude,
-                        units = UnitSystem.METRIC.value
-                    )
-
-                val res_currWeather = repo.fetchCurrentWeatherDataRemotely(
-                    lat = currentMarker.position.latitude,
-                    lon = currentMarker.position.longitude,
-                    units = UnitSystem.METRIC.value
-                )
-
-                res_forecast?.city?.let { repo.addCityToFavourites(it) }
-
-                if (res_currWeather != null) {
-                    repo.insertCurrentWeather(res_currWeather.toCurrentWeather())
-                    if (res_forecast != null) {
-                        repo.saveLocationForecastData(res_forecast.list.map { it.copy(cityId = res_forecast.city.id) })
-                        val dum_list = repo.getForecastItemsByCityID(res_forecast.city.id)
-                        Log.i("TAG", "onCreate: " + dum_list.toString())
-                    }
-
-                }
-
-                withContext(Dispatchers.Main) {
-                    Log.i("TAG", "forecast: " + res_forecast.toString())
-                    Log.i("TAG", "currWeather: " + res_currWeather.toString())
-                }
-            }
-        }
+//        bindingMap.btnProceed.setOnClickListener {
+//            Log.i("TAG", "${currentMarker.position.latitude} && ${currentMarker.position.longitude}" )
+//
+//            lifecycleScope.launch(Dispatchers.IO) {
+//                val res_forecast = repo.fetchForecastDataRemotely(
+//                        lat = currentMarker.position.latitude,
+//                        lon = currentMarker.position.longitude,
+//                        units = UnitSystem.METRIC.value
+//                    )
+//
+//                val res_currWeather = repo.fetchCurrentWeatherDataRemotely(
+//                    lat = currentMarker.position.latitude,
+//                    lon = currentMarker.position.longitude,
+//                    units = UnitSystem.METRIC.value
+//                )
+//
+//                res_forecast?.city?.let { repo.addCityToFavourites(it) }
+//
+//                if (res_currWeather != null) {
+//                    repo.insertCurrentWeather(res_currWeather.toCurrentWeather())
+//                    if (res_forecast != null) {
+//                        repo.saveLocationForecastData(res_forecast.list.map { it.copy(cityId = res_forecast.city.id) })
+//                        val dum_list = repo.getForecastItemsByCityID(res_forecast.city.id)
+//                        Log.i("TAG", "onCreate: " + dum_list.toString())
+//                    }
+//
+//                }
+//
+//                withContext(Dispatchers.Main) {
+//                    Log.i("TAG", "forecast: " + res_forecast.toString())
+//                    Log.i("TAG", "currWeather: " + res_currWeather.toString())
+//                }
+//            }
+//        }
 
         /*************************************************************************************************/
 
@@ -284,7 +300,6 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // If permissions aren't granted, request them
             ActivityCompat.requestPermissions(
                 this,
                 LOCATION_PERMISSIONS,
@@ -356,8 +371,8 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
     }
 
     override fun onMapChosen() {
-        bindingMap.map.visibility = View.VISIBLE
-        bindingMap.btnProceed.visibility = View.VISIBLE
+//        bindingMap.map.visibility = View.VISIBLE
+//        bindingMap.btnProceed.visibility = View.VISIBLE
     }
 
     override fun onNotificationsEnabled() {

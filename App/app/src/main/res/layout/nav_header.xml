@@ -1,20 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="?attr/colorPrimary"
-    android:gravity="center">
+    android:background="?attr/colorSurfaceContainerLow">
+
+    <!-- App logo or title -->
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:src="@drawable/app_icon"
+        android:contentDescription="App logo"
+        android:layout_marginBottom="16dp" />
+
+    <!-- User profile section -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Weather Report"
+        android:textAppearance="?attr/textAppearanceTitleLarge"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginBottom="8dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textColor="@android:color/white"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginTop="8dp" />
+        android:text="Stay updated with real-time forecasts"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?attr/colorOnSurfaceVariant" />
 
 </LinearLayout>

@@ -5,6 +5,9 @@
             android:id="@+id/nav_home"
             android:title="Home" />
         <item
+            android:id="@+id/nav_fav"
+            android:title="Favourite Locations" />
+        <item
             android:id="@+id/nav_settings"
             android:title="Settings" />
         <item

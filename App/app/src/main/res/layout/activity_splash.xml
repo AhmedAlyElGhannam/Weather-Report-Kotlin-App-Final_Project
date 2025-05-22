@@ -11,12 +11,21 @@
         android:id="@+id/splashAnimation"
         android:layout_width="379dp"
         android:layout_height="371dp"
-        android:layout_marginBottom="200dp"
+        android:layout_marginBottom="208dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
         app:lottie_autoPlay="true"
         app:lottie_loop="false"
         app:lottie_rawRes="@raw/splash_screen" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
