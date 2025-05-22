@@ -1,17 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:checkableBehavior="single" >
         <item
             android:id="@+id/nav_home"
-            android:title="Home" />
+            android:icon="@drawable/ic_home"
+            android:title="Home"
+            app:iconTint="@color/light_cloud_purple_8c68b2"
+            app:itemBackground="@drawable/menu_item_ripple" />
+        <item
+            android:id="@+id/nav_search"
+            android:icon="@drawable/ic_search"
+            android:title="Search"
+            app:iconTint="@color/light_cloud_purple_8c68b2"
+            app:itemBackground="@drawable/menu_item_ripple" />
+
         <item
             android:id="@+id/nav_fav"
-            android:title="Favourite Locations" />
+            android:icon="@drawable/ic_fav"
+            android:title="Favourite Locations"
+            app:iconTint="@color/light_cloud_purple_8c68b2"
+            app:itemBackground="@drawable/menu_item_ripple" />
         <item
             android:id="@+id/nav_settings"
-            android:title="Settings" />
+            android:icon="@drawable/ic_gear"
+            android:title="Settings"
+            app:iconTint="@color/light_cloud_purple_8c68b2"
+            app:itemBackground="@drawable/menu_item_ripple" />
         <item
             android:id="@+id/nav_about"
-            android:title="About" />
+            android:icon="@drawable/ic_about"
+            android:title="About"
+            app:iconTint="@color/light_cloud_purple_8c68b2"
+            app:itemBackground="@drawable/menu_item_ripple" />
     </group>
 </menu>
