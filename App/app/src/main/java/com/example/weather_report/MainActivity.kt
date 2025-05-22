@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import com.example.weather_report.databinding.ActivityMainBinding
@@ -35,6 +36,21 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.LocationManager
+import android.os.Looper
+import android.provider.Settings
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import java.util.Locale
 
 
 class MainActivity : AppCompatActivity() {
@@ -42,7 +58,17 @@ class MainActivity : AppCompatActivity() {
     lateinit var binderHome : HomeScreenBinding
     lateinit var binderMainActivity: ActivityMainBinding
 
+    lateinit var repo : WeatherRepositoryImpl
+
     lateinit var currentMarker: Marker
+
+    private val LOCATION_PERMISSION_REQUESTCODE : Int = 1006
+    private val LOCATION_PERMISSIONS : Array<String> = arrayOf(
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
+
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     companion object {
         init {
@@ -62,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
         /*************************************************************************************************/
 
-        val repo : WeatherRepositoryImpl = WeatherRepositoryImpl.getInstance(
+        repo = WeatherRepositoryImpl.getInstance(
             CityLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCityDao()),
             ForecastItemLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getForecastItemDao()),
             CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCurrentWeatherDao()),
@@ -174,5 +200,129 @@ class MainActivity : AppCompatActivity() {
         /*************************************************************************************************/
 
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (checkPermissions()) {
+            if (isLocationEnable()) {
+                getFreshLocation()
+            }
+            else {
+                enableLocationServices()
+            }
+        }
+        else {
+            ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS,LOCATION_PERMISSION_REQUESTCODE)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUESTCODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getFreshLocation()
+            } else {
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun checkPermissions() : Boolean {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return false
+        }
+
+        return true
+    }
+
+    private fun enableLocationServices() {
+        Toast.makeText(this , "Please Turn on Location" , Toast.LENGTH_LONG).show()
+        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        startActivity(intent)
+    }
+
+    private fun isLocationEnable() : Boolean {
+        val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)|| locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun getFreshLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // If permissions aren't granted, request them
+            ActivityCompat.requestPermissions(
+                this,
+                LOCATION_PERMISSIONS,
+                LOCATION_PERMISSION_REQUESTCODE
+            )
+            return
+        }
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        fusedLocationProviderClient.requestLocationUpdates(
+            LocationRequest.Builder(0).apply {
+            setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+        }.build(),
+            object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    super.onLocationResult(locationResult)
+                    val location = locationResult.lastLocation
+
+                    if (location != null) {
+                        Log.i("TAG", "onLocationResult: ${location.latitude} && ${location.longitude}")
+                        GlobalScope.launch(Dispatchers.IO) {
+                            val res_forecast = repo.fetchForecastDataRemotely(
+                                lat = location.latitude,
+                                lon = location.latitude,
+                                units = UnitSystem.METRIC.value
+                            )
+
+                            val res_currWeather = repo.fetchCurrentWeatherDataRemotely(
+                                lat = location.latitude,
+                                lon = location.latitude,
+                                units = UnitSystem.METRIC.value
+                            )
+
+                            res_forecast?.city?.let { repo.addCityToFavourites(it) }
+
+                            if (res_currWeather != null) {
+                                repo.insertCurrentWeather(res_currWeather.toCurrentWeather())
+                                if (res_forecast != null) {
+                                    repo.saveLocationForecastData(res_forecast.list.map { it.copy(cityId = res_forecast.city.id) })
+                                    val dum_list = repo.getForecastItemsByCityID(res_forecast.city.id)
+                                    Log.i("TAG", "onCreate: " + dum_list.toString())
+                                }
+
+                            }
+
+                            withContext(Dispatchers.Main) {
+                                Log.i("TAG", "forecast: " + res_forecast.toString())
+                                Log.i("TAG", "currWeather: " + res_currWeather.toString())
+                            }
+                        }
+                    }
+                }},
+            Looper.myLooper())
     }
 }
