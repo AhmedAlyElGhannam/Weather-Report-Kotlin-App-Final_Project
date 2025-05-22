@@ -42,6 +42,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var binderHome : HomeScreenBinding
     lateinit var binderMainActivity: ActivityMainBinding
 
+    lateinit var currentMarker: Marker
+
     companion object {
         init {
             System.loadLibrary("weather_report")
@@ -74,8 +76,6 @@ class MainActivity : AppCompatActivity() {
 
         /*************************************************************************************************/
 
-        var currentMarker: Marker? = null
-
         // Set user agent
         Configuration.getInstance().userAgentValue = packageName
         Configuration.getInstance().load(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext))
@@ -85,29 +85,26 @@ class MainActivity : AppCompatActivity() {
         map.setBuiltInZoomControls(true)
         map.setMultiTouchControls(true)
 
-        map.setMinZoomLevel(4.0)
-        map.setMaxZoomLevel(18.0)
+        map.minZoomLevel = 4.0
+        map.maxZoomLevel = 18.0
 
         map.controller.setZoom(4.0)
 
         // Create the map event receiver
         val mapEventsReceiver = object : MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
-                // Remove old marker if it exists
-                currentMarker?.let {
-                    map.overlays.remove(it)
+                if (!::currentMarker.isInitialized) {
+                    // First time: create the marker
+                    currentMarker = Marker(map).apply {
+                        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                        title = "Pinned Location"
+                        icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_map_pin_red)
+                        map.overlays.add(this)
+                    }
                 }
 
-                // Create a new marker
-                val marker = Marker(map)
-                marker.position = p
-                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                marker.title = "Pinned Location"
-                marker.icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_map_pin_red)
-
-                // Add the new marker
-                map.overlays.add(marker)
-                currentMarker = marker // Track it
+                // Update the marker position
+                currentMarker.position = p
                 map.invalidate()
 
                 return true
@@ -124,34 +121,38 @@ class MainActivity : AppCompatActivity() {
 
         /*************************************************************************************************/
 
-        GlobalScope.launch(Dispatchers.IO) {
-            val res_forecast = repo.fetchForecastDataRemotely(
-                lat = 39.0444,
-                lon = 69.2357,
-                units = UnitSystem.METRIC.value
-            )
+        binderMainActivity.btnProceed.setOnClickListener {
+            Log.i("TAG", "${currentMarker.position.latitude} && ${currentMarker.position.longitude}" )
 
-            val res_currWeather = repo.fetchCurrentWeatherDataRemotely(
-                lat = 39.0444,
-                lon = 69.2357,
-                units = UnitSystem.METRIC.value
-            )
+            GlobalScope.launch(Dispatchers.IO) {
+                val res_forecast = repo.fetchForecastDataRemotely(
+                        lat = currentMarker.position.latitude,
+                        lon = currentMarker.position.longitude,
+                        units = UnitSystem.METRIC.value
+                    )
 
-            res_forecast?.city?.let { repo.addCityToFavourites(it) }
+                val res_currWeather = repo.fetchCurrentWeatherDataRemotely(
+                    lat = currentMarker.position.latitude,
+                    lon = currentMarker.position.longitude,
+                    units = UnitSystem.METRIC.value
+                )
 
-            if (res_currWeather != null) {
-                repo.insertCurrentWeather(res_currWeather.toCurrentWeather())
-                if (res_forecast != null) {
-                    repo.saveLocationForecastData(res_forecast.list.map { it.copy(cityId = res_forecast.city.id) })
-                    val dum_list = repo.getForecastItemsByCityID(res_forecast.city.id)
-                    Log.i("TAG", "onCreate: " + dum_list.toString())
+                res_forecast?.city?.let { repo.addCityToFavourites(it) }
+
+                if (res_currWeather != null) {
+                    repo.insertCurrentWeather(res_currWeather.toCurrentWeather())
+                    if (res_forecast != null) {
+                        repo.saveLocationForecastData(res_forecast.list.map { it.copy(cityId = res_forecast.city.id) })
+                        val dum_list = repo.getForecastItemsByCityID(res_forecast.city.id)
+                        Log.i("TAG", "onCreate: " + dum_list.toString())
+                    }
+
                 }
 
-            }
-
-            withContext(Dispatchers.Main) {
-                Log.i("TAG", "forecast: " + res_forecast.toString())
-                Log.i("TAG", "currWeather: " + res_currWeather.toString())
+                withContext(Dispatchers.Main) {
+                    Log.i("TAG", "forecast: " + res_forecast.toString())
+                    Log.i("TAG", "currWeather: " + res_currWeather.toString())
+                }
             }
         }
 
