@@ -6,15 +6,13 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     tools:context=".MainActivity"
     android:theme="@style/Base.Theme.Weather_Report">
 
     <!-- MAIN CONTENT (Everything except the NavigationView) -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/backgroundImage"
@@ -33,14 +31,14 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#CC1F2A44"
+            android:background="#991F2A44"
             android:elevation="4dp"
             android:alpha="1"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:fitsSystemWindows="true"
-            app:title=""/>
+            app:title=""
+            android:fitsSystemWindows="true"/>
 
         <!-- Fragment Container -->
         <androidx.fragment.app.FragmentContainerView
@@ -64,7 +62,8 @@
         app:headerLayout="@layout/nav_header"
         android:paddingTop="?attr/actionBarSize"
         app:menu="@menu/nav_menu"
-        android:fitsSystemWindows="false"
-        app:insetForeground="#00000000"/>
+        android:background="#CC1F2A44"
+        android:elevation="4dp"
+        android:alpha="1"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>
