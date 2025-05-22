@@ -1,5 +1,8 @@
 package com.example.weather_report
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -7,6 +10,7 @@ import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.example.weather_report.databinding.ActivitySplashBinding
 
+@SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashBinding
@@ -16,13 +20,15 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Start Lottie animation automatically
-        binding.lottieAnimationView.playAnimation()
+        binding.splashAnimation.addAnimatorListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+                finish()
+            }
+        })
 
-        // Delay for 5 seconds before moving to MainActivity
-        Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, MainActivity::class.java))
-            finish() // Don't let user come back to splash
-        }, 5000)
+        // start animation
+        binding.splashAnimation.playAnimation()
+
     }
 }

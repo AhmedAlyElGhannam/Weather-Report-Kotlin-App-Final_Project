@@ -26,7 +26,6 @@ import com.example.weather_report.utils.UnitSystemsConversions
 import com.example.weather_report.utils.WeatherResponseToWeatherLocalDataSourceMapper.toCurrentWeather
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -40,10 +39,11 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Geocoder
 import android.location.LocationManager
 import android.os.Looper
 import android.provider.Settings
+import android.view.View
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -53,7 +53,7 @@ import com.google.android.gms.location.Priority
 import java.util.Locale
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), InitialChoiceCallback {
 
     lateinit var binderHome : HomeScreenBinding
     lateinit var binderMainActivity: ActivityMainBinding
@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
 
         /*************************************************************************************************/
 
-        val dialog = InitialSetupDialog()
+        val dialog = InitialSetupDialog(this@MainActivity)
         dialog.show(supportFragmentManager, "InitialSetupDialog")
 
         /*************************************************************************************************/
@@ -150,7 +150,7 @@ class MainActivity : AppCompatActivity() {
         binderMainActivity.btnProceed.setOnClickListener {
             Log.i("TAG", "${currentMarker.position.latitude} && ${currentMarker.position.longitude}" )
 
-            GlobalScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(Dispatchers.IO) {
                 val res_forecast = repo.fetchForecastDataRemotely(
                         lat = currentMarker.position.latitude,
                         lon = currentMarker.position.longitude,
@@ -200,21 +200,6 @@ class MainActivity : AppCompatActivity() {
         /*************************************************************************************************/
 
 
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if (checkPermissions()) {
-            if (isLocationEnable()) {
-                getFreshLocation()
-            }
-            else {
-                enableLocationServices()
-            }
-        }
-        else {
-            ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS,LOCATION_PERMISSION_REQUESTCODE)
-        }
     }
 
     override fun onRequestPermissionsResult(
@@ -291,7 +276,7 @@ class MainActivity : AppCompatActivity() {
 
                     if (location != null) {
                         Log.i("TAG", "onLocationResult: ${location.latitude} && ${location.longitude}")
-                        GlobalScope.launch(Dispatchers.IO) {
+                        lifecycleScope.launch(Dispatchers.IO) {
                             val res_forecast = repo.fetchForecastDataRemotely(
                                 lat = location.latitude,
                                 lon = location.latitude,
@@ -324,5 +309,29 @@ class MainActivity : AppCompatActivity() {
                     }
                 }},
             Looper.myLooper())
+    }
+
+    override fun onGpsChosen() {
+        if (checkPermissions()) {
+            if (isLocationEnable()) {
+                getFreshLocation()
+            }
+            else {
+                enableLocationServices()
+            }
+        }
+        else {
+            ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS,LOCATION_PERMISSION_REQUESTCODE)
+        }
+    }
+
+    override fun onMapChosen() {
+        binderMainActivity.map.visibility = View.VISIBLE
+        binderMainActivity.btnProceed.visibility = View.VISIBLE
+    }
+
+    override fun onNotificationsEnabled() {
+        // will come back to that
+        Toast.makeText(this@MainActivity, "Notifications enabled", Toast.LENGTH_SHORT).show()
     }
 }

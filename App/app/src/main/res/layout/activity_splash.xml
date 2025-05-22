@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:lottie="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pure_snow_white_ffffff">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/white">
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/splashAnimation"
+        android:layout_width="379dp"
+        android:layout_height="371dp"
+        android:layout_marginBottom="200dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="false"
+        app:lottie_rawRes="@raw/splash_screen" />
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/lottieAnimationView"
-            android:layout_width="354dp"
-            android:layout_height="406dp"
-            android:layout_centerInParent="true"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="false"
-            app:lottie_rawRes="@raw/splash_screen" />
-
-    </RelativeLayout>
-</layout>
+</androidx.constraintlayout.widget.ConstraintLayout>

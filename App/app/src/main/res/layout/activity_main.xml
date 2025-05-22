@@ -8,7 +8,8 @@
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btnProceed"
@@ -20,5 +21,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp"
-        android:elevation="6dp" />
+        android:elevation="6dp"
+        android:visibility="gone"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
