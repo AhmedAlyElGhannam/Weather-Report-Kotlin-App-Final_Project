@@ -4,14 +4,11 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.MotionEvent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
-import com.example.weather_report.databinding.ActivityMainBinding
-import com.example.weather_report.databinding.HomeScreenBinding
 import com.example.weather_report.features.initialdialog.InitialSetupDialog
 import com.example.weather_report.model.local.CityLocalDataSourceImpl
 import com.example.weather_report.model.local.CurrentWeatherLocalDataSourceImpl
@@ -43,7 +40,13 @@ import android.location.LocationManager
 import android.os.Looper
 import android.provider.Settings
 import android.view.View
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import com.example.weather_report.databinding.FragmentHomeScreenBinding
+import com.example.weather_report.databinding.FragmentMapBinding
+import com.example.weather_report.databinding.MainScreenBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -55,8 +58,12 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity(), InitialChoiceCallback {
 
-    lateinit var binderHome : HomeScreenBinding
-    lateinit var binderMainActivity: ActivityMainBinding
+    lateinit var binderHome : FragmentHomeScreenBinding
+    lateinit var bindingMap: FragmentMapBinding
+    lateinit var bindingMainScreen : MainScreenBinding
+
+    private lateinit var navController: NavController
+    lateinit var drawerLayout: DrawerLayout
 
     lateinit var repo : WeatherRepositoryImpl
 
@@ -83,8 +90,31 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
 
         /*************************************************************************************************/
 
-        binderMainActivity = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binderMainActivity.root)
+        bindingMainScreen = MainScreenBinding.inflate(layoutInflater)
+        setContentView(bindingMainScreen.root)
+
+        /************************************************************************************************/
+
+        drawerLayout = bindingMainScreen.drawerLayout
+
+        bindingMainScreen.navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_home -> {
+                    if (navController.currentDestination?.id != R.id.homeFragment) {
+                        navController.navigate(R.id.homeFragment)
+                    }
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.nav_settings -> {
+//                    navController.navigate(R.id.settingsFragment)
+//                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                // Add other menu items here
+                else -> false
+            }
+        }
 
         /*************************************************************************************************/
 
@@ -106,7 +136,7 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
         Configuration.getInstance().userAgentValue = packageName
         Configuration.getInstance().load(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext))
 
-        val map = binderMainActivity.map
+        val map = bindingMap.map
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setBuiltInZoomControls(true)
         map.setMultiTouchControls(true)
@@ -147,7 +177,7 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
 
         /*************************************************************************************************/
 
-        binderMainActivity.btnProceed.setOnClickListener {
+        bindingMap.btnProceed.setOnClickListener {
             Log.i("TAG", "${currentMarker.position.latitude} && ${currentMarker.position.longitude}" )
 
             lifecycleScope.launch(Dispatchers.IO) {
@@ -326,8 +356,8 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
     }
 
     override fun onMapChosen() {
-        binderMainActivity.map.visibility = View.VISIBLE
-        binderMainActivity.btnProceed.visibility = View.VISIBLE
+        bindingMap.map.visibility = View.VISIBLE
+        bindingMap.btnProceed.visibility = View.VISIBLE
     }
 
     override fun onNotificationsEnabled() {
