@@ -21,11 +21,13 @@ import com.example.weather_report.model.remote.IWeatherService
 import com.example.weather_report.model.remote.RetrofitHelper
 import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
 import com.example.weather_report.model.repository.WeatherRepositoryImpl
+import com.example.weather_report.utils.ChosenDataUnits
+import com.example.weather_report.utils.Units
 
 class HomeScreenFragment : Fragment() {
     lateinit var binding: FragmentHomeScreenBinding
     lateinit var vmFactory : HomeScreenViewModelFactory
-    lateinit var homeViewModel : HomeScreenViewModel :
+    lateinit var homeViewModel : HomeScreenViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,37 +75,36 @@ class HomeScreenFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun updateWeatherUI(weather: WeatherResponse) {
-//        binding.tempTxt.text = "${weather.main.temp}°C"
-//        binding.weatherConditionTxt.text = weather.weather.firstOrNull()?.main
-//        binding.locationTxt.text = weather.name
-
         binding.weatherImg.setAnimation(
-            when(weather.weather[0].description) {
-                "clear sky" -> R.raw.sunny
-                "rain" -> R.raw.rainy
-                "rain shower" -> R.raw.rainy
-                "thunderstorm" -> R.raw.thunderstorm
-                "snow" -> R.raw.snowy
-                "mist" -> R.raw.misty
-                else -> R.raw.cloudy
+            when(weather.weather[0].main) {
+                "Thunderstorm" -> R.raw.thunderstorm
+                "Drizzle" -> R.raw.drizzle
+                "Rain" -> R.raw.rainy
+                "Snow" -> R.raw.snowy
+                "Mist" -> R.raw.misty
+                "Smoke" -> R.raw.misty
+                "Haze" -> R.raw.misty
+                "Dust" -> R.raw.misty
+                "Fog" -> R.raw.misty
+                "Sand" -> R.raw.misty
+                "Ash" -> R.raw.misty
+                "Squall" -> R.raw.misty
+                "Tornado" -> R.raw.misty
+                "Clear" -> R.raw.sunny
+                "Clouds" -> R.raw.cloudy
+                else -> R.raw.sunny
             }
         )
 
-        binding.weatherConditionTxt.text = when(weather.weather[0].description) {
-            "clear sky" -> "Clear Sky"
-            "rain" -> "Rainy"
-            "rain shower" -> "Rainy Shower"
-            "thunderstorm" -> "Thunderstorm"
-            "snow" -> "Snowy"
-            "mist" -> "Misty"
-            "few clouds" -> "Few Clouds"
-            "scattered clouds" -> "Scattered Clouds"
-            "broken clouds" -> "Broken Clouds"
-            else -> "Unknown"
-        }
+        binding.weatherConditionTxt.text = weather.weather[0].main
 
-        binding.dateTxt.text = weather.main.
+        binding.locationTxt.text = weather.name
 
+        binding.highLowTempTxt.text = "↑ ${weather.main.temp_max}°${ChosenDataUnits.tempUnit} ↓ ${weather.main.temp_min}°${ChosenDataUnits.tempUnit}"
+
+        binding.tempTxt.text = "${weather.main.temp}°${ChosenDataUnits.tempUnit}"
+
+        binding.feelslikeTempTxt.text = "Feels Like ${weather.main.feels_like}°${ChosenDataUnits.tempUnit}"
     }
 
     private fun updateForecastUI(forecast: ForecastResponse) {
