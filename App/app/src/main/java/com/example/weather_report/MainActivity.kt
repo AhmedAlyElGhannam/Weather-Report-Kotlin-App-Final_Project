@@ -220,17 +220,17 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
         /*************************************************************************************************/
 
         // testing temp conversion
-        Log.i("TAG",
-            "40C = ${UnitSystemsConversions.celsiusToKelvin(40.0)}K = ${UnitSystemsConversions.celsiusToFahrenheit(40.0)}F"
-        )
-        // testing wind speed conversion
-        Log.i("TAG",
-            "10m/s = ${UnitSystemsConversions.meterPerSecondToKilometerPerHour(10.0)}km/h = ${UnitSystemsConversions.meterPerSecondToMilePerHour(10.0)}mph = ${UnitSystemsConversions.meterPerSecondToFeetPerSecond(10.0)}ft/s"
-        )
-        // testing pressure conversions
-        Log.i("TAG", "10000hpa = ${UnitSystemsConversions.hectopascalToAtm(10000.0)}atm = ${UnitSystemsConversions.hectopascalToPsi(10000.0)}psi = ${UnitSystemsConversions.hectopascalToBar(10000.0)}bar")
-        // for showing phone cpu arch
-        Log.i("TAG", "CPU Arch = ${Arrays.toString(Build.SUPPORTED_ABIS)}")
+//        Log.i("TAG",
+//            "40C = ${UnitSystemsConversions.celsiusToKelvin(40.0)}K = ${UnitSystemsConversions.celsiusToFahrenheit(40.0)}F"
+//        )
+//        // testing wind speed conversion
+//        Log.i("TAG",
+//            "10m/s = ${UnitSystemsConversions.meterPerSecondToKilometerPerHour(10.0)}km/h = ${UnitSystemsConversions.meterPerSecondToMilePerHour(10.0)}mph = ${UnitSystemsConversions.meterPerSecondToFeetPerSecond(10.0)}ft/s"
+//        )
+//        // testing pressure conversions
+//        Log.i("TAG", "10000hpa = ${UnitSystemsConversions.hectopascalToAtm(10000.0)}atm = ${UnitSystemsConversions.hectopascalToPsi(10000.0)}psi = ${UnitSystemsConversions.hectopascalToBar(10000.0)}bar")
+//        // for showing phone cpu arch
+//        Log.i("TAG", "CPU Arch = ${Arrays.toString(Build.SUPPORTED_ABIS)}")
 
         /*************************************************************************************************/
 
@@ -311,33 +311,9 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
                     if (location != null) {
                         Log.i("TAG", "onLocationResult: ${location.latitude} && ${location.longitude}")
                         lifecycleScope.launch(Dispatchers.IO) {
-                            val res_forecast = repo.fetchForecastDataRemotely(
-                                lat = location.latitude,
-                                lon = location.latitude,
-                                units = UnitSystem.METRIC.value
-                            )
-
-                            val res_currWeather = repo.fetchCurrentWeatherDataRemotely(
-                                lat = location.latitude,
-                                lon = location.latitude,
-                                units = UnitSystem.METRIC.value
-                            )
-
-                            res_forecast?.city?.let { repo.addCityToFavourites(it) }
-
-                            if (res_currWeather != null) {
-                                repo.insertCurrentWeather(res_currWeather.toCurrentWeather())
-                                if (res_forecast != null) {
-                                    repo.saveLocationForecastData(res_forecast.list.map { it.copy(cityId = res_forecast.city.id) })
-                                    val dum_list = repo.getForecastItemsByCityID(res_forecast.city.id)
-                                    Log.i("TAG", "onCreate: " + dum_list.toString())
-                                }
-
-                            }
 
                             withContext(Dispatchers.Main) {
-                                Log.i("TAG", "forecast: " + res_forecast.toString())
-                                Log.i("TAG", "currWeather: " + res_currWeather.toString())
+                                Log.i("TAG", "Location Secured. Coordinates: ${location.latitude}lat, ${location.longitude}")
                             }
                         }
                     }

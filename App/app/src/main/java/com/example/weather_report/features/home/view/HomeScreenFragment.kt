@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.weather_report.features.home.viewmodel.HomeScreenViewModel
 import com.example.weather_report.R
@@ -27,7 +28,18 @@ import com.example.weather_report.utils.Units
 class HomeScreenFragment : Fragment() {
     lateinit var binding: FragmentHomeScreenBinding
     lateinit var vmFactory : HomeScreenViewModelFactory
-    lateinit var homeViewModel : HomeScreenViewModel
+    private val homeViewModel : HomeScreenViewModel by viewModels {
+        HomeScreenViewModelFactory(
+            WeatherRepositoryImpl.getInstance(
+                CityLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getCityDao()),
+                ForecastItemLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getForecastItemDao()),
+                CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getCurrentWeatherDao()),
+                WeatherAndForecastRemoteDataSourceImpl(
+                    RetrofitHelper.retrofit.create(
+                        IWeatherService::class.java))
+            )
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,18 +53,18 @@ class HomeScreenFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         /*******************************************************/
-        vmFactory = HomeScreenViewModelFactory(
-            WeatherRepositoryImpl.getInstance(
-                CityLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getCityDao()),
-                ForecastItemLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getForecastItemDao()),
-                CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getCurrentWeatherDao()),
-                WeatherAndForecastRemoteDataSourceImpl(
-                    RetrofitHelper.retrofit.create(
-                        IWeatherService::class.java))
-            )
-        )
-
-        homeViewModel = ViewModelProvider(this, vmFactory)[HomeScreenViewModel::class.java]
+//        vmFactory = HomeScreenViewModelFactory(
+//            WeatherRepositoryImpl.getInstance(
+//                CityLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getCityDao()),
+//                ForecastItemLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getForecastItemDao()),
+//                CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getCurrentWeatherDao()),
+//                WeatherAndForecastRemoteDataSourceImpl(
+//                    RetrofitHelper.retrofit.create(
+//                        IWeatherService::class.java))
+//            )
+//        )
+//
+//        homeViewModel = ViewModelProvider(this, vmFactory)[HomeScreenViewModel::class.java]
 
         /*******************************************************/
 
