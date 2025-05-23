@@ -99,56 +99,53 @@ class HomeScreenViewModel(private val repo : IWeatherRepository) : ViewModel() {
                     // Fetch data in metric units for conversion
                     response = repo.fetchForecastDataRemotely(lat, lon, UnitSystem.METRIC.value)
 
-                    if (response != null) {
-                        // iterate over each forecast items to apply unit conversions
-                        response.list.forEach { forecastItem ->
+                    response?.list?.forEach { forecastItem ->
 
-                            // temp (actual && high && low && feels like) conversions
-                            forecastItem.main.temp = when (ChosenDataUnits.tempUnit) {
-                                Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.temp)
-                                Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.temp)
-                                else -> forecastItem.main.temp
-                            }
+                        // temp (actual && high && low && feels like) conversions
+                        forecastItem.main.temp = when (ChosenDataUnits.tempUnit) {
+                            Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.temp)
+                            Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.temp)
+                            else -> forecastItem.main.temp
+                        }
 
-                            forecastItem.main.temp_kf = when (ChosenDataUnits.tempUnit) {
-                                Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.temp_kf)
-                                Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.temp_kf)
-                                else -> forecastItem.main.temp_kf
-                            }
+                        forecastItem.main.temp_kf = when (ChosenDataUnits.tempUnit) {
+                            Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.temp_kf)
+                            Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.temp_kf)
+                            else -> forecastItem.main.temp_kf
+                        }
 
-                            forecastItem.main.feels_like = when (ChosenDataUnits.tempUnit) {
-                                Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.feels_like)
-                                Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.feels_like)
-                                else -> forecastItem.main.feels_like
-                            }
+                        forecastItem.main.feels_like = when (ChosenDataUnits.tempUnit) {
+                            Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.feels_like)
+                            Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.feels_like)
+                            else -> forecastItem.main.feels_like
+                        }
 
-                            forecastItem.main.temp_min = when (ChosenDataUnits.tempUnit) {
-                                Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.temp_min)
-                                Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.temp_min)
-                                else -> forecastItem.main.temp_min
-                            }
+                        forecastItem.main.temp_min = when (ChosenDataUnits.tempUnit) {
+                            Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.temp_min)
+                            Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.temp_min)
+                            else -> forecastItem.main.temp_min
+                        }
 
-                            forecastItem.main.temp_max = when (ChosenDataUnits.tempUnit) {
-                                Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.temp_max)
-                                Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.temp_max)
-                                else -> forecastItem.main.temp_max
-                            }
+                        forecastItem.main.temp_max = when (ChosenDataUnits.tempUnit) {
+                            Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.temp_max)
+                            Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.temp_max)
+                            else -> forecastItem.main.temp_max
+                        }
 
-                            // wind speed conversion
-                            forecastItem.wind.speed = when (ChosenDataUnits.speedUnit) {
-                                Units.KILOMETERS_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToKilometerPerHour(forecastItem.wind.speed)
-                                Units.MILES_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToMilePerHour(forecastItem.wind.speed)
-                                Units.FEET_PER_SECOND.symbol -> UnitSystemsConversions.meterPerSecondToFeetPerSecond(forecastItem.wind.speed)
-                                else -> forecastItem.wind.speed
-                            }
+                        // wind speed conversion
+                        forecastItem.wind.speed = when (ChosenDataUnits.speedUnit) {
+                            Units.KILOMETERS_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToKilometerPerHour(forecastItem.wind.speed)
+                            Units.MILES_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToMilePerHour(forecastItem.wind.speed)
+                            Units.FEET_PER_SECOND.symbol -> UnitSystemsConversions.meterPerSecondToFeetPerSecond(forecastItem.wind.speed)
+                            else -> forecastItem.wind.speed
+                        }
 
-                            // pressure conversion
-                            forecastItem.main.pressure = when (ChosenDataUnits.pressureUnit) {
-                                Units.ATMOSPHERE.symbol -> UnitSystemsConversions.hectopascalToAtm(forecastItem.main.pressure.toDouble()).toInt()
-                                Units.BAR.symbol -> UnitSystemsConversions.hectopascalToBar(forecastItem.main.pressure.toDouble()).toInt()
-                                Units.PSI.symbol -> UnitSystemsConversions.hectopascalToPsi(forecastItem.main.pressure.toDouble()).toInt()
-                                else -> forecastItem.main.pressure
-                            }
+                        // pressure conversion
+                        forecastItem.main.pressure = when (ChosenDataUnits.pressureUnit) {
+                            Units.ATMOSPHERE.symbol -> UnitSystemsConversions.hectopascalToAtm(forecastItem.main.pressure.toDouble()).toInt()
+                            Units.BAR.symbol -> UnitSystemsConversions.hectopascalToBar(forecastItem.main.pressure.toDouble()).toInt()
+                            Units.PSI.symbol -> UnitSystemsConversions.hectopascalToPsi(forecastItem.main.pressure.toDouble()).toInt()
+                            else -> forecastItem.main.pressure
                         }
                     }
                 } else {
