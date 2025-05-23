@@ -6,8 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import com.example.weather_report.MainActivityViewModel
 import com.example.weather_report.features.home.viewmodel.HomeScreenViewModel
 import com.example.weather_report.R
 import com.example.weather_report.databinding.FragmentHomeScreenBinding
@@ -27,7 +29,7 @@ import com.example.weather_report.utils.Units
 
 class HomeScreenFragment : Fragment() {
     lateinit var binding: FragmentHomeScreenBinding
-    lateinit var vmFactory : HomeScreenViewModelFactory
+    private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
     private val homeViewModel : HomeScreenViewModel by viewModels {
         HomeScreenViewModelFactory(
             WeatherRepositoryImpl.getInstance(
@@ -52,28 +54,16 @@ class HomeScreenFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        /*******************************************************/
-//        vmFactory = HomeScreenViewModelFactory(
-//            WeatherRepositoryImpl.getInstance(
-//                CityLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getCityDao()),
-//                ForecastItemLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getForecastItemDao()),
-//                CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getCurrentWeatherDao()),
-//                WeatherAndForecastRemoteDataSourceImpl(
-//                    RetrofitHelper.retrofit.create(
-//                        IWeatherService::class.java))
-//            )
-//        )
-//
-//        homeViewModel = ViewModelProvider(this, vmFactory)[HomeScreenViewModel::class.java]
-
-        /*******************************************************/
-
         setupObservers()
-        // Trigger data fetch if location is available
-        arguments?.getDoubleArray("location")?.let {
-            homeViewModel.fetchWeatherData(it[0], it[1])
-            homeViewModel.fetchForecastData(it[0], it[1])
-        }
+        homeViewModel.fetchForecastData(
+            mainActivityViewModel.coordinates.value.lat,
+            mainActivityViewModel.coordinates.value.lon
+        )
+
+        homeViewModel.fetchWeatherData(
+            mainActivityViewModel.coordinates.value.lat,
+            mainActivityViewModel.coordinates.value.lon
+        )
     }
 
     private fun setupObservers() {

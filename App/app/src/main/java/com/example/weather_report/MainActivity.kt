@@ -32,12 +32,14 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Looper
 import android.provider.Settings
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import com.example.weather_report.databinding.MainScreenBinding
+import com.example.weather_report.model.pojo.Coordinates
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -48,7 +50,6 @@ import com.google.android.gms.location.Priority
 
 class MainActivity : AppCompatActivity(), InitialChoiceCallback {
 
-//    lateinit var bindingMap: FragmentMapBinding
     lateinit var bindingMainScreen : MainScreenBinding
 
     private lateinit var navController: NavController
@@ -57,6 +58,8 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
     lateinit var repo : WeatherRepositoryImpl
 
     lateinit var currentMarker: Marker
+
+    private val mainActivityViewModel : MainActivityViewModel by viewModels()
 
     private val LOCATION_PERMISSION_REQUESTCODE : Int = 1006
     private val LOCATION_PERMISSIONS : Array<String> = arrayOf(
@@ -93,10 +96,10 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
 
         // Initialize Drawer Toggle
         val toggle = ActionBarDrawerToggle(
-            this,
+            this@MainActivity,
             bindingMainScreen.drawerLayout,
             bindingMainScreen.toolbar,
-            R.string.navigation_drawer_open, // Add string resources
+            R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
         bindingMainScreen.drawerLayout.addDrawerListener(toggle)
@@ -218,23 +221,6 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
 //        }
 
         /*************************************************************************************************/
-
-        // testing temp conversion
-//        Log.i("TAG",
-//            "40C = ${UnitSystemsConversions.celsiusToKelvin(40.0)}K = ${UnitSystemsConversions.celsiusToFahrenheit(40.0)}F"
-//        )
-//        // testing wind speed conversion
-//        Log.i("TAG",
-//            "10m/s = ${UnitSystemsConversions.meterPerSecondToKilometerPerHour(10.0)}km/h = ${UnitSystemsConversions.meterPerSecondToMilePerHour(10.0)}mph = ${UnitSystemsConversions.meterPerSecondToFeetPerSecond(10.0)}ft/s"
-//        )
-//        // testing pressure conversions
-//        Log.i("TAG", "10000hpa = ${UnitSystemsConversions.hectopascalToAtm(10000.0)}atm = ${UnitSystemsConversions.hectopascalToPsi(10000.0)}psi = ${UnitSystemsConversions.hectopascalToBar(10000.0)}bar")
-//        // for showing phone cpu arch
-//        Log.i("TAG", "CPU Arch = ${Arrays.toString(Build.SUPPORTED_ABIS)}")
-
-        /*************************************************************************************************/
-
-
     }
 
     override fun onRequestPermissionsResult(
@@ -310,15 +296,14 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
 
                     if (location != null) {
                         Log.i("TAG", "onLocationResult: ${location.latitude} && ${location.longitude}")
-                        lifecycleScope.launch(Dispatchers.IO) {
 
-                            withContext(Dispatchers.Main) {
-                                Log.i("TAG", "Location Secured. Coordinates: ${location.latitude}lat, ${location.longitude}")
-                            }
-                        }
+                        mainActivityViewModel.setCoordinates(Coordinates(
+                            location.latitude,
+                            location.longitude
+                        ))
+                        Log.i("TAG", "Location Secured. Coordinates: ${location.latitude}lat, ${location.longitude}")
                     }
-                }},
-            Looper.myLooper())
+                }}, Looper.myLooper())
     }
 
     override fun onGpsChosen() {
