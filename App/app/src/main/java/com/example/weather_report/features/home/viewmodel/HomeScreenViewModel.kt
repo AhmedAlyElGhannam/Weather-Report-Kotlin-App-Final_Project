@@ -20,7 +20,7 @@ class HomeScreenViewModel(private val repo : IWeatherRepository) : ViewModel() {
     private val _forecastResponse = MutableLiveData<ForecastResponse?>()
     val forecastResponse: LiveData<ForecastResponse?> = _forecastResponse
 
-    fun fetchWeatherData(lat: Double, lon: Double, units: String) {
+    fun fetchWeatherData(lat: Double, lon: Double) {
         viewModelScope.launch {
             try {
                 var response : WeatherResponse?
@@ -28,9 +28,7 @@ class HomeScreenViewModel(private val repo : IWeatherRepository) : ViewModel() {
                 if (ChosenDataUnits.unitSystem == UnitSystem.CUSTOM.value) {
                     response = repo.fetchCurrentWeatherDataRemotely(lat, lon, UnitSystem.METRIC.value)
 
-                    // convert all units in response depending on what is chosen
-
-                    // temp (actual && high && low && feels like)
+                    // temp (actual && high && low && feels like) conversions
                     if (response != null) {
                         response.main.temp = when(ChosenDataUnits.tempUnit) {
                             Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(response.main.temp)
@@ -85,17 +83,80 @@ class HomeScreenViewModel(private val repo : IWeatherRepository) : ViewModel() {
                 }
 
                 _weatherResponse.postValue(response)
+
             } catch (e: Exception) {
                 _weatherResponse.postValue(null)
             }
         }
     }
 
-    fun fetchForecastData(lat: Double, lon: Double, units: String) {
+    fun fetchForecastData(lat: Double, lon: Double) {
         viewModelScope.launch {
             try {
-                val response = repo.fetchForecastDataRemotely(lat, lon, units)
+                var response: ForecastResponse?
+
+                if (ChosenDataUnits.unitSystem == UnitSystem.CUSTOM.value) {
+                    // Fetch data in metric units for conversion
+                    response = repo.fetchForecastDataRemotely(lat, lon, UnitSystem.METRIC.value)
+
+                    if (response != null) {
+                        // iterate over each forecast items to apply unit conversions
+                        response.list.forEach { forecastItem ->
+
+                            // temp (actual && high && low && feels like) conversions
+                            forecastItem.main.temp = when (ChosenDataUnits.tempUnit) {
+                                Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.temp)
+                                Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.temp)
+                                else -> forecastItem.main.temp
+                            }
+
+                            forecastItem.main.temp_kf = when (ChosenDataUnits.tempUnit) {
+                                Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.temp_kf)
+                                Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.temp_kf)
+                                else -> forecastItem.main.temp_kf
+                            }
+
+                            forecastItem.main.feels_like = when (ChosenDataUnits.tempUnit) {
+                                Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.feels_like)
+                                Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.feels_like)
+                                else -> forecastItem.main.feels_like
+                            }
+
+                            forecastItem.main.temp_min = when (ChosenDataUnits.tempUnit) {
+                                Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.temp_min)
+                                Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.temp_min)
+                                else -> forecastItem.main.temp_min
+                            }
+
+                            forecastItem.main.temp_max = when (ChosenDataUnits.tempUnit) {
+                                Units.KELVIN.symbol -> UnitSystemsConversions.celsiusToKelvin(forecastItem.main.temp_max)
+                                Units.FAHRENHEIT.symbol -> UnitSystemsConversions.celsiusToFahrenheit(forecastItem.main.temp_max)
+                                else -> forecastItem.main.temp_max
+                            }
+
+                            // wind speed conversion
+                            forecastItem.wind.speed = when (ChosenDataUnits.speedUnit) {
+                                Units.KILOMETERS_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToKilometerPerHour(forecastItem.wind.speed)
+                                Units.MILES_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToMilePerHour(forecastItem.wind.speed)
+                                Units.FEET_PER_SECOND.symbol -> UnitSystemsConversions.meterPerSecondToFeetPerSecond(forecastItem.wind.speed)
+                                else -> forecastItem.wind.speed
+                            }
+
+                            // pressure conversion
+                            forecastItem.main.pressure = when (ChosenDataUnits.pressureUnit) {
+                                Units.ATMOSPHERE.symbol -> UnitSystemsConversions.hectopascalToAtm(forecastItem.main.pressure.toDouble()).toInt()
+                                Units.BAR.symbol -> UnitSystemsConversions.hectopascalToBar(forecastItem.main.pressure.toDouble()).toInt()
+                                Units.PSI.symbol -> UnitSystemsConversions.hectopascalToPsi(forecastItem.main.pressure.toDouble()).toInt()
+                                else -> forecastItem.main.pressure
+                            }
+                        }
+                    }
+                } else {
+                    response = repo.fetchForecastDataRemotely(lat, lon, ChosenDataUnits.unitSystem)
+                }
+
                 _forecastResponse.postValue(response)
+
             } catch (e: Exception) {
                 _forecastResponse.postValue(null)
             }
