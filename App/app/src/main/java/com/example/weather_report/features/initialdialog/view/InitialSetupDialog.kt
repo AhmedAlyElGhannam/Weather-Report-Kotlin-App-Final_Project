@@ -1,4 +1,4 @@
-package com.example.weather_report.features.initialdialog
+package com.example.weather_report.features.initialdialog.view
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.weather_report.InitialChoiceCallback
-import com.example.weather_report.R
 import com.example.weather_report.databinding.DialogInitialSetupBinding
 
 class InitialSetupDialog(private val listener: InitialChoiceCallback) : DialogFragment() {

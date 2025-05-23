@@ -1,4 +1,4 @@
-package com.example.weather_report
+package com.example.weather_report.features.home.view
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.weather_report.features.home.viewmodel.HomeScreenViewModel
+import com.example.weather_report.R
 import com.example.weather_report.databinding.FragmentHomeScreenBinding
 
 class HomeScreenFragment : Fragment() {

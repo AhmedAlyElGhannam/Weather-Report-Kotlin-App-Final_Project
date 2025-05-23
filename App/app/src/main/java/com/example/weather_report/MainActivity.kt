@@ -7,9 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.preference.PreferenceManager
-import com.example.weather_report.features.initialdialog.InitialSetupDialog
+import com.example.weather_report.features.initialdialog.view.InitialSetupDialog
 import com.example.weather_report.model.local.CityLocalDataSourceImpl
 import com.example.weather_report.model.local.CurrentWeatherLocalDataSourceImpl
 import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
@@ -25,12 +23,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.util.GeoPoint
 import java.util.Arrays
-import org.osmdroid.config.Configuration
-import org.osmdroid.events.MapEventsReceiver
-import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import android.Manifest
 import android.content.Context
@@ -39,14 +32,11 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Looper
 import android.provider.Settings
-import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import com.example.weather_report.databinding.FragmentHomeScreenBinding
-import com.example.weather_report.databinding.FragmentMapBinding
 import com.example.weather_report.databinding.MainScreenBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -54,7 +44,6 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import java.util.Locale
 
 
 class MainActivity : AppCompatActivity(), InitialChoiceCallback {
