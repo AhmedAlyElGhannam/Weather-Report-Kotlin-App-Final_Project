@@ -1,5 +1,6 @@
 package com.example.weather_report.features.home.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -82,6 +83,8 @@ class HomeScreenViewModel(private val repo : IWeatherRepository) : ViewModel() {
                     response = repo.fetchCurrentWeatherDataRemotely(lat, lon, ChosenDataUnits.unitSystem)
                 }
 
+                Log.i("TAG", "fetchWeatherData: ${response}")
+
                 _weatherResponse.postValue(response)
 
             } catch (e: Exception) {
@@ -152,6 +155,7 @@ class HomeScreenViewModel(private val repo : IWeatherRepository) : ViewModel() {
                     response = repo.fetchForecastDataRemotely(lat, lon, ChosenDataUnits.unitSystem)
                 }
 
+                Log.i("TAG", "fetchForecastData: ${response}")
                 _forecastResponse.postValue(response)
 
             } catch (e: Exception) {

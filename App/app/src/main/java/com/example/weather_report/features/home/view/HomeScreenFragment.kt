@@ -55,18 +55,15 @@ class HomeScreenFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers()
-        homeViewModel.fetchForecastData(
-            mainActivityViewModel.coordinates.value.lat,
-            mainActivityViewModel.coordinates.value.lon
-        )
-
-        homeViewModel.fetchWeatherData(
-            mainActivityViewModel.coordinates.value.lat,
-            mainActivityViewModel.coordinates.value.lon
-        )
     }
 
     private fun setupObservers() {
+        mainActivityViewModel.coordinates.observe(viewLifecycleOwner) { coordinates ->
+            coordinates?.let {
+                homeViewModel.fetchWeatherData(it.lat, it.lon)
+                homeViewModel.fetchForecastData(it.lat, it.lon)
+            }
+        }
         homeViewModel.weatherResponse.observe(viewLifecycleOwner) { weather ->
             weather?.let { updateWeatherUI(it) }
         }
