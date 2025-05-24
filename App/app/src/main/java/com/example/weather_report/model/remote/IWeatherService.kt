@@ -7,7 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface IWeatherService {
-    @GET("forecast")
+    @GET("forecast/hourly")
     suspend fun getForecast(
         @Query("lat") lat : Double,
         @Query("lon") lon : Double,

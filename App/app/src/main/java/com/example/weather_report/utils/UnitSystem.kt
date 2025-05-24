@@ -3,5 +3,6 @@ package com.example.weather_report.utils
 enum class UnitSystem(val value: String) {
     STANDARD("standard"),
     METRIC("metric"),
-    IMPERIAL("imperial");
+    IMPERIAL("imperial"),
+    CUSTOM("custom");
 }

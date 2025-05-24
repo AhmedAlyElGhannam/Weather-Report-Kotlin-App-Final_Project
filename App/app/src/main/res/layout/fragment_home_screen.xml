@@ -110,7 +110,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/interreg"
+                                android:layout_gravity="center"
                                 android:text="↑ 38° ↓ 22°"
+                                android:textAlignment="center"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
                                 android:textSize="20sp" />
 
@@ -121,35 +123,11 @@
                                 android:layout_marginTop="8dp"
                                 android:fontFamily="@font/interreg"
                                 android:text="Feels like 31°"
+                                android:layout_gravity="center"
+                                android:textAlignment="center"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
                                 android:textSize="20sp" />
                         </LinearLayout>
-
-                        <TextView
-                            android:id="@+id/dateTxt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="20dp"
-                            android:fontFamily="@font/interreg"
-                            android:text="Sun, May 18"
-                            android:textColor="@color/soft_gray_mist_d9d9d9"
-                            android:textSize="18sp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/tempDetailsLayout" />
-
-                        <TextView
-                            android:id="@+id/timeTxt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:fontFamily="@font/interreg"
-                            android:text="22:31"
-                            android:textColor="@color/soft_gray_mist_d9d9d9"
-                            android:textSize="18sp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/dateTxt" />
 
                         <TextView
                             android:id="@+id/locationTxt"
@@ -162,7 +140,7 @@
                             android:textSize="18sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/timeTxt" />
+                            app:layout_constraintTop_toBottomOf="@id/tempDetailsLayout" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -172,8 +150,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/interreg"
-                    android:paddingBottom="20dp"
-                    android:text="Weather Hourly"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="16dp"
+                    android:text=""
                     android:textColor="@color/soft_gray_mist_d9d9d9"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -207,8 +186,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/interreg"
-                    android:paddingBottom="20dp"
-                    android:text="Daily Weather"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="16dp"
+                    android:text=""
                     android:textColor="@color/soft_gray_mist_d9d9d9"
                     android:textSize="22sp"
                     android:textStyle="bold"
@@ -243,7 +223,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/interreg"
                     android:paddingBottom="20dp"
-                    android:text="Additional Details"
+                    android:text=""
                     android:textColor="@color/soft_gray_mist_d9d9d9"
                     android:textSize="24sp"
                     android:textStyle="bold"
@@ -274,27 +254,26 @@
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
+                            android:layout_columnWeight="1.2"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="16dp">
-
+                            android:padding="12dp"
+                            android:minWidth="100dp">
                             <ImageView
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_humidity"
                                 app:tint="@color/light_sky_ice_bef4fe" />
-
                             <TextView
+                                android:id="@+id/humidityTxt"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
                                 android:fontFamily="@font/interreg"
                                 android:text="27%"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="16dp" />
-
+                                android:textSize="12dp"
+                                android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -302,34 +281,34 @@
                                 android:fontFamily="@font/interreg"
                                 android:text="Humidity"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
-                                android:textSize="12sp" />
+                                android:textSize="12dp"
+                                android:singleLine="true" />
                         </LinearLayout>
 
                         <!-- Pressure -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
+                            android:layout_columnWeight="1.2"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="16dp">
-
+                            android:padding="12dp"
+                            android:minWidth="100dp">
                             <ImageView
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_pressure"
                                 app:tint="@color/light_sky_ice_bef4fe" />
-
                             <TextView
+                                android:id="@+id/pressureTxt"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
                                 android:fontFamily="@font/interreg"
                                 android:text="1012 hPa"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="16dp" />
-
+                                android:textSize="12dp"
+                                android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -337,34 +316,34 @@
                                 android:fontFamily="@font/interreg"
                                 android:text="Pressure"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
-                                android:textSize="12sp" />
+                                android:textSize="12dp"
+                                android:singleLine="true" />
                         </LinearLayout>
 
-                        <!-- Wind -->
+                        <!-- Windspeed -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
+                            android:layout_columnWeight="1.2"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="16dp">
-
+                            android:padding="12dp"
+                            android:minWidth="100dp">
                             <ImageView
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_wind"
                                 app:tint="@color/light_sky_ice_bef4fe" />
-
                             <TextView
+                                android:id="@+id/windSpeedTxt"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
                                 android:fontFamily="@font/interreg"
                                 android:text="15 km/h"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="16dp" />
-
+                                android:textSize="12dp"
+                                android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -372,112 +351,113 @@
                                 android:fontFamily="@font/interreg"
                                 android:text="Wind"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
-                                android:textSize="12sp" />
+                                android:textSize="12dp"
+                                android:singleLine="true" />
                         </LinearLayout>
 
-                        <!-- Feels Like -->
+                        <!-- Sunrise -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
+                            android:layout_columnWeight="1.2"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="16dp">
-
+                            android:padding="12dp"
+                            android:minWidth="100dp">
                             <ImageView
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:src="@drawable/ic_temp"
+                                android:src="@drawable/ic_sunrise"
                                 app:tint="@color/light_sky_ice_bef4fe" />
-
                             <TextView
+                                android:id="@+id/sunriseTxt"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
                                 android:fontFamily="@font/interreg"
                                 android:text="31°C"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="16dp" />
-
+                                android:textSize="12dp"
+                                android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:fontFamily="@font/interreg"
-                                android:text="Feels Like"
+                                android:text="Sunrise"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
-                                android:textSize="12sp" />
+                                android:textSize="12dp"
+                                android:singleLine="true" />
                         </LinearLayout>
 
-                        <!-- Cloud Cover -->
+                        <!-- Clouds -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
+                            android:layout_columnWeight="1.2"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="16dp">
-
+                            android:padding="12dp"
+                            android:minWidth="100dp">
                             <ImageView
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:src="@drawable/ic_cloud"
                                 app:tint="@color/light_sky_ice_bef4fe" />
-
                             <TextView
+                                android:id="@+id/cloudCoverageTxt"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
                                 android:fontFamily="@font/interreg"
                                 android:text="70%"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="16dp" />
-
+                                android:textSize="12dp"
+                                android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:fontFamily="@font/interreg"
-                                android:text="Cloud Cover"
+                                android:text="Clouds"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
-                                android:textSize="12sp" />
+                                android:textSize="12dp"
+                                android:singleLine="true" />
                         </LinearLayout>
 
-                        <!-- UV Index -->
+                        <!-- Sunset -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
+                            android:layout_columnWeight="1.2"
                             android:gravity="center"
                             android:orientation="vertical"
-                            android:padding="16dp">
-
+                            android:padding="12dp"
+                            android:minWidth="100dp">
                             <ImageView
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:src="@drawable/ic_uv"
+                                android:src="@drawable/ic_sunset"
                                 app:tint="@color/light_sky_ice_bef4fe" />
-
                             <TextView
+                                android:id="@+id/sunsetTxt"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
                                 android:fontFamily="@font/interreg"
                                 android:text="0.0"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:layout_marginTop="16dp" />
-
+                                android:textSize="12dp"
+                                android:textStyle="bold" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:fontFamily="@font/interreg"
-                                android:text="UV Index"
+                                android:text="Sunset"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
-                                android:textSize="12sp" />
+                                android:textSize="12dp"
+                                android:singleLine="true" />
                         </LinearLayout>
                     </GridLayout>
                 </androidx.cardview.widget.CardView>
