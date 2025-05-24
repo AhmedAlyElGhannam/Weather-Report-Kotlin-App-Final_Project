@@ -6,5 +6,6 @@ class ChosenDataUnits {
         val speedUnit = Units.METERS_PER_SECOND.symbol
         val tempUnit = Units.CELSIUS.symbol
         val pressureUnit = Units.HECTOPASCAL.symbol
+        val distanceUnit = Units.METER.symbol
     }
 }

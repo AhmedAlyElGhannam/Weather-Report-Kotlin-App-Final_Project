@@ -13,5 +13,10 @@ enum class Units (val symbol: String, val description: String) {
     HECTOPASCAL("hPa", "Hectopascal"),
     PSI("Psi", "Pounds per Square Inch"),
     BAR("Bar", "Bar"),
-    ATMOSPHERE("atm", "Atmosphere");
+    ATMOSPHERE("atm", "Atmosphere"),
+
+    METER("m", "meters"),
+    KILOMETER("km", "kilometers"),
+    MILE("mi", "miles"),
+    FEET("ft", "feet");
 }

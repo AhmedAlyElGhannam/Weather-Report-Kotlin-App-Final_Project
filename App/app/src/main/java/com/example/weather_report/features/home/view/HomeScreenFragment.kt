@@ -29,6 +29,10 @@ import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourc
 import com.example.weather_report.model.repository.WeatherRepositoryImpl
 import com.example.weather_report.utils.ChosenDataUnits
 import com.example.weather_report.utils.Units
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class HomeScreenFragment : Fragment() {
     lateinit var binding: FragmentHomeScreenBinding
@@ -38,6 +42,12 @@ class HomeScreenFragment : Fragment() {
     private var hasFetchedForecastData = false
     private var weather: WeatherResponse? = null
     private var forecast: ForecastResponse? = null
+    val formatUnixTime: (Long) -> String = { unixTime ->
+        val date = Date(unixTime * 1000)
+        val format = SimpleDateFormat("HH:mm", Locale.getDefault())
+        format.timeZone = TimeZone.getDefault()
+        format.format(date)
+    }
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
     private val homeViewModel : HomeScreenViewModel by viewModels {
         HomeScreenViewModelFactory(
@@ -95,7 +105,10 @@ class HomeScreenFragment : Fragment() {
                 weather = mainActivityViewModel.weatherResponse.value
                 hasFetchedWeatherData = true
 
-                weather?.let { updateWeatherUI(it) }
+                weather?.let {
+                    updateWeatherUI(it)
+                    updateExtraInfo(it)
+                }
             }
         }
 
@@ -156,6 +169,16 @@ class HomeScreenFragment : Fragment() {
         binding.tempTxt.text = "${weather.main.temp}°${ChosenDataUnits.tempUnit}"
 
         binding.feelslikeTempTxt.text = "Feels Like ${weather.main.feels_like}°${ChosenDataUnits.tempUnit}"
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun updateExtraInfo(weather: WeatherResponse) {
+        binding.windSpeedTxt.text = "${weather.wind.speed}${ChosenDataUnits.speedUnit}"
+        binding.sunsetTxt.text = formatUnixTime.invoke(weather.sys.sunset)
+        binding.pressureTxt.text = "${weather.main.pressure}${ChosenDataUnits.pressureUnit}"
+        binding.humidityTxt.text = "${weather.main.humidity}%"
+        binding.sunriseTxt.text = formatUnixTime.invoke(weather.sys.sunrise)
+        binding.cloudCoverageTxt.text = "${weather.clouds.all}%"
     }
 
     private fun updateForecastUI(forecast: ForecastResponse) {
