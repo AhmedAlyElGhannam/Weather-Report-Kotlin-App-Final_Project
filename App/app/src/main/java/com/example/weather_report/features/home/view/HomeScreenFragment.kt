@@ -2,6 +2,7 @@ package com.example.weather_report.features.home.view
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -92,9 +93,14 @@ class HomeScreenFragment : Fragment() {
 
                     forecast?.let { it1 ->
                         updateForecastUI(it1)
-                        hourlyWeatherAdapter.submitList(it1.list)
                     }
                 }
+            }
+
+        mainActivityViewModel.hourlyWeatherItemsList
+            .observe(viewLifecycleOwner) { filteredList ->
+                Log.i("TAG", "Observing hourly list: ${filteredList?.size}")
+                hourlyWeatherAdapter.submitList(filteredList)
             }
     }
 
