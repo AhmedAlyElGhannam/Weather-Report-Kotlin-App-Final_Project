@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.weather_report.MainActivityViewModel
 import com.example.weather_report.features.home.viewmodel.HomeScreenViewModel
 import com.example.weather_report.R
@@ -29,6 +31,7 @@ import com.example.weather_report.utils.Units
 
 class HomeScreenFragment : Fragment() {
     lateinit var binding: FragmentHomeScreenBinding
+    lateinit var hourlyWeatherAdapter: HourlyWeatherAdapter
     private var hasFetchedWeatherData = false
     private var hasFetchedForecastData = false
     private var weather: WeatherResponse? = null
@@ -58,6 +61,15 @@ class HomeScreenFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.hourlyWeatherRecyclerView.hasFixedSize()
+        val layoutManagerHourly : LinearLayoutManager = LinearLayoutManager(requireContext())
+        layoutManagerHourly.orientation = RecyclerView.HORIZONTAL
+        binding.hourlyWeatherRecyclerView.layoutManager = layoutManagerHourly
+
+        hourlyWeatherAdapter = HourlyWeatherAdapter()
+        hourlyWeatherAdapter.submitList(listOf())
+        binding.hourlyWeatherRecyclerView.adapter = hourlyWeatherAdapter
+
         setupObservers()
     }
 
@@ -72,13 +84,16 @@ class HomeScreenFragment : Fragment() {
             }
         }
 
-        mainActivityViewModel.weatherResponse
+        mainActivityViewModel.forecastResponse
             .observe(viewLifecycleOwner) {
                 if (!hasFetchedForecastData) {
                     forecast = mainActivityViewModel.forecastResponse.value
                     hasFetchedForecastData = true
 
-                    forecast?.let { it1 -> updateForecastUI(it1) }
+                    forecast?.let { it1 ->
+                        updateForecastUI(it1)
+                        hourlyWeatherAdapter.submitList(it1.list)
+                    }
                 }
             }
     }

@@ -1,15 +1,16 @@
-//package com.example.weather_report.utils
-//
-//import androidx.recyclerview.widget.DiffUtil
-//
-//class HourlyWeatherDiffUtil : DiffUtil.ItemCallback<Product>() {
-//    override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean
-//    {
-//        return oldItem.id == newItem.id
-//    }
-//
-//    override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean
-//    {
-//        return oldItem==newItem
-//    }
-//}
+package com.example.weather_report.utils
+
+import androidx.recyclerview.widget.DiffUtil
+import com.example.weather_report.model.pojo.ForecastItem
+
+class HourlyWeatherDiffUtil : DiffUtil.ItemCallback<ForecastItem>() {
+    override fun areItemsTheSame(oldItem: ForecastItem, newItem: ForecastItem): Boolean
+    {
+        return oldItem.dt == newItem.dt
+    }
+
+    override fun areContentsTheSame(oldItem: ForecastItem, newItem: ForecastItem): Boolean
+    {
+        return oldItem == newItem
+    }
+}
