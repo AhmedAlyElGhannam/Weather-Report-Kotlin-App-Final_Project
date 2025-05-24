@@ -33,6 +33,7 @@ import com.example.weather_report.utils.Units
 class HomeScreenFragment : Fragment() {
     lateinit var binding: FragmentHomeScreenBinding
     lateinit var hourlyWeatherAdapter: HourlyWeatherAdapter
+    lateinit var dailyWeatherForecastAdapter: DailyWeatherForecastAdapter
     private var hasFetchedWeatherData = false
     private var hasFetchedForecastData = false
     private var weather: WeatherResponse? = null
@@ -62,14 +63,27 @@ class HomeScreenFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // layout manager for hourly
         binding.hourlyWeatherRecyclerView.hasFixedSize()
         val layoutManagerHourly : LinearLayoutManager = LinearLayoutManager(requireContext())
         layoutManagerHourly.orientation = RecyclerView.HORIZONTAL
         binding.hourlyWeatherRecyclerView.layoutManager = layoutManagerHourly
 
+        // layout manager for daily
+        binding.dailyWeatherRecyclerView.hasFixedSize()
+        val layoutManagerDaily : LinearLayoutManager = LinearLayoutManager(requireContext())
+        layoutManagerDaily.orientation = RecyclerView.HORIZONTAL
+        binding.dailyWeatherRecyclerView.layoutManager = layoutManagerDaily
+
+        // adapter for hourly
         hourlyWeatherAdapter = HourlyWeatherAdapter()
         hourlyWeatherAdapter.submitList(listOf())
         binding.hourlyWeatherRecyclerView.adapter = hourlyWeatherAdapter
+
+        // adapter for daily
+        dailyWeatherForecastAdapter = DailyWeatherForecastAdapter()
+        dailyWeatherForecastAdapter.submitList(listOf())
+        binding.dailyWeatherRecyclerView.adapter = dailyWeatherForecastAdapter
 
         setupObservers()
     }
@@ -81,7 +95,7 @@ class HomeScreenFragment : Fragment() {
                 weather = mainActivityViewModel.weatherResponse.value
                 hasFetchedWeatherData = true
 
-                weather?.let { it1 -> updateWeatherUI(it1) }
+                weather?.let { updateWeatherUI(it) }
             }
         }
 
@@ -91,8 +105,8 @@ class HomeScreenFragment : Fragment() {
                     forecast = mainActivityViewModel.forecastResponse.value
                     hasFetchedForecastData = true
 
-                    forecast?.let { it1 ->
-                        updateForecastUI(it1)
+                    forecast?.let {
+                        updateForecastUI(it)
                     }
                 }
             }
@@ -102,6 +116,12 @@ class HomeScreenFragment : Fragment() {
                 Log.i("TAG", "Observing hourly list: ${filteredList?.size}")
                 hourlyWeatherAdapter.submitList(filteredList)
             }
+
+        mainActivityViewModel.dailyWeatherItemsList.observe(viewLifecycleOwner) { dailyList ->
+            dailyList?.let {
+                dailyWeatherForecastAdapter.submitList(it)
+            }
+        }
     }
 
     @SuppressLint("SetTextI18n")

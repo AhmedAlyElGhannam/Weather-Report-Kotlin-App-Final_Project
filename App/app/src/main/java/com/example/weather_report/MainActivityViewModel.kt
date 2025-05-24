@@ -33,6 +33,9 @@ class MainActivityViewModel(private val repo : IWeatherRepository) : ViewModel()
     private val _hourlyWeatherItemsList = MutableLiveData<List<ForecastItem?>?>()
     val hourlyWeatherItemsList : LiveData<List<ForecastItem?>?> = _hourlyWeatherItemsList
 
+    private val _dailyWeatherItemsList = MutableLiveData<List<ForecastItem>>()
+    val dailyWeatherItemsList: LiveData<List<ForecastItem>> = _dailyWeatherItemsList
+
     fun fetchWeatherData(lat: Double, lon: Double) {
         viewModelScope.launch {
             try {
@@ -171,6 +174,7 @@ class MainActivityViewModel(private val repo : IWeatherRepository) : ViewModel()
                 _forecastResponse.postValue(response)
                 response?.let {
                     filterForecastForToday(it)
+                    _dailyWeatherItemsList.postValue(filterDailyForecast(it))
                     Log.i("TAG", "fetchForecastData: ${hourlyWeatherItemsList.value?.size}")
                 }
             } catch (e: Exception) {
@@ -214,6 +218,70 @@ class MainActivityViewModel(private val repo : IWeatherRepository) : ViewModel()
             Log.i("TAG", "Filtered items count: ${_hourlyWeatherItemsList.value?.size}")
     }
 
+    private fun filterDailyForecast(forecastResponse: ForecastResponse): List<ForecastItem> {
+        val totalSeconds = forecastResponse.city.timezone
+        // Calculate timezone with hours AND minutes (same as hourly filter)
+        val hours = totalSeconds / 3600
+        val remainingSeconds = totalSeconds % 3600
+        val minutes = remainingSeconds / 60
+        val sign = if (totalSeconds >= 0) "+" else "-"
+        val tzId = String.format("GMT%s%02d:%02d", sign, abs(hours), abs(minutes))
+        val timeZone = TimeZone.getTimeZone(tzId)
+
+        val calendar = Calendar.getInstance(timeZone).apply {
+            timeInMillis = System.currentTimeMillis() // Current time in city's timezone
+        }
+        // Get today's date components
+        val currentYear = calendar.get(Calendar.YEAR)
+        val currentMonth = calendar.get(Calendar.MONTH) + 1
+        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+        // Group items by date (excluding today)
+        val dateMap = mutableMapOf<String, MutableList<ForecastItem>>()
+
+        forecastResponse.list.forEach { item ->
+            // Convert item's timestamp to local time
+            calendar.timeInMillis = item.dt * 1000L
+            val itemYear = calendar.get(Calendar.YEAR)
+            val itemMonth = calendar.get(Calendar.MONTH) + 1
+            val itemDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+            // Skip today's items
+            if (itemYear == currentYear && itemMonth == currentMonth && itemDay == currentDay) {
+                return@forEach
+            }
+
+            // Group items by date
+            val dateKey = "$itemYear-$itemMonth-$itemDay"
+            if (!dateMap.containsKey(dateKey)) {
+                dateMap[dateKey] = mutableListOf()
+            }
+            dateMap[dateKey]?.add(item)
+        }
+
+        // Select the item closest to midday (12:00 PM) for each day
+        val dailyList = mutableListOf<ForecastItem>()
+        dateMap.forEach { (_, items) ->
+            var closestToMidday: ForecastItem? = null
+            var minTimeDiff = Long.MAX_VALUE
+
+            items.forEach { item ->
+                calendar.timeInMillis = item.dt * 1000L
+                val hour = calendar.get(Calendar.HOUR_OF_DAY)
+                val minute = calendar.get(Calendar.MINUTE)
+                // Calculate time difference from 12:00 PM (in minutes)
+                val diff = abs((hour - 12) * 60 + minute)
+                if (diff < minTimeDiff) {
+                    minTimeDiff = diff.toLong()
+                    closestToMidday = item
+                }
+            }
+            closestToMidday?.let { dailyList.add(it) }
+        }
+
+        // Sort by date
+        return dailyList.sortedBy { it.dt }
+    }
 
     fun setCoordinates(_coord : Coordinates) {
         _coordinates.value = _coord

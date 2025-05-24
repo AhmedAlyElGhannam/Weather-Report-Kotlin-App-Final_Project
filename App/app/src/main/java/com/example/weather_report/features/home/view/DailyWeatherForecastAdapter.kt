@@ -7,32 +7,32 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather_report.R
+import com.example.weather_report.databinding.ItemDailyWeatherBinding
 import com.example.weather_report.databinding.ItemHourlyWeatherBinding
 import com.example.weather_report.model.pojo.ForecastItem
+import com.example.weather_report.utils.ChosenDataUnits
 import com.example.weather_report.utils.ForecastItemDiffUtil
 
-class HourlyWeatherAdapter:
-    ListAdapter<ForecastItem, HourlyWeatherAdapter.HourlyWeatherViewHolder>(ForecastItemDiffUtil()) {
+class DailyWeatherForecastAdapter:
+    ListAdapter<ForecastItem, DailyWeatherForecastAdapter.DailyWeatherViewHolder>(ForecastItemDiffUtil()) {
     lateinit var context: Context
 
-    lateinit var binding: ItemHourlyWeatherBinding
+    lateinit var binding: ItemDailyWeatherBinding
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HourlyWeatherViewHolder {
-        val inflater:LayoutInflater= LayoutInflater.from(parent.context)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DailyWeatherViewHolder {
+        val inflater: LayoutInflater = LayoutInflater.from(parent.context)
         context= parent.context
-        binding = ItemHourlyWeatherBinding.inflate(inflater, parent, false)
-        return HourlyWeatherViewHolder(binding)
+        binding = ItemDailyWeatherBinding.inflate(inflater, parent, false)
+        return DailyWeatherViewHolder(binding)
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(holder: HourlyWeatherViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: DailyWeatherViewHolder, position: Int) {
         val currentObj = getItem(position)
         currentObj?.let { item ->
-            holder.binding.hourlyTempTextView.text = item.weather[0].main
-
-            holder.binding.hourlyTimeTextView.text = item.dt_txt.substringAfter(" ")
-
-            holder.binding.hourlyWeatherIcon.setImageResource(
+            holder.binding.dailyTempTextView.text = "${item.main.temp}°${ChosenDataUnits.tempUnit}"
+            holder.binding.dailyDayTextView.text = item.dt_txt.substringBefore(" ")
+            holder.binding.dailyWeatherIcon.setImageResource(
                 when(item.weather[0].main) {
                     "Thunderstorm" -> R.drawable.ic_thunderstormy
                     "Drizzle" -> R.drawable.ic_drizzley
@@ -57,5 +57,5 @@ class HourlyWeatherAdapter:
         }
     }
 
-    class HourlyWeatherViewHolder(var binding: ItemHourlyWeatherBinding) : RecyclerView.ViewHolder(binding.root)
+    class DailyWeatherViewHolder(var binding: ItemDailyWeatherBinding) : RecyclerView.ViewHolder(binding.root)
 }

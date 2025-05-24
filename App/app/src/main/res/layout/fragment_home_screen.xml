@@ -110,7 +110,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/interreg"
+                                android:layout_gravity="center"
                                 android:text="↑ 38° ↓ 22°"
+                                android:textAlignment="center"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
                                 android:textSize="20sp" />
 
@@ -121,6 +123,8 @@
                                 android:layout_marginTop="8dp"
                                 android:fontFamily="@font/interreg"
                                 android:text="Feels like 31°"
+                                android:layout_gravity="center"
+                                android:textAlignment="center"
                                 android:textColor="@color/soft_gray_mist_d9d9d9"
                                 android:textSize="20sp" />
                         </LinearLayout>
