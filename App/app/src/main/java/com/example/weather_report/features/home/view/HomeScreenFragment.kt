@@ -29,6 +29,10 @@ import com.example.weather_report.utils.Units
 
 class HomeScreenFragment : Fragment() {
     lateinit var binding: FragmentHomeScreenBinding
+    private var hasFetchedWeatherData = false
+    private var hasFetchedForecastData = false
+    private var weather: WeatherResponse? = null
+    private var forecast: ForecastResponse? = null
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
     private val homeViewModel : HomeScreenViewModel by viewModels {
         HomeScreenViewModelFactory(
@@ -58,18 +62,25 @@ class HomeScreenFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        mainActivityViewModel.coordinates.observe(viewLifecycleOwner) { coordinates ->
-            coordinates?.let {
-                homeViewModel.fetchWeatherData(it.lat, it.lon)
-                homeViewModel.fetchForecastData(it.lat, it.lon)
+        mainActivityViewModel.weatherResponse
+            .observe(viewLifecycleOwner) {
+                if (!hasFetchedWeatherData) {
+                weather = mainActivityViewModel.weatherResponse.value
+                hasFetchedWeatherData = true
+
+                weather?.let { it1 -> updateWeatherUI(it1) }
             }
         }
-        homeViewModel.weatherResponse.observe(viewLifecycleOwner) { weather ->
-            weather?.let { updateWeatherUI(it) }
-        }
-        homeViewModel.forecastResponse.observe(viewLifecycleOwner) { forecast ->
-            forecast?.let { updateForecastUI(it) }
-        }
+
+        mainActivityViewModel.weatherResponse
+            .observe(viewLifecycleOwner) {
+                if (!hasFetchedForecastData) {
+                    forecast = mainActivityViewModel.forecastResponse.value
+                    hasFetchedForecastData = true
+
+                    forecast?.let { it1 -> updateForecastUI(it1) }
+                }
+            }
     }
 
     @SuppressLint("SetTextI18n")

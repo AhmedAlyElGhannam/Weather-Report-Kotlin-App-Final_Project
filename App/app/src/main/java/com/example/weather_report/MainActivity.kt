@@ -39,6 +39,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import com.example.weather_report.databinding.MainScreenBinding
+import com.example.weather_report.features.home.viewmodel.HomeScreenViewModelFactory
+import com.example.weather_report.features.mapdialog.view.MapDialog
 import com.example.weather_report.model.pojo.Coordinates
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -48,18 +50,24 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
 
-class MainActivity : AppCompatActivity(), InitialChoiceCallback {
+class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordinatesOnMapCallback {
 
     lateinit var bindingMainScreen : MainScreenBinding
 
     private lateinit var navController: NavController
-    lateinit var drawerLayout: DrawerLayout
 
-    lateinit var repo : WeatherRepositoryImpl
-
-    lateinit var currentMarker: Marker
-
-    private val mainActivityViewModel : MainActivityViewModel by viewModels()
+    private val mainActivityViewModel : MainActivityViewModel by viewModels() {
+        MainActivityViewModelFactory(
+            WeatherRepositoryImpl.getInstance(
+                CityLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCityDao()),
+                ForecastItemLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getForecastItemDao()),
+                CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCurrentWeatherDao()),
+                WeatherAndForecastRemoteDataSourceImpl(
+                    RetrofitHelper.retrofit.create(
+                        IWeatherService::class.java))
+            )
+        )
+    }
 
     private val LOCATION_PERMISSION_REQUESTCODE : Int = 1006
     private val LOCATION_PERMISSIONS : Array<String> = arrayOf(
@@ -73,6 +81,7 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
         init {
             System.loadLibrary("weather_report")
         }
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -80,63 +89,33 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        mainActivityViewModel
+
         /*************************************************************************************************/
 
         bindingMainScreen = MainScreenBinding.inflate(layoutInflater)
         setContentView(bindingMainScreen.root)
 
+        bindingMainScreen.fragmentContainer.isActivated = false
+
         /************************************************************************************************/
 
-        drawerLayout = bindingMainScreen.drawerLayout
-
-        // Set up Toolbar
-        setSupportActionBar(bindingMainScreen.toolbar)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
 
 
-        // Initialize Drawer Toggle
-        val toggle = ActionBarDrawerToggle(
-            this@MainActivity,
-            bindingMainScreen.drawerLayout,
-            bindingMainScreen.toolbar,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
-        )
-        bindingMainScreen.drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
-
-        bindingMainScreen.navView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_home -> {
-                    if (navController.currentDestination?.id != R.id.homeFragment) {
-                        navController.navigate(R.id.homeFragment)
-                    }
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-                R.id.nav_settings -> {
-//                    navController.navigate(R.id.settingsFragment)
-//                    drawerLayout.closeDrawer(GravityCompat.START)
-                    true
-                }
-                // Add other menu items here
-                else -> false
-            }
-        }
+//        drawerLayout = bindingMainScreen.drawerLayout
 
         /*************************************************************************************************/
 
-        repo = WeatherRepositoryImpl.getInstance(
-            CityLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCityDao()),
-            ForecastItemLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getForecastItemDao()),
-            CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCurrentWeatherDao()),
-            WeatherAndForecastRemoteDataSourceImpl(RetrofitHelper.retrofit.create(IWeatherService::class.java))
-        )
+//        repo = WeatherRepositoryImpl.getInstance(
+//            CityLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCityDao()),
+//            ForecastItemLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getForecastItemDao()),
+//            CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCurrentWeatherDao()),
+//            WeatherAndForecastRemoteDataSourceImpl(RetrofitHelper.retrofit.create(IWeatherService::class.java))
+//        )
 
         /*************************************************************************************************/
 
-        val dialog = InitialSetupDialog(this@MainActivity)
-        dialog.show(supportFragmentManager, "InitialSetupDialog")
+        InitialSetupDialog(this@MainActivity).show(supportFragmentManager, "InitialSetupDialog")
 
         /*************************************************************************************************/
 
@@ -264,6 +243,43 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)|| locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
+    private fun initializeNavigationDrawer() {
+        // set up Toolbar
+        setSupportActionBar(bindingMainScreen.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+
+        // initialize DrawerToggle
+        val toggle = ActionBarDrawerToggle(
+            this@MainActivity,
+            bindingMainScreen.drawerLayout,
+            bindingMainScreen.toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
+        bindingMainScreen.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        bindingMainScreen.navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_home -> {
+                    if (navController.currentDestination?.id != R.id.homeFragment) {
+                        navController.navigate(R.id.homeFragment)
+                    }
+                    bindingMainScreen.drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.nav_settings -> {
+//                    navController.navigate(R.id.settingsFragment)
+//                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                // Add other menu items here
+                else -> false
+            }
+        }
+    }
+
     @OptIn(DelicateCoroutinesApi::class)
     fun getFreshLocation() {
         if (ActivityCompat.checkSelfPermission(
@@ -297,11 +313,20 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
                     if (location != null) {
                         Log.i("TAG", "onLocationResult: ${location.latitude} && ${location.longitude}")
 
-                        mainActivityViewModel.setCoordinates(Coordinates(
+                        mainActivityViewModel.fetchWeatherData(
                             location.latitude,
                             location.longitude
-                        ))
+                        )
+
+                        mainActivityViewModel.fetchForecastData(
+                            location.latitude,
+                            location.longitude
+                        )
+
                         Log.i("TAG", "Location Secured. Coordinates: ${location.latitude}lat, ${location.longitude}")
+
+                        // stop location updates
+                        fusedLocationProviderClient.removeLocationUpdates(this)
                     }
                 }}, Looper.myLooper())
     }
@@ -318,15 +343,32 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback {
         else {
             ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS,LOCATION_PERMISSION_REQUESTCODE)
         }
+
+        bindingMainScreen.fragmentContainer.isActivated = true
+        initializeNavigationDrawer()
     }
 
     override fun onMapChosen() {
-//        bindingMap.map.visibility = View.VISIBLE
-//        bindingMap.btnProceed.visibility = View.VISIBLE
+        MapDialog(this@MainActivity).show(supportFragmentManager, "MapDialog")
     }
 
     override fun onNotificationsEnabled() {
         // will come back to that
         Toast.makeText(this@MainActivity, "Notifications enabled", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onCoordinatesSelected(lat: Double, lon: Double) {
+        mainActivityViewModel.fetchWeatherData(
+            lat,
+            lon
+        )
+
+        mainActivityViewModel.fetchForecastData(
+            lat,
+            lon
+        )
+
+        bindingMainScreen.fragmentContainer.isActivated = true
+        initializeNavigationDrawer()
     }
 }

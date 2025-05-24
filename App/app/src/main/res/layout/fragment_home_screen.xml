@@ -126,32 +126,6 @@
                         </LinearLayout>
 
                         <TextView
-                            android:id="@+id/dateTxt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="20dp"
-                            android:fontFamily="@font/interreg"
-                            android:text="Sun, May 18"
-                            android:textColor="@color/soft_gray_mist_d9d9d9"
-                            android:textSize="18sp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/tempDetailsLayout" />
-
-                        <TextView
-                            android:id="@+id/timeTxt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:fontFamily="@font/interreg"
-                            android:text="22:31"
-                            android:textColor="@color/soft_gray_mist_d9d9d9"
-                            android:textSize="18sp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/dateTxt" />
-
-                        <TextView
                             android:id="@+id/locationTxt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -162,7 +136,7 @@
                             android:textSize="18sp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/timeTxt" />
+                            app:layout_constraintTop_toBottomOf="@id/tempDetailsLayout" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -172,7 +146,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/interreg"
-                    android:paddingBottom="20dp"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="16dp"
                     android:text="Weather Hourly"
                     android:textColor="@color/soft_gray_mist_d9d9d9"
                     android:textSize="24sp"
@@ -207,7 +182,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/interreg"
-                    android:paddingBottom="20dp"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="16dp"
                     android:text="Daily Weather"
                     android:textColor="@color/soft_gray_mist_d9d9d9"
                     android:textSize="22sp"
