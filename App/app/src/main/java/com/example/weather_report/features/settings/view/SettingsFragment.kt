@@ -1,5 +1,6 @@
 package com.example.weather_report.features.settings.view
 
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -77,6 +78,8 @@ class SettingsFragment : Fragment() {
                 R.id.rb_french -> appliedSettings.setLanguage(AvailableLanguages.FRENCH)
                 R.id.rb_spanish -> appliedSettings.setLanguage(AvailableLanguages.SPANISH)
             }
+
+            updateAppLanguage()
         }
 
         // Location selection
@@ -209,6 +212,9 @@ class SettingsFragment : Fragment() {
     private fun updateAppLanguage() {
         val languageCode = appliedSettings.getLanguage().code
         LocaleHelper.applyLanguage(requireContext(), languageCode)
+        activity?.window?.decorView?.layoutDirection =
+            if (languageCode == "ar") View.LAYOUT_DIRECTION_RTL
+            else View.LAYOUT_DIRECTION_LTR
         activity?.recreate()
     }
 }
