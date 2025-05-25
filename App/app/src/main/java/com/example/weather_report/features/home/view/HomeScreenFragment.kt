@@ -152,18 +152,18 @@ class HomeScreenFragment : Fragment() {
 
         binding.locationTxt.text = weather.name
 
-        binding.highLowTempTxt.text = "↑ ${weather.main.temp_max}°${AppliedSystemSettings.getTempUnit()} ↓ ${weather.main.temp_min}°${AppliedSystemSettings.getTempUnit()}"
+        binding.highLowTempTxt.text = "↑ ${weather.main.temp_max}°${AppliedSystemSettings.getTempUnit().symbol} ↓ ${weather.main.temp_min}°${AppliedSystemSettings.getTempUnit().symbol}"
 
-        binding.tempTxt.text = "${weather.main.temp}°${AppliedSystemSettings.getTempUnit()}"
+        binding.tempTxt.text = "${weather.main.temp}°${AppliedSystemSettings.getTempUnit().symbol}"
 
-        binding.feelslikeTempTxt.text = "Feels Like ${weather.main.feels_like}°${AppliedSystemSettings.getTempUnit()}"
+        binding.feelslikeTempTxt.text = "Feels Like ${weather.main.feels_like}°${AppliedSystemSettings.getTempUnit().symbol}"
     }
 
     @SuppressLint("SetTextI18n")
     private fun updateExtraInfo(weather: WeatherResponse) {
-        binding.windSpeedTxt.text = "${weather.wind.speed}${AppliedSystemSettings.getSpeedUnit()}"
+        binding.windSpeedTxt.text = "${weather.wind.speed}${AppliedSystemSettings.getSpeedUnit().symbol}"
         binding.sunsetTxt.text = formatUnixTime.invoke(weather.sys.sunset)
-        binding.pressureTxt.text = "${weather.main.pressure}${AppliedSystemSettings.getPressureUnit()}"
+        binding.pressureTxt.text = "${weather.main.pressure}${AppliedSystemSettings.getPressureUnit().symbol}"
         binding.humidityTxt.text = "${weather.main.humidity}%"
         binding.sunriseTxt.text = formatUnixTime.invoke(weather.sys.sunrise)
         binding.cloudCoverageTxt.text = "${weather.clouds.all}%"

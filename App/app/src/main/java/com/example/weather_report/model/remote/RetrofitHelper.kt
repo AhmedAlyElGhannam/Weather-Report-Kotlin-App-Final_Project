@@ -1,6 +1,7 @@
 package com.example.weather_report.model.remote
 
 import com.example.weather_report.BuildConfig
+import com.example.weather_report.utils.AppliedSystemSettings
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -31,6 +32,8 @@ private class ApiKeyInterceptor(private val apiKey: String) : Interceptor {
         val originalRequest = chain.request()
         val newUrl = originalRequest.url.newBuilder()
             .addQueryParameter("appid", apiKey)
+            .addQueryParameter("lang", AppliedSystemSettings.getLanguage().code)
+            .addQueryParameter("units", AppliedSystemSettings.getUnitSystem().value)
             .build()
 
         val newRequest = originalRequest.newBuilder()

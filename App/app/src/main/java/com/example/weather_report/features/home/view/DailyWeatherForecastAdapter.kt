@@ -29,7 +29,7 @@ class DailyWeatherForecastAdapter:
     override fun onBindViewHolder(holder: DailyWeatherViewHolder, position: Int) {
         val currentObj = getItem(position)
         currentObj?.let { item ->
-            holder.binding.dailyTempTextView.text = "${item.main.temp}°${AppliedSystemSettings.getTempUnit()}"
+            holder.binding.dailyTempTextView.text = "${item.main.temp}°${AppliedSystemSettings.getTempUnit().symbol}"
             holder.binding.dailyDayTextView.text = item.dt_txt.substringBefore(" ")
             holder.binding.dailyWeatherIcon.setImageResource(
                 when(item.weather[0].main) {
