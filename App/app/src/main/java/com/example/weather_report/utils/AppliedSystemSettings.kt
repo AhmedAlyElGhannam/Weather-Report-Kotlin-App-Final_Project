@@ -3,7 +3,7 @@ package com.example.weather_report.utils
 class AppliedSystemSettings {
     companion object {
         @Volatile
-        private var _unitSystem = UnitSystem.METRIC
+        private var _unitSystem = UnitSystem.CUSTOM
 
         @Volatile
         private var _speedUnit = Units.METERS_PER_SECOND
@@ -24,7 +24,7 @@ class AppliedSystemSettings {
         private var _location = LocationOptions.GPS
 
         @Volatile
-        private var _notifications = NotificationsOptions.NOTIFICATIONS_OFF
+        private var _notifications = NotificationsOptions.NOTIFICATIONS_ON
 
         @Synchronized
         fun getSelectedNotificationOption(): NotificationsOptions = _notifications
