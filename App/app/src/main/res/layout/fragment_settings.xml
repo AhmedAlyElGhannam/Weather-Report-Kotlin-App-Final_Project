@@ -120,7 +120,7 @@
                 <ToggleButton
                     android:id="@+id/toggle_notifications"
                     android:layout_width="100dp"
-                    android:layout_height="45dp"
+                    android:layout_height="48dp"
                     android:layout_marginEnd="8dp"
                     android:background="@drawable/toggle_button_state"
                     android:text=""
@@ -329,6 +329,7 @@
 
                     <RadioButton
                         android:id="@+id/rb_celsius"
+                        android:enabled="false"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -341,6 +342,7 @@
 
                     <RadioButton
                         android:id="@+id/rb_fahrenheit"
+                        android:enabled="false"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -353,6 +355,7 @@
 
                     <RadioButton
                         android:id="@+id/rb_kelvin"
+                        android:enabled="false"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -400,6 +403,7 @@
 
                 <RadioGroup
                     android:id="@+id/rg_speed_unit"
+                    android:enabled="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -407,6 +411,7 @@
 
                     <RadioButton
                         android:id="@+id/rb_mps"
+                        android:enabled="false"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -419,6 +424,7 @@
 
                     <RadioButton
                         android:id="@+id/rb_mph"
+                        android:enabled="false"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -431,6 +437,7 @@
 
                     <RadioButton
                         android:id="@+id/rb_kmh"
+                        android:enabled="false"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -443,6 +450,7 @@
 
                     <RadioButton
                         android:id="@+id/rb_fps"
+                        android:enabled="false"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -498,6 +506,7 @@
 
                     <RadioButton
                         android:id="@+id/rb_hpa"
+                        android:enabled="false"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -510,6 +519,7 @@
 
                     <RadioButton
                         android:id="@+id/rb_atm"
+                        android:enabled="false"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -522,6 +532,7 @@
 
                     <RadioButton
                         android:id="@+id/rb_bar"
+                        android:enabled="false"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -534,6 +545,7 @@
 
                     <RadioButton
                         android:id="@+id/rb_psi"
+                        android:enabled="false"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
