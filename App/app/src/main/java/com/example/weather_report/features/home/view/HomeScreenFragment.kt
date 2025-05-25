@@ -14,16 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.weather_report.MainActivityViewModel
 import com.example.weather_report.R
 import com.example.weather_report.databinding.FragmentHomeScreenBinding
-import com.example.weather_report.model.local.CityLocalDataSourceImpl
-import com.example.weather_report.model.local.CurrentWeatherLocalDataSourceImpl
-import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
-import com.example.weather_report.model.local.LocalDB
 import com.example.weather_report.model.pojo.ForecastResponse
 import com.example.weather_report.model.pojo.WeatherResponse
-import com.example.weather_report.model.remote.IWeatherService
-import com.example.weather_report.model.remote.RetrofitHelper
-import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
-import com.example.weather_report.model.repository.WeatherRepositoryImpl
 import com.example.weather_report.utils.AppliedSystemSettings
 import java.text.SimpleDateFormat
 import java.util.Date

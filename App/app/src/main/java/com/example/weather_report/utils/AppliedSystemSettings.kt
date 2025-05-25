@@ -17,6 +17,9 @@ class AppliedSystemSettings {
         @Volatile
         private var _distanceUnit = Units.METER.symbol
 
+        @Volatile
+        private var _language =
+
         @Synchronized
         fun getUnitSystem(): String = _unitSystem
 
