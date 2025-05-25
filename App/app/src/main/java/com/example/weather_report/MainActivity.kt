@@ -167,6 +167,7 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
             when (menuItem.itemId) {
                 R.id.nav_home -> {
                     if (navController.currentDestination?.id != R.id.homeFragment) {
+                        bindingMainScreen.toolbar.title = "Home"
                         navController.navigate(R.id.homeFragment)
                     }
                     bindingMainScreen.drawerLayout.closeDrawer(GravityCompat.START)
@@ -174,6 +175,7 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
                 }
                 R.id.nav_settings -> {
                     if (navController.currentDestination?.id != R.id.settingsFragment) {
+                        bindingMainScreen.toolbar.title = "Settings"
                         navController.navigate(R.id.settingsFragment)
                     }
                     bindingMainScreen.drawerLayout.closeDrawer(GravityCompat.START)

@@ -9,6 +9,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <View
+            android:id="@+id/overlay"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#991F2A44"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <!-- Location Options Card -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_location_options"
@@ -154,79 +164,50 @@
                     android:id="@+id/rg_language"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:paddingVertical="8dp">
+                    android:orientation="vertical">
 
-                    <GridLayout
-                        android:layout_width="match_parent"
+                    <RadioButton
+                        android:id="@+id/rb_arabic"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:rowCount="2"
-                        android:columnCount="2"
-                        android:useDefaultMargins="true">
+                        android:text="Arabic"
+                        android:fontFamily="@font/interreg"
+                        android:textColor="@color/soft_gray_mist_d9d9d9"
+                        android:textStyle="bold"
+                        android:buttonTint="@color/light_cloud_purple_8c68b2"/>
 
-                        <RadioButton
-                            android:id="@+id/rb_arabic"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:layout_rowWeight="1"
-                            android:layout_row="0"
-                            android:layout_column="0"
-                            android:text="Arabic"
-                            android:fontFamily="@font/interreg"
-                            android:textColor="@color/soft_gray_mist_d9d9d9"
-                            android:textStyle="bold"
-                            android:buttonTint="@color/light_cloud_purple_8c68b2"
-                            android:padding="8dp"/>
+                    <RadioButton
+                        android:id="@+id/rb_english"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="English"
 
-                        <RadioButton
-                            android:id="@+id/rb_english"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:layout_rowWeight="1"
-                            android:layout_row="0"
-                            android:layout_column="1"
-                            android:text="English"
-                            android:fontFamily="@font/interreg"
-                            android:textColor="@color/soft_gray_mist_d9d9d9"
-                            android:textStyle="bold"
-                            android:buttonTint="@color/light_cloud_purple_8c68b2"
-                            android:padding="8dp"/>
+                        android:fontFamily="@font/interreg"
+                        android:textColor="@color/soft_gray_mist_d9d9d9"
+                        android:textStyle="bold"
+                        android:buttonTint="@color/light_cloud_purple_8c68b2"/>
 
-                        <RadioButton
-                            android:id="@+id/rb_french"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:layout_rowWeight="1"
-                            android:layout_row="1"
-                            android:layout_column="0"
-                            android:text="French"
-                            android:fontFamily="@font/interreg"
-                            android:textColor="@color/soft_gray_mist_d9d9d9"
-                            android:textStyle="bold"
-                            android:buttonTint="@color/light_cloud_purple_8c68b2"
-                            android:padding="8dp"/>
+                    <RadioButton
+                        android:id="@+id/rb_french"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="French"
+                        android:fontFamily="@font/interreg"
+                        android:textColor="@color/soft_gray_mist_d9d9d9"
+                        android:textStyle="bold"
+                        android:buttonTint="@color/light_cloud_purple_8c68b2"/>
 
-                        <RadioButton
-                            android:id="@+id/rb_spanish"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_columnWeight="1"
-                            android:layout_rowWeight="1"
-                            android:layout_row="1"
-                            android:layout_column="1"
-                            android:text="Spanish"
-                            android:fontFamily="@font/interreg"
-                            android:textColor="@color/soft_gray_mist_d9d9d9"
-                            android:textStyle="bold"
-                            android:buttonTint="@color/light_cloud_purple_8c68b2"
-                            android:padding="8dp"/>
-
-                    </GridLayout>
-
+                    <RadioButton
+                        android:id="@+id/rb_spanish"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Spanish"
+                        android:fontFamily="@font/interreg"
+                        android:textColor="@color/soft_gray_mist_d9d9d9"
+                        android:textStyle="bold"
+                        android:buttonTint="@color/light_cloud_purple_8c68b2"/>
                 </RadioGroup>
+
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

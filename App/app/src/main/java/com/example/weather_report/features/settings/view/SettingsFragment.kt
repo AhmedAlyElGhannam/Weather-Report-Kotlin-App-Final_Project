@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import com.example.weather_report.R
 import com.example.weather_report.databinding.FragmentHomeScreenBinding
 import com.example.weather_report.databinding.FragmentSettingsBinding
+import com.example.weather_report.databinding.MainScreenBinding
 
 class SettingsFragment : Fragment() {
 
