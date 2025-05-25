@@ -30,6 +30,8 @@ class HomeScreenFragment : Fragment() {
     private var hasFetchedForecastData = false
     private var weather: WeatherResponse? = null
     private var forecast: ForecastResponse? = null
+    private val appliedSettings by lazy { AppliedSystemSettings.getInstance(requireContext()) }
+
     val formatUnixTime: (Long) -> String = { unixTime ->
         val date = Date(unixTime * 1000)
         val format = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -152,18 +154,18 @@ class HomeScreenFragment : Fragment() {
 
         binding.locationTxt.text = weather.name
 
-        binding.highLowTempTxt.text = "↑ ${weather.main.temp_max}°${AppliedSystemSettings.getTempUnit().symbol} ↓ ${weather.main.temp_min}°${AppliedSystemSettings.getTempUnit().symbol}"
+        binding.highLowTempTxt.text = "↑ ${weather.main.temp_max}°${appliedSettings.getTempUnit().symbol} ↓ ${weather.main.temp_min}°${appliedSettings.getTempUnit().symbol}"
 
-        binding.tempTxt.text = "${weather.main.temp}°${AppliedSystemSettings.getTempUnit().symbol}"
+        binding.tempTxt.text = "${weather.main.temp}°${appliedSettings.getTempUnit().symbol}"
 
-        binding.feelslikeTempTxt.text = "Feels Like ${weather.main.feels_like}°${AppliedSystemSettings.getTempUnit().symbol}"
+        binding.feelslikeTempTxt.text = "Feels Like ${weather.main.feels_like}°${appliedSettings.getTempUnit().symbol}"
     }
 
     @SuppressLint("SetTextI18n")
     private fun updateExtraInfo(weather: WeatherResponse) {
-        binding.windSpeedTxt.text = "${weather.wind.speed}${AppliedSystemSettings.getSpeedUnit().symbol}"
+        binding.windSpeedTxt.text = "${weather.wind.speed}${appliedSettings.getSpeedUnit().symbol}"
         binding.sunsetTxt.text = formatUnixTime.invoke(weather.sys.sunset)
-        binding.pressureTxt.text = "${weather.main.pressure}${AppliedSystemSettings.getPressureUnit().symbol}"
+        binding.pressureTxt.text = "${weather.main.pressure}${appliedSettings.getPressureUnit().symbol}"
         binding.humidityTxt.text = "${weather.main.humidity}%"
         binding.sunriseTxt.text = formatUnixTime.invoke(weather.sys.sunrise)
         binding.cloudCoverageTxt.text = "${weather.clouds.all}%"

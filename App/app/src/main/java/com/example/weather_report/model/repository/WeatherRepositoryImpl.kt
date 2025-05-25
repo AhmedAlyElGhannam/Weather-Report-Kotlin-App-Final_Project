@@ -39,17 +39,19 @@ class WeatherRepositoryImpl private constructor(
     override suspend fun fetchForecastDataRemotely(
         lat: Double,
         lon: Double,
-        units: String
+        units: String,
+        lang: String
     ) : ForecastResponse? {
-        return remote.makeNetworkCallToGetForecast(lat, lon, units)
+        return remote.makeNetworkCallToGetForecast(lat, lon, units, lang)
     }
 
     override suspend fun fetchCurrentWeatherDataRemotely(
         lat: Double,
         lon: Double,
-        units: String
+        units: String,
+        lang: String
     ) : WeatherResponse? {
-        return remote.makeNetworkCallToGetCurrentWeather(lat, lon, units)
+        return remote.makeNetworkCallToGetCurrentWeather(lat, lon, units, lang)
     }
 
     override suspend fun fetchFavouriteCitiesLocally(): List<City> {

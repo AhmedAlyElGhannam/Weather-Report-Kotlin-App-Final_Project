@@ -1,7 +1,6 @@
 package com.example.weather_report
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -16,15 +15,7 @@ import com.example.weather_report.model.remote.IWeatherService
 import com.example.weather_report.model.remote.RetrofitHelper
 import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
 import com.example.weather_report.model.repository.WeatherRepositoryImpl
-import com.example.weather_report.utils.UnitSystem
-import com.example.weather_report.utils.UnitSystemsConversions
-import com.example.weather_report.utils.WeatherResponseToWeatherLocalDataSourceMapper.toCurrentWeather
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.Arrays
-import org.osmdroid.views.overlay.Marker
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -35,13 +26,12 @@ import android.provider.Settings
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.weather_report.databinding.MainScreenBinding
 import com.example.weather_report.features.mapdialog.view.MapDialog
-import com.example.weather_report.model.pojo.Coordinates
+import com.example.weather_report.utils.AppliedSystemSettings
+import com.example.weather_report.utils.LocaleHelper
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -55,6 +45,8 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
     lateinit var bindingMainScreen : MainScreenBinding
 
     private lateinit var navController: NavController
+
+    private val appliedSettings by lazy { AppliedSystemSettings.getInstance(this@MainActivity) }
 
     private val mainActivityViewModel : MainActivityViewModel by viewModels() {
         MainActivityViewModelFactory(
@@ -222,12 +214,16 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
 
                         mainActivityViewModel.fetchWeatherData(
                             location.latitude,
-                            location.longitude
+                            location.longitude,
+                            appliedSettings.getUnitSystem().value,
+                            appliedSettings.getLanguage().code
                         )
 
                         mainActivityViewModel.fetchForecastData(
                             location.latitude,
-                            location.longitude
+                            location.longitude,
+                            appliedSettings.getUnitSystem().value,
+                            appliedSettings.getLanguage().code
                         )
 
                         Log.i("TAG", "Location Secured. Coordinates: ${location.latitude}lat, ${location.longitude}")
@@ -267,15 +263,26 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
     override fun onCoordinatesSelected(lat: Double, lon: Double) {
         mainActivityViewModel.fetchWeatherData(
             lat,
-            lon
+            lon,
+            appliedSettings.getUnitSystem().value,
+            appliedSettings.getLanguage().code
         )
 
         mainActivityViewModel.fetchForecastData(
             lat,
-            lon
+            lon,
+            appliedSettings.getUnitSystem().value,
+            appliedSettings.getLanguage().code
         )
 
         bindingMainScreen.fragmentContainer.isActivated = true
         initializeNavigationDrawer()
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val appliedSettings = AppliedSystemSettings.getInstance(newBase)
+        super.attachBaseContext(
+            LocaleHelper.applyLanguage(newBase, appliedSettings.getLanguage().code)
+        )
     }
 }

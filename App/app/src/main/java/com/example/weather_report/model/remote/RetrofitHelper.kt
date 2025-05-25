@@ -32,8 +32,6 @@ private class ApiKeyInterceptor(private val apiKey: String) : Interceptor {
         val originalRequest = chain.request()
         val newUrl = originalRequest.url.newBuilder()
             .addQueryParameter("appid", apiKey)
-            .addQueryParameter("lang", AppliedSystemSettings.getLanguage().code)
-            .addQueryParameter("units", AppliedSystemSettings.getUnitSystem().value)
             .build()
 
         val newRequest = originalRequest.newBuilder()

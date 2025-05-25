@@ -11,13 +11,15 @@ interface IWeatherService {
     suspend fun getForecast(
         @Query("lat") lat : Double,
         @Query("lon") lon : Double,
-        @Query("units") units : String
+        @Query("units") units : String,
+        @Query("lang") lang: String
     ) : Response<ForecastResponse?>?
 
     @GET("weather")
     suspend fun getWeather(
         @Query("lat") lat : Double,
         @Query("lon") lon : Double,
-        @Query("units") units : String
+        @Query("units") units : String,
+        @Query("lang") lang: String
     ) : Response<WeatherResponse?>?
 }

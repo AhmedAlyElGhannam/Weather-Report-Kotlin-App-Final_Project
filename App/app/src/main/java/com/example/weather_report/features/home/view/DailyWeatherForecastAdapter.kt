@@ -18,9 +18,13 @@ class DailyWeatherForecastAdapter:
 
     lateinit var binding: ItemDailyWeatherBinding
 
+    lateinit var appliedSettings: AppliedSystemSettings
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DailyWeatherViewHolder {
         val inflater: LayoutInflater = LayoutInflater.from(parent.context)
         context= parent.context
+        appliedSettings = AppliedSystemSettings.getInstance(context)
         binding = ItemDailyWeatherBinding.inflate(inflater, parent, false)
         return DailyWeatherViewHolder(binding)
     }
@@ -29,7 +33,7 @@ class DailyWeatherForecastAdapter:
     override fun onBindViewHolder(holder: DailyWeatherViewHolder, position: Int) {
         val currentObj = getItem(position)
         currentObj?.let { item ->
-            holder.binding.dailyTempTextView.text = "${item.main.temp}°${AppliedSystemSettings.getTempUnit().symbol}"
+            holder.binding.dailyTempTextView.text = "${item.main.temp}°${appliedSettings.getTempUnit().symbol}"
             holder.binding.dailyDayTextView.text = item.dt_txt.substringBefore(" ")
             holder.binding.dailyWeatherIcon.setImageResource(
                 when(item.weather[0].main) {

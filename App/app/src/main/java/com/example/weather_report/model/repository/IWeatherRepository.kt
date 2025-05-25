@@ -10,13 +10,15 @@ interface IWeatherRepository {
     suspend fun fetchForecastDataRemotely(
         lat : Double,
         lon : Double,
-        units : String
+        units : String,
+        lang: String
     ) : ForecastResponse?
 
     suspend fun fetchCurrentWeatherDataRemotely(
         lat : Double,
         lon : Double,
-        units : String
+        units : String,
+        lang: String
     ) : WeatherResponse?
 
     suspend fun fetchFavouriteCitiesLocally(): List<City>
