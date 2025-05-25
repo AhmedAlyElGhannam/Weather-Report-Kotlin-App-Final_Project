@@ -39,7 +39,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import com.example.weather_report.databinding.MainScreenBinding
-import com.example.weather_report.features.home.viewmodel.HomeScreenViewModelFactory
 import com.example.weather_report.features.mapdialog.view.MapDialog
 import com.example.weather_report.model.pojo.Coordinates
 import com.google.android.gms.location.FusedLocationProviderClient

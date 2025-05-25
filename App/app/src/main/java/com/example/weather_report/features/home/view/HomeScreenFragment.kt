@@ -9,14 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather_report.MainActivityViewModel
-import com.example.weather_report.features.home.viewmodel.HomeScreenViewModel
 import com.example.weather_report.R
 import com.example.weather_report.databinding.FragmentHomeScreenBinding
-import com.example.weather_report.features.home.viewmodel.HomeScreenViewModelFactory
 import com.example.weather_report.model.local.CityLocalDataSourceImpl
 import com.example.weather_report.model.local.CurrentWeatherLocalDataSourceImpl
 import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
@@ -27,8 +24,7 @@ import com.example.weather_report.model.remote.IWeatherService
 import com.example.weather_report.model.remote.RetrofitHelper
 import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
 import com.example.weather_report.model.repository.WeatherRepositoryImpl
-import com.example.weather_report.utils.ChosenDataUnits
-import com.example.weather_report.utils.Units
+import com.example.weather_report.utils.AppliedSystemSettings
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -49,18 +45,18 @@ class HomeScreenFragment : Fragment() {
         format.format(date)
     }
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
-    private val homeViewModel : HomeScreenViewModel by viewModels {
-        HomeScreenViewModelFactory(
-            WeatherRepositoryImpl.getInstance(
-                CityLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getCityDao()),
-                ForecastItemLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getForecastItemDao()),
-                CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getCurrentWeatherDao()),
-                WeatherAndForecastRemoteDataSourceImpl(
-                    RetrofitHelper.retrofit.create(
-                        IWeatherService::class.java))
-            )
-        )
-    }
+//    private val homeViewModel : HomeScreenViewModel by viewModels {
+//        HomeScreenViewModelFactory(
+//            WeatherRepositoryImpl.getInstance(
+//                CityLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getCityDao()),
+//                ForecastItemLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getForecastItemDao()),
+//                CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(requireContext()).getCurrentWeatherDao()),
+//                WeatherAndForecastRemoteDataSourceImpl(
+//                    RetrofitHelper.retrofit.create(
+//                        IWeatherService::class.java))
+//            )
+//        )
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -164,18 +160,18 @@ class HomeScreenFragment : Fragment() {
 
         binding.locationTxt.text = weather.name
 
-        binding.highLowTempTxt.text = "↑ ${weather.main.temp_max}°${ChosenDataUnits.tempUnit} ↓ ${weather.main.temp_min}°${ChosenDataUnits.tempUnit}"
+        binding.highLowTempTxt.text = "↑ ${weather.main.temp_max}°${AppliedSystemSettings.getTempUnit()} ↓ ${weather.main.temp_min}°${AppliedSystemSettings.getTempUnit()}"
 
-        binding.tempTxt.text = "${weather.main.temp}°${ChosenDataUnits.tempUnit}"
+        binding.tempTxt.text = "${weather.main.temp}°${AppliedSystemSettings.getTempUnit()}"
 
-        binding.feelslikeTempTxt.text = "Feels Like ${weather.main.feels_like}°${ChosenDataUnits.tempUnit}"
+        binding.feelslikeTempTxt.text = "Feels Like ${weather.main.feels_like}°${AppliedSystemSettings.getTempUnit()}"
     }
 
     @SuppressLint("SetTextI18n")
     private fun updateExtraInfo(weather: WeatherResponse) {
-        binding.windSpeedTxt.text = "${weather.wind.speed}${ChosenDataUnits.speedUnit}"
+        binding.windSpeedTxt.text = "${weather.wind.speed}${AppliedSystemSettings.getSpeedUnit()}"
         binding.sunsetTxt.text = formatUnixTime.invoke(weather.sys.sunset)
-        binding.pressureTxt.text = "${weather.main.pressure}${ChosenDataUnits.pressureUnit}"
+        binding.pressureTxt.text = "${weather.main.pressure}${AppliedSystemSettings.getPressureUnit()}"
         binding.humidityTxt.text = "${weather.main.humidity}%"
         binding.sunriseTxt.text = formatUnixTime.invoke(weather.sys.sunrise)
         binding.cloudCoverageTxt.text = "${weather.clouds.all}%"

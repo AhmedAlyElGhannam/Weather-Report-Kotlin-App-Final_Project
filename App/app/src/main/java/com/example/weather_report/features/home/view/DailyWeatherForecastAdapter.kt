@@ -8,9 +8,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather_report.R
 import com.example.weather_report.databinding.ItemDailyWeatherBinding
-import com.example.weather_report.databinding.ItemHourlyWeatherBinding
 import com.example.weather_report.model.pojo.ForecastItem
-import com.example.weather_report.utils.ChosenDataUnits
+import com.example.weather_report.utils.AppliedSystemSettings
 import com.example.weather_report.utils.ForecastItemDiffUtil
 
 class DailyWeatherForecastAdapter:
@@ -30,7 +29,7 @@ class DailyWeatherForecastAdapter:
     override fun onBindViewHolder(holder: DailyWeatherViewHolder, position: Int) {
         val currentObj = getItem(position)
         currentObj?.let { item ->
-            holder.binding.dailyTempTextView.text = "${item.main.temp}°${ChosenDataUnits.tempUnit}"
+            holder.binding.dailyTempTextView.text = "${item.main.temp}°${AppliedSystemSettings.getTempUnit()}"
             holder.binding.dailyDayTextView.text = item.dt_txt.substringBefore(" ")
             holder.binding.dailyWeatherIcon.setImageResource(
                 when(item.weather[0].main) {
