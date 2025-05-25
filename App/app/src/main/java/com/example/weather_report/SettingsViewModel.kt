@@ -2,6 +2,6 @@ package com.example.weather_report
 
 import androidx.lifecycle.ViewModel
 
-class SearchViewModel : ViewModel() {
+class SettingsViewModel : ViewModel() {
     // TODO: Implement the ViewModel
 }

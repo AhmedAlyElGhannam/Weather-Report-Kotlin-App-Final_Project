@@ -38,6 +38,7 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.example.weather_report.databinding.MainScreenBinding
 import com.example.weather_report.features.mapdialog.view.MapDialog
 import com.example.weather_report.model.pojo.Coordinates
@@ -97,108 +98,11 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
 
         bindingMainScreen.fragmentContainer.isActivated = false
 
-        /************************************************************************************************/
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+        navController = navHostFragment.navController
 
-
-
-//        drawerLayout = bindingMainScreen.drawerLayout
-
-        /*************************************************************************************************/
-
-//        repo = WeatherRepositoryImpl.getInstance(
-//            CityLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCityDao()),
-//            ForecastItemLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getForecastItemDao()),
-//            CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCurrentWeatherDao()),
-//            WeatherAndForecastRemoteDataSourceImpl(RetrofitHelper.retrofit.create(IWeatherService::class.java))
-//        )
-
-        /*************************************************************************************************/
 
         InitialSetupDialog(this@MainActivity).show(supportFragmentManager, "InitialSetupDialog")
-
-        /*************************************************************************************************/
-
-//        // Set user agent
-//        Configuration.getInstance().userAgentValue = packageName
-//        Configuration.getInstance().load(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext))
-//
-//        val map = bindingMap.map
-//        map.setTileSource(TileSourceFactory.MAPNIK)
-//        map.setBuiltInZoomControls(true)
-//        map.setMultiTouchControls(true)
-//
-//        map.minZoomLevel = 4.0
-//        map.maxZoomLevel = 18.0
-//
-//        map.controller.setZoom(4.0)
-//
-//        // Create the map event receiver
-//        val mapEventsReceiver = object : MapEventsReceiver {
-//            override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
-//                if (!::currentMarker.isInitialized) {
-//                    // First time: create the marker
-//                    currentMarker = Marker(map).apply {
-//                        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-//                        title = "Pinned Location"
-//                        icon = ContextCompat.getDrawable(this@MainActivity, R.drawable.ic_map_pin_red)
-//                        map.overlays.add(this)
-//                    }
-//                }
-//
-//                // Update the marker position
-//                currentMarker.position = p
-//                map.invalidate()
-//
-//                return true
-//            }
-//
-//            override fun longPressHelper(p: GeoPoint): Boolean {
-//                return false
-//            }
-//        }
-//
-//        // Add the event overlay only once
-//        val overlayEvents = MapEventsOverlay(mapEventsReceiver)
-//        map.overlays.add(overlayEvents)
-
-        /*************************************************************************************************/
-
-//        bindingMap.btnProceed.setOnClickListener {
-//            Log.i("TAG", "${currentMarker.position.latitude} && ${currentMarker.position.longitude}" )
-//
-//            lifecycleScope.launch(Dispatchers.IO) {
-//                val res_forecast = repo.fetchForecastDataRemotely(
-//                        lat = currentMarker.position.latitude,
-//                        lon = currentMarker.position.longitude,
-//                        units = UnitSystem.METRIC.value
-//                    )
-//
-//                val res_currWeather = repo.fetchCurrentWeatherDataRemotely(
-//                    lat = currentMarker.position.latitude,
-//                    lon = currentMarker.position.longitude,
-//                    units = UnitSystem.METRIC.value
-//                )
-//
-//                res_forecast?.city?.let { repo.addCityToFavourites(it) }
-//
-//                if (res_currWeather != null) {
-//                    repo.insertCurrentWeather(res_currWeather.toCurrentWeather())
-//                    if (res_forecast != null) {
-//                        repo.saveLocationForecastData(res_forecast.list.map { it.copy(cityId = res_forecast.city.id) })
-//                        val dum_list = repo.getForecastItemsByCityID(res_forecast.city.id)
-//                        Log.i("TAG", "onCreate: " + dum_list.toString())
-//                    }
-//
-//                }
-//
-//                withContext(Dispatchers.Main) {
-//                    Log.i("TAG", "forecast: " + res_forecast.toString())
-//                    Log.i("TAG", "currWeather: " + res_currWeather.toString())
-//                }
-//            }
-//        }
-
-        /*************************************************************************************************/
     }
 
     override fun onRequestPermissionsResult(
@@ -269,8 +173,10 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
                     true
                 }
                 R.id.nav_settings -> {
-//                    navController.navigate(R.id.settingsFragment)
-//                    drawerLayout.closeDrawer(GravityCompat.START)
+                    if (navController.currentDestination?.id != R.id.settingsFragment) {
+                        navController.navigate(R.id.settingsFragment)
+                    }
+                    bindingMainScreen.drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
                 // Add other menu items here
