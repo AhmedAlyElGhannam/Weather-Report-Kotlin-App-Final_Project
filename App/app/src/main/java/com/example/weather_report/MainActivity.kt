@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.weather_report.features.initialdialog.view.InitialSetupDialog
-import com.example.weather_report.model.local.CityLocalDataSourceImpl
+
 import com.example.weather_report.model.local.LocalDB
 import com.example.weather_report.model.remote.IWeatherService
 import com.example.weather_report.model.remote.RetrofitHelper
@@ -22,6 +22,7 @@ import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.os.Looper
 import android.provider.Settings
 import androidx.activity.viewModels
@@ -31,8 +32,9 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.weather_report.databinding.MainScreenBinding
 import com.example.weather_report.features.mapdialog.view.MapDialog
-import com.example.weather_report.model.local.CurrentWeatherLocalDataSourceImpl
-import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
+
+import com.example.weather_report.model.local.ILocalDataSource
+import com.example.weather_report.model.local.LocalDataSourceImpl
 import com.example.weather_report.utils.AppliedSystemSettings
 import com.example.weather_report.utils.LocaleHelper
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -55,15 +57,10 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
 
     private val mainActivityViewModel : MainActivityViewModel by viewModels() {
         MainActivityViewModelFactory(
-            WeatherRepositoryImpl.getInstance(
-                CityLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCityDao()),
-                ForecastItemLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getForecastItemDao()),
-                CurrentWeatherLocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).getCurrentWeatherDao()),
-                WeatherAndForecastRemoteDataSourceImpl(
-                    RetrofitHelper.retrofit.create(
-                        IWeatherService::class.java))
-            )
-        )
+            WeatherRepositoryImpl.getInstance(WeatherAndForecastRemoteDataSourceImpl(
+                    RetrofitHelper.retrofit.create(IWeatherService::class.java))
+            ,LocalDataSourceImpl(LocalDB.getInstance(this@MainActivity).weatherDao())
+        ))
     }
 
     private val LOCATION_PERMISSION_REQUESTCODE : Int = 1006
@@ -323,9 +320,20 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
 
     override fun onNotificationsEnabled() {
         // will come back to that
+//        if (!Settings.canDrawOverlays(this)) {
+//            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+//            startActivityForResult(intent, NOTIFICATION_REQUESTCODE)
+//        }
+
         if (!Settings.canDrawOverlays(this)) {
-            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-            startActivityForResult(intent, NOTIFICATION_REQUESTCODE)
+            val overlayIntent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:${this.packageName}")
+            ).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            this.startActivity(overlayIntent)
+            return
         }
 
 //        Toast.makeText(this@MainActivity, "Notifications enabled", Toast.LENGTH_SHORT).show()

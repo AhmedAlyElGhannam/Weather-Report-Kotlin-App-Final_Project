@@ -7,14 +7,16 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.weather_report.model.pojo.City
 import com.example.weather_report.model.pojo.CurrentWeather
+import com.example.weather_report.model.pojo.CurrentWeatherEntity
 import com.example.weather_report.model.pojo.ForecastItem
+import com.example.weather_report.model.pojo.ForecastWeatherEntity
+import com.example.weather_report.model.pojo.LocationEntity
 
-@Database(entities = [ForecastItem::class, City::class, CurrentWeather::class], version = 1)
+@Database(entities = [LocationEntity::class, CurrentWeatherEntity::class, ForecastWeatherEntity::class], version = 1)
 @TypeConverters(Converters::class)
 abstract class LocalDB: RoomDatabase() {
-    abstract fun getForecastItemDao() : IForecastItemDao
-    abstract fun getCityDao() : ICityDao
-    abstract fun getCurrentWeatherDao() : ICurrentWeatherDao
+    abstract fun weatherDao(): WeatherDao
+
 
 
     companion object {

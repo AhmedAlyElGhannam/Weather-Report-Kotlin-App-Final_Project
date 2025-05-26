@@ -3,6 +3,8 @@ package com.example.weather_report.model.repository
 import com.example.weather_report.model.local.ICityLocalDataSource
 import com.example.weather_report.model.local.ICurrentWeatherLocalDataSource
 import com.example.weather_report.model.local.IForecastItemLocalDataSource
+import com.example.weather_report.model.local.ILocalDataSource
+import com.example.weather_report.model.local.LocalDataSourceImpl
 import com.example.weather_report.model.pojo.City
 import com.example.weather_report.model.pojo.Clouds
 import com.example.weather_report.model.pojo.Coordinates
@@ -32,9 +34,7 @@ import kotlin.reflect.KMutableProperty1
 
 class WeatherRepositoryImplTest {
 
-    private lateinit var cityLocal: ICityLocalDataSource
-    private lateinit var forecastLocal: IForecastItemLocalDataSource
-    private lateinit var currentWeatherLocal: ICurrentWeatherLocalDataSource
+    private lateinit var local: ILocalDataSource
     private lateinit var remote: IWeatherAndForecastRemoteDataSource
     private lateinit var repository: WeatherRepositoryImpl
 
@@ -187,12 +187,10 @@ class WeatherRepositoryImplTest {
         // prevent repo singleton behaviour by reflection
         resetRepoInstanceByReflection()
 
-        cityLocal = mockk(relaxed = true)
-        forecastLocal = mockk(relaxed = true)
-        currentWeatherLocal = mockk(relaxed = true)
+        local = mockk(relaxed = true)
         remote = mockk(relaxed = true)
         repository = WeatherRepositoryImpl.getInstance(
-            cityLocal, forecastLocal, currentWeatherLocal, remote
+            remote, local
         )
     }
 
