@@ -17,10 +17,10 @@
         tools:layout="@layout/fragment_settings" />
 
     <fragment
-        android:id="@+id/favLocationsFragment"
+        android:id="@+id/alarmFragment"
         android:name="com.example.weather_report.FavouriteLocationsFragment"
-        android:label="Favourites"
-        tools:layout="@layout/fragment_favourite_locations" />
+        android:label="Alerts"
+        tools:layout="@layout/fragment_alarm" />
 
     <fragment
         android:id="@+id/aboutFragment"

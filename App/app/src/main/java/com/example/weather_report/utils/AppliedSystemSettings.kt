@@ -18,13 +18,22 @@ class AppliedSystemSettings private constructor(context: Context) {
         }
     }
 
+    fun getIsInitialSetup(): Boolean {
+        val value = prefs.getBoolean("initial_setup", true)
+        return value
+    }
+
+    fun setIsInitialSetup() {
+        prefs.edit { putBoolean("initial_setup", false) }
+    }
+
     fun getUnitSystem(): UnitSystem {
-        val value = prefs.getString("unit_system", UnitSystem.CUSTOM.value) ?: UnitSystem.CUSTOM.value
-        return UnitSystem.entries.find { it.value == value } ?: UnitSystem.CUSTOM
+        val value = prefs.getString("unit_system", UnitSystem.CUSTOM.code) ?: UnitSystem.CUSTOM.code
+        return UnitSystem.entries.find { it.code == value } ?: UnitSystem.CUSTOM
     }
 
     fun setUnitSystem(value: UnitSystem) {
-        prefs.edit { putString("unit_system", value.value) }
+        prefs.edit { putString("unit_system", value.code) }
     }
 
     fun getSpeedUnit(): Units {

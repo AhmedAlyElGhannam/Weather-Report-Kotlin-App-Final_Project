@@ -67,7 +67,14 @@ class WeatherRepositoryImplTest {
         gust = 1.18
     )
 
-    val sys1 = Sys(pod = "d")
+    val sys1 = Sys(
+        pod = "d",
+        type = 0,
+        id = 1,
+        country = "Hi",
+        sunrise = 123,
+        sunset = 456
+    )
 
 
     val main2 = MainWeather(
@@ -99,7 +106,14 @@ class WeatherRepositoryImplTest {
         gust = 3.39
     )
 
-    val sys2 = Sys(pod = "n")
+    val sys2 = Sys(
+    pod = "d",
+    type = 0,
+    id = 1,
+    country = "Hi",
+    sunrise = 123,
+    sunset = 456
+    )
 
     val mockForecastItems = listOf(
         ForecastItem(
@@ -189,11 +203,11 @@ class WeatherRepositoryImplTest {
 
     @Test
     fun fetchForecastDataRemotely_takesValidCoordinates_returnsDataFromRemoteSource() = runTest {
-        coEvery { remote.makeNetworkCallToGetForecast(1.0, 1.0, "metric") } returns mockResponse
+        coEvery { remote.makeNetworkCallToGetForecast(1.0, 1.0, "metric", "en") } returns mockResponse
 
-        val result = repository.fetchForecastDataRemotely(1.0, 1.0, "metric")
+        val result = repository.fetchForecastDataRemotely(1.0, 1.0, "metric", "en")
 
         Assertions.assertEquals(mockResponse, result)
-        coVerify { remote.makeNetworkCallToGetForecast(1.0, 1.0, "metric") }
+        coVerify { remote.makeNetworkCallToGetForecast(1.0, 1.0, "metric", "en") }
     }
 }

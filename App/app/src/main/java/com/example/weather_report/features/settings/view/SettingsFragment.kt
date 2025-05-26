@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.weather_report.MainActivity
 import com.example.weather_report.R
 import com.example.weather_report.databinding.FragmentSettingsBinding
 import com.example.weather_report.utils.AppliedSystemSettings
@@ -103,15 +104,18 @@ class SettingsFragment : Fragment() {
                     appliedSettings.setUnitSystem(UnitSystem.STANDARD)
                     setCustomUnitsEnabled(false)
                     setDefaultUnitsForSystem(UnitSystem.STANDARD)
+                    (activity as? MainActivity)?.refreshDataWithCurrentSettings()
                 }
                 R.id.rb_imperial -> {
                     appliedSettings.setUnitSystem(UnitSystem.IMPERIAL)
                     setCustomUnitsEnabled(false)
                     setDefaultUnitsForSystem(UnitSystem.IMPERIAL)
+                    (activity as? MainActivity)?.refreshDataWithCurrentSettings()
                 }
                 R.id.rb_custom -> {
                     appliedSettings.setUnitSystem(UnitSystem.CUSTOM)
                     setCustomUnitsEnabled(true)
+                    (activity as? MainActivity)?.refreshDataWithCurrentSettings()
                 }
             }
         }
@@ -188,22 +192,22 @@ class SettingsFragment : Fragment() {
     private fun setDefaultUnitsForSystem(unitSystem: UnitSystem) {
         when (unitSystem) {
             UnitSystem.STANDARD -> {
-                // Set SI defaults
-                appliedSettings.setTempUnit(Units.CELSIUS)
+                appliedSettings.setTempUnit(Units.KELVIN)
                 appliedSettings.setSpeedUnit(Units.METERS_PER_SECOND)
                 appliedSettings.setPressureUnit(Units.HECTOPASCAL)
-                // Update UI
-                binding.rbCelsius.isChecked = true
+
+                binding.rbKelvin.isChecked = true
                 binding.rbMps.isChecked = true
                 binding.rbHpa.isChecked = true
             }
             UnitSystem.IMPERIAL -> {
                 appliedSettings.setTempUnit(Units.FAHRENHEIT)
                 appliedSettings.setSpeedUnit(Units.MILES_PER_HOUR)
-                appliedSettings.setPressureUnit(Units.PSI)
+                appliedSettings.setPressureUnit(Units.HECTOPASCAL)
+
                 binding.rbFahrenheit.isChecked = true
                 binding.rbMph.isChecked = true
-                binding.rbPsi.isChecked = true
+                binding.rbHpa.isChecked = true
             }
             else -> {}
         }

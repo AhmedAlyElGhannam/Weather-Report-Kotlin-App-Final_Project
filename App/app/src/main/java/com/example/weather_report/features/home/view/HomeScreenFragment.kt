@@ -8,15 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.weather_report.MainActivity
 import com.example.weather_report.MainActivityViewModel
 import com.example.weather_report.R
 import com.example.weather_report.databinding.FragmentHomeScreenBinding
 import com.example.weather_report.model.pojo.ForecastResponse
 import com.example.weather_report.model.pojo.WeatherResponse
 import com.example.weather_report.utils.AppliedSystemSettings
+import com.example.weather_report.utils.UnitSystem
+import com.example.weather_report.utils.UnitSystemsConversions
+import com.example.weather_report.utils.Units
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -86,6 +89,11 @@ class HomeScreenFragment : Fragment() {
         binding.dailyWeatherRecyclerView.adapter = dailyWeatherForecastAdapter
 
         setupObservers()
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            (activity as MainActivity).refreshDataWithCurrentSettings()
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
     }
 
     private fun setupObservers() {
@@ -96,8 +104,9 @@ class HomeScreenFragment : Fragment() {
                 hasFetchedWeatherData = true
 
                 weather?.let {
-                    updateWeatherUI(it)
-                    updateExtraInfo(it)
+                    applyUnits()
+                    updateWeatherUI()
+                    updateExtraInfo()
                 }
             }
         }
@@ -109,7 +118,8 @@ class HomeScreenFragment : Fragment() {
                     hasFetchedForecastData = true
 
                     forecast?.let {
-                        updateForecastUI(it)
+                        applyUnits()
+                        updateForecastUI()
                     }
                 }
             }
@@ -128,9 +138,9 @@ class HomeScreenFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateWeatherUI(weather: WeatherResponse) {
+    private fun updateWeatherUI() {
         binding.weatherImg.setAnimation(
-            when(weather.weather[0].main) {
+            when(weather!!.weather[0].main) {
                 "Thunderstorm" -> R.raw.thunderstorm
                 "Drizzle" -> R.raw.drizzle
                 "Rain" -> R.raw.rainy
@@ -150,28 +160,70 @@ class HomeScreenFragment : Fragment() {
             }
         )
 
-        binding.weatherConditionTxt.text = weather.weather[0].main
+        binding.weatherConditionTxt.text = weather!!.weather[0].main
 
-        binding.locationTxt.text = weather.name
+        binding.locationTxt.text = weather!!.name
 
-        binding.highLowTempTxt.text = "↑ ${weather.main.temp_max}°${appliedSettings.getTempUnit().symbol} ↓ ${weather.main.temp_min}°${appliedSettings.getTempUnit().symbol}"
+        binding.highLowTempTxt.text = "↑ ${weather!!.main.temp_max}°${appliedSettings.getTempUnit().symbol} ↓ ${weather!!.main.temp_min}°${appliedSettings.getTempUnit().symbol}"
 
-        binding.tempTxt.text = "${weather.main.temp}°${appliedSettings.getTempUnit().symbol}"
+        binding.tempTxt.text = "${weather!!.main.temp}°${appliedSettings.getTempUnit().symbol}"
 
-        binding.feelslikeTempTxt.text = "Feels Like ${weather.main.feels_like}°${appliedSettings.getTempUnit().symbol}"
+        binding.feelslikeTempTxt.text = "Feels Like ${weather!!.main.feels_like}°${appliedSettings.getTempUnit().symbol}"
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateExtraInfo(weather: WeatherResponse) {
-        binding.windSpeedTxt.text = "${weather.wind.speed}${appliedSettings.getSpeedUnit().symbol}"
-        binding.sunsetTxt.text = formatUnixTime.invoke(weather.sys.sunset)
-        binding.pressureTxt.text = "${weather.main.pressure}${appliedSettings.getPressureUnit().symbol}"
-        binding.humidityTxt.text = "${weather.main.humidity}%"
-        binding.sunriseTxt.text = formatUnixTime.invoke(weather.sys.sunrise)
-        binding.cloudCoverageTxt.text = "${weather.clouds.all}%"
+    private fun updateExtraInfo() {
+        binding.windSpeedTxt.text = "${weather!!.wind.speed}${appliedSettings.getSpeedUnit().symbol}"
+        binding.sunsetTxt.text = formatUnixTime.invoke(weather!!.sys.sunset)
+        binding.pressureTxt.text = "${weather!!.main.pressure}${appliedSettings.getPressureUnit().symbol}"
+        binding.humidityTxt.text = "${weather!!.main.humidity}%"
+        binding.sunriseTxt.text = formatUnixTime.invoke(weather!!.sys.sunrise)
+        binding.cloudCoverageTxt.text = "${weather!!.clouds.all}%"
     }
 
-    private fun updateForecastUI(forecast: ForecastResponse) {
+    private fun updateForecastUI() {
 
+    }
+
+    private fun applyUnits() {
+        if (weather != null) {
+            when (appliedSettings.getUnitSystem()) {
+                UnitSystem.CUSTOM -> {
+                    weather!!.main.temp = convertTemperature(weather!!.main.temp)
+
+                    weather!!.main.temp_kf = convertTemperature(weather!!.main.temp_kf)
+
+                    weather!!.main.feels_like = convertTemperature(weather!!.main.feels_like)
+
+                    weather!!.main.temp_min = convertTemperature(weather!!.main.temp_min)
+
+                    weather!!.main.temp_max = convertTemperature(weather!!.main.temp_max)
+
+                    weather!!.wind.speed = when(appliedSettings.getSpeedUnit().symbol) {
+                        Units.KILOMETERS_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToKilometerPerHour(weather!!.wind.speed)
+                        Units.MILES_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToMilePerHour(weather!!.wind.speed)
+                        Units.FEET_PER_SECOND.symbol -> UnitSystemsConversions.meterPerSecondToFeetPerSecond(weather!!.wind.speed)
+                        else -> weather!!.wind.speed
+                    }
+
+                    weather!!.main.pressure = when(appliedSettings.getPressureUnit().symbol) {
+                        Units.ATMOSPHERE.symbol -> UnitSystemsConversions.hectopascalToAtm(weather!!.main.pressure.toDouble()).toInt()
+                        Units.BAR.symbol -> UnitSystemsConversions.hectopascalToBar(weather!!.main.pressure.toDouble()).toInt()
+                        Units.PSI.symbol -> UnitSystemsConversions.hectopascalToPsi(weather!!.main.pressure.toDouble()).toInt()
+                        else -> weather!!.main.pressure
+                    }
+                }
+                UnitSystem.IMPERIAL -> {} // should be applied automatically
+                UnitSystem.STANDARD -> {} // should be applied automatically
+            }
+        }
+    }
+
+    private fun convertTemperature(tempCelsius: Double): Double {
+        return when (appliedSettings.getTempUnit()) {
+            Units.FAHRENHEIT -> UnitSystemsConversions.celsiusToFahrenheit(tempCelsius)
+            Units.KELVIN -> UnitSystemsConversions.celsiusToKelvin(tempCelsius)
+            else -> tempCelsius
+        }
     }
 }

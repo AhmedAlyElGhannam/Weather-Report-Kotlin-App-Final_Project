@@ -8,8 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.weather_report.features.initialdialog.view.InitialSetupDialog
 import com.example.weather_report.model.local.CityLocalDataSourceImpl
-import com.example.weather_report.model.local.CurrentWeatherLocalDataSourceImpl
-import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
 import com.example.weather_report.model.local.LocalDB
 import com.example.weather_report.model.remote.IWeatherService
 import com.example.weather_report.model.remote.RetrofitHelper
@@ -21,6 +19,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Looper
 import android.provider.Settings
 import androidx.activity.viewModels
@@ -30,6 +31,8 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.weather_report.databinding.MainScreenBinding
 import com.example.weather_report.features.mapdialog.view.MapDialog
+import com.example.weather_report.model.local.CurrentWeatherLocalDataSourceImpl
+import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
 import com.example.weather_report.utils.AppliedSystemSettings
 import com.example.weather_report.utils.LocaleHelper
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -45,6 +48,8 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
     lateinit var bindingMainScreen : MainScreenBinding
 
     private lateinit var navController: NavController
+
+    private var isConnected: Boolean = false
 
     private val appliedSettings by lazy { AppliedSystemSettings.getInstance(this@MainActivity) }
 
@@ -62,6 +67,7 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
     }
 
     private val LOCATION_PERMISSION_REQUESTCODE : Int = 1006
+    private val NOTIFICATION_REQUESTCODE: Int = 9642
     private val LOCATION_PERMISSIONS : Array<String> = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION
@@ -85,16 +91,66 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
 
         /*************************************************************************************************/
 
+
+
         bindingMainScreen = MainScreenBinding.inflate(layoutInflater)
         setContentView(bindingMainScreen.root)
 
         bindingMainScreen.fragmentContainer.isActivated = false
 
+
+        /*************************************************************************************************/
+
+        // network check
+        val connectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkCapabilities = connectivityManager.activeNetwork?.let {
+            connectivityManager.getNetworkCapabilities(it)
+        }
+        isConnected = networkCapabilities?.let {
+            it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                    it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+        } ?: false
+
+        /*************************************************************************************************/
+
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
         navController = navHostFragment.navController
 
 
+        /*************************************************************************************************/
+
         InitialSetupDialog(this@MainActivity).show(supportFragmentManager, "InitialSetupDialog")
+
+
+//        if (isConnected) {
+//            // is initial setup or not
+//            if (appliedSettings.getIsInitialSetup()) {
+//                appliedSettings.setIsInitialSetup()
+//                // show initial setup dialog
+//                InitialSetupDialog(this@MainActivity).show(supportFragmentManager, "InitialSetupDialog")
+//            }
+//            else {
+//                // proceed with rest of logic
+//
+//                bindingMainScreen.fragmentContainer.isActivated = true
+//                initializeNavigationDrawer()
+//            }
+//        }
+//        else {
+//            // is initial setup or not
+//            if (appliedSettings.getIsInitialSetup()) {
+//                appliedSettings.setIsInitialSetup()
+//                // show initial setup dialog
+//                Toast.makeText(this@MainActivity, "Please reconnect to the internet and restart the app", Toast.LENGTH_LONG).show()
+//            }
+//            else {
+//                // fetch data from db
+//
+//                bindingMainScreen.fragmentContainer.isActivated = true
+//                initializeNavigationDrawer()
+//            }
+//        }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -173,6 +229,14 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
                     bindingMainScreen.drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
+                R.id.nav_alert -> {
+                    if (navController.currentDestination?.id != R.id.alarmFragment) {
+                        bindingMainScreen.toolbar.title = "Alerts"
+                        navController.navigate(R.id.alarmFragment)
+                    }
+                    bindingMainScreen.drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
                 // Add other menu items here
                 else -> false
             }
@@ -213,16 +277,18 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
                         Log.i("TAG", "onLocationResult: ${location.latitude} && ${location.longitude}")
 
                         mainActivityViewModel.fetchWeatherData(
+                            isConnected,
                             location.latitude,
                             location.longitude,
-                            appliedSettings.getUnitSystem().value,
+                            appliedSettings.getUnitSystem().code,
                             appliedSettings.getLanguage().code
                         )
 
                         mainActivityViewModel.fetchForecastData(
+                            isConnected,
                             location.latitude,
                             location.longitude,
-                            appliedSettings.getUnitSystem().value,
+                            appliedSettings.getUnitSystem().code,
                             appliedSettings.getLanguage().code
                         )
 
@@ -257,21 +323,28 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
 
     override fun onNotificationsEnabled() {
         // will come back to that
-        Toast.makeText(this@MainActivity, "Notifications enabled", Toast.LENGTH_SHORT).show()
+        if (!Settings.canDrawOverlays(this)) {
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+            startActivityForResult(intent, NOTIFICATION_REQUESTCODE)
+        }
+
+//        Toast.makeText(this@MainActivity, "Notifications enabled", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCoordinatesSelected(lat: Double, lon: Double) {
         mainActivityViewModel.fetchWeatherData(
+            isConnected,
             lat,
             lon,
-            appliedSettings.getUnitSystem().value,
+            appliedSettings.getUnitSystem().code,
             appliedSettings.getLanguage().code
         )
 
         mainActivityViewModel.fetchForecastData(
+            isConnected,
             lat,
             lon,
-            appliedSettings.getUnitSystem().value,
+            appliedSettings.getUnitSystem().code,
             appliedSettings.getLanguage().code
         )
 
@@ -284,5 +357,28 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
         super.attachBaseContext(
             LocaleHelper.applyLanguage(newBase, appliedSettings.getLanguage().code)
         )
+    }
+
+    public fun refreshDataWithCurrentSettings() {
+//        mainActivityViewModel.lastCoordinates.value?.let { coordinates ->
+//            mainActivityViewModel.fetchWeatherData(
+//                coordinates.lat,
+//                coordinates.lon,
+//                appliedSettings.getUnitSystem().code,
+//                appliedSettings.getLanguage().code
+//            )
+//            mainActivityViewModel.fetchForecastData(
+//                coordinates.lat,
+//                coordinates.lon,
+//                appliedSettings.getUnitSystem().code,
+//                appliedSettings.getLanguage().code
+//            )
+//        } ?: getFreshLocation()
+    }
+
+    private fun isDataFresh(lastUpdated: Long): Boolean {
+        val currentTime = System.currentTimeMillis()
+        val twentyFourHoursInMillis = 24 * 60 * 60 * 1000
+        return (currentTime - lastUpdated) < twentyFourHoursInMillis
     }
 }
