@@ -1,5 +1,6 @@
 package com.example.weather_report.features.favlist.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,6 +28,26 @@ class FavouriteLocationsViewModel(private val repo: IWeatherRepository) : ViewMo
                 _favoriteLocations.postValue(favorites)
             } catch (e: Exception) {
                 _errorMessage.postValue("Error loading favorites: ${e.message}")
+            } finally {
+                _isLoading.postValue(false)
+            }
+        }
+    }
+
+    fun addFavourite(lat: Double, lon: Double, name: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val res = repo.addFavoriteLocation(lat, lon, name)
+                if (res) {
+                    Log.i("TAG", "addFavourite: Success")
+                    loadFavoriteLocations()
+                } else {
+                    _errorMessage.postValue("Failed to add favorite location")
+                    Log.i("TAG", "addFavourite: Failure")
+                }
+            } catch (e: Exception) {
+                _errorMessage.postValue("Error adding favorite: ${e.message}")
             } finally {
                 _isLoading.postValue(false)
             }

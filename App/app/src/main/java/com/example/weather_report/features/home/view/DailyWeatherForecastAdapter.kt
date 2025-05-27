@@ -23,7 +23,7 @@ class DailyWeatherForecastAdapter:
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DailyWeatherViewHolder {
         val inflater: LayoutInflater = LayoutInflater.from(parent.context)
-        context= parent.context
+        context = parent.context
         appliedSettings = AppliedSystemSettings.getInstance(context)
         binding = ItemDailyWeatherBinding.inflate(inflater, parent, false)
         return DailyWeatherViewHolder(binding)

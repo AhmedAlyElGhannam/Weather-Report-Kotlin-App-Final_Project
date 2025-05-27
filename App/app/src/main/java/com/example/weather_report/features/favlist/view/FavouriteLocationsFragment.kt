@@ -1,32 +1,41 @@
 package com.example.weather_report.features.favorites
 
+import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weather_report.MainActivityViewModelFactory
-import com.example.weather_report.databinding.FragmentFavouriteLocationsBinding
+import com.example.weather_report.ISelectedCoordinatesOnMapCallback
+import com.example.weather_report.databinding.FragmentFavouritesBinding
+import com.example.weather_report.features.details.viewmodel.WeatherDetailsViewModel
 import com.example.weather_report.features.favlist.view.FavouriteLocationsAdapter
 import com.example.weather_report.features.favlist.viewmodel.FavouriteLocationsViewModel
+import com.example.weather_report.features.favlist.viewmodel.FavouriteLocationsViewModelFactory
+import com.example.weather_report.features.mapdialog.view.MapDialog
 import com.example.weather_report.model.local.LocalDB
 import com.example.weather_report.model.local.LocalDataSourceImpl
 import com.example.weather_report.model.remote.IWeatherService
 import com.example.weather_report.model.remote.RetrofitHelper
 import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
 import com.example.weather_report.model.repository.WeatherRepositoryImpl
+import java.util.Locale
 
-class FavouriteLocationsFragment : Fragment() {
+class FavouriteLocationsFragment : Fragment(), ISelectedCoordinatesOnMapCallback {
 
-    private var _binding: FragmentFavouriteLocationsBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentFavouritesBinding
+    private lateinit var adapter: FavouriteLocationsAdapter
+    private val weatherDetailsViewModel: WeatherDetailsViewModel by activityViewModels()
 
     private val viewModel: FavouriteLocationsViewModel by viewModels {
-        MainActivityViewModelFactory(
+        FavouriteLocationsViewModelFactory(
             WeatherRepositoryImpl.getInstance(
                 WeatherAndForecastRemoteDataSourceImpl(
                     RetrofitHelper.retrofit.create(IWeatherService::class.java)),
@@ -35,14 +44,12 @@ class FavouriteLocationsFragment : Fragment() {
         )
     }
 
-    private lateinit var adapter: FavouriteLocationsAdapter
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFavouriteLocationsBinding.inflate(inflater, container, false)
+        binding = FragmentFavouritesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -52,26 +59,30 @@ class FavouriteLocationsFragment : Fragment() {
         setupRecyclerView()
         setupObservers()
         viewModel.loadFavoriteLocations()
+
+        binding.fabAdd.setOnClickListener {
+            MapDialog(this).show(parentFragmentManager, "MapDialog")
+        }
     }
 
     private fun setupRecyclerView() {
         adapter = FavouriteLocationsAdapter(
-            onItemClick = { location ->
-                // Handle item click - navigate to details or update current location
-                // You'll need to implement this based on your navigation structure
-                findNavController().navigate(
-                    FavouriteLocationsFragmentDirections.actionFavouriteLocationsFragmentToHomeFragment(
-                        location.location.latitude,
-                        location.location.longitude
+            onItemClick = { locationWithWeather ->
+                if (locationWithWeather.currentWeather != null && locationWithWeather.forecast != null) {
+                    weatherDetailsViewModel.setFavoriteLocationData(locationWithWeather)
+                    findNavController().navigate(
+                        FavouriteLocationsFragmentDirections.actionFavouriteLocationsFragmentToWeatherDetailsFragment()
                     )
-                )
+                } else {
+                    Toast.makeText(requireContext(), "Weather data not available for this location", Toast.LENGTH_SHORT).show()
+                }
             },
             onRemoveClick = { locationId ->
                 viewModel.removeFavorite(locationId)
             }
         )
 
-        binding.recyclerView.apply {
+        binding.mainRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@FavouriteLocationsFragment.adapter
         }
@@ -80,25 +91,29 @@ class FavouriteLocationsFragment : Fragment() {
     private fun setupObservers() {
         viewModel.favoriteLocations.observe(viewLifecycleOwner, Observer { locations ->
             adapter.submitList(locations)
-            binding.emptyState.visibility = if (locations.isEmpty()) View.VISIBLE else View.GONE
-        })
-
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        })
-
-        viewModel.errorMessage.observe(viewLifecycleOwner, Observer { error ->
-            error?.let {
-                // Show error message (you can use a Toast or Snackbar)
-                // For now, we'll just log it
-                println("Error: $it")
-                viewModel.errorMessage.value = null // Reset error message
-            }
         })
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun onCoordinatesSelected(lat: Double, lon: Double) {
+
+        val addresses = Geocoder(requireContext(), Locale.getDefault()).getFromLocation(lat, lon, 1)
+        var cityWithCountryCode : String
+
+        if (addresses.isNullOrEmpty()) {
+            cityWithCountryCode = "Unknown"
+        }
+        else {
+            val address = addresses[0]
+            val city = address.locality ?: address.subAdminArea // fallback if locality is null
+            val country = address.countryCode
+            cityWithCountryCode = "${city}, ${country}"
+        }
+
+        Log.i("TAG", "onCoordinatesSelected: ${cityWithCountryCode}")
+        viewModel.addFavourite(
+            lat,
+            lon,
+            cityWithCountryCode
+        )
     }
 }

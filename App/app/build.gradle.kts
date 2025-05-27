@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
+    id ("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -140,4 +141,5 @@ dependencies {
 
     // coroutine worker
     implementation("androidx.work:work-runtime-ktx:2.10.1")
+
 }

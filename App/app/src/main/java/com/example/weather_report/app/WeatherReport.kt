@@ -1,4 +1,4 @@
-package com.example.weather_report
+package com.example.weather_report.app
 
 import android.app.Application
 import com.example.weather_report.utils.AppliedSystemSettings
