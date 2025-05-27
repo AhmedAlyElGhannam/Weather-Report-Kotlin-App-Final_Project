@@ -1,8 +1,7 @@
 package com.example.weather_report.utils
 
-enum class UnitSystem(val value: String, val desc: String) {
+enum class UnitSystem(val code: String, val desc: String) {
     STANDARD("standard", "SI Units"),
-    METRIC("metric", "Metric Units"),
     IMPERIAL("imperial", "Imperial Units"),
-    CUSTOM("custom", "Custom");
+    CUSTOM("metric", "Custom");
 }

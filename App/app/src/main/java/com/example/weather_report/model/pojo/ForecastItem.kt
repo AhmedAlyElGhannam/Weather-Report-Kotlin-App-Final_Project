@@ -1,24 +1,5 @@
 package com.example.weather_report.model.pojo
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.PrimaryKey
-
-
-@Entity(
-    tableName = "Forecast_Table",
-    primaryKeys = ["dt", "cityId"],
-    foreignKeys = [
-        ForeignKey(
-            entity = City::class,
-            parentColumns = ["id"],
-            childColumns = ["cityId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ],
-    indices = [Index("cityId")]
-)
 data class ForecastItem(
     val dt: Long,
     val main: MainWeather,

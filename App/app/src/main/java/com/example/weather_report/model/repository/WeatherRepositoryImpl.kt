@@ -1,37 +1,60 @@
 package com.example.weather_report.model.repository
 
-import com.example.weather_report.model.local.CityLocalDataSourceImpl
-import com.example.weather_report.model.local.CurrentWeatherLocalDataSourceImpl
-import com.example.weather_report.model.local.ForecastItemLocalDataSourceImpl
-import com.example.weather_report.model.local.ICityLocalDataSource
-import com.example.weather_report.model.local.ICurrentWeatherLocalDataSource
-import com.example.weather_report.model.local.IForecastItemLocalDataSource
-import com.example.weather_report.model.pojo.City
-import com.example.weather_report.model.pojo.CurrentWeather
-import com.example.weather_report.model.pojo.ForecastItem
-import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
+import com.example.weather_report.model.local.ILocalDataSource
 import com.example.weather_report.model.pojo.ForecastResponse
+import com.example.weather_report.model.pojo.LocationEntity
+import com.example.weather_report.model.pojo.LocationWithWeather
 import com.example.weather_report.model.pojo.WeatherResponse
 import com.example.weather_report.model.remote.IWeatherAndForecastRemoteDataSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class WeatherRepositoryImpl private constructor(
-    private val local_city : ICityLocalDataSource,
-    private val local_forecast : IForecastItemLocalDataSource,
-    private val local_currWeather : ICurrentWeatherLocalDataSource,
-    private val remote : IWeatherAndForecastRemoteDataSource
+    private val remoteDataSource: IWeatherAndForecastRemoteDataSource,
+    private val localDataSource: ILocalDataSource
 ) : IWeatherRepository {
+
     companion object {
-        private var repo : WeatherRepositoryImpl? = null
+        private const val DATA_FRESHNESS_THRESHOLD = 30 * 60 * 1000 // 30 minutes in milliseconds
+        @Volatile
+        private var instance: WeatherRepositoryImpl? = null
+
         fun getInstance(
-            _local_city : ICityLocalDataSource,
-            _local_forecast : IForecastItemLocalDataSource,
-            _local_currWeather : ICurrentWeatherLocalDataSource,
-            _remote : IWeatherAndForecastRemoteDataSource
-        ) : WeatherRepositoryImpl {
-            return repo ?: synchronized(this) {
-                val temp = WeatherRepositoryImpl(_local_city, _local_forecast, _local_currWeather, _remote)
-                repo = temp
-                temp
+            remoteDataSource: IWeatherAndForecastRemoteDataSource,
+            localDataSource: ILocalDataSource
+        ): WeatherRepositoryImpl {
+            return instance ?: synchronized(this) {
+                instance ?: WeatherRepositoryImpl(remoteDataSource, localDataSource).also {
+                    instance = it
+                }
+            }
+        }
+    }
+
+    // Added: In-memory storage for preferences (replacing SharedPreferences)
+    private var preferredUnits: String = "metric" // Default to metric
+    private var manualLocation: Pair<Double, Double>? = null
+    private var manualAddress: String? = null
+    private var locationMethod: String = "auto" // Default to auto
+
+    override suspend fun fetchCurrentWeatherDataRemotely(
+        lat: Double,
+        lon: Double,
+        units: String,
+        lang: String
+    ): WeatherResponse? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = remoteDataSource.makeNetworkCallToGetCurrentWeather(lat, lon, units, lang)
+                response?.let {
+                    setCurrentLocation(lat, lon)
+                    saveCurrentWeather(it)
+                }
+                response
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
             }
         }
     }
@@ -39,100 +62,193 @@ class WeatherRepositoryImpl private constructor(
     override suspend fun fetchForecastDataRemotely(
         lat: Double,
         lon: Double,
-        units: String
-    ) : ForecastResponse? {
-        return remote.makeNetworkCallToGetForecast(lat, lon, units)
+        units: String,
+        lang: String
+    ): ForecastResponse? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = remoteDataSource.makeNetworkCallToGetForecast(lat, lon, units, lang)
+                response?.let {
+                    setCurrentLocation(lat, lon)
+                    saveForecast(it)
+                }
+                response
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
     }
 
-    override suspend fun fetchCurrentWeatherDataRemotely(
+    private suspend fun saveCurrentWeather(weatherResponse: WeatherResponse) {
+        val locationId = getCurrentLocationId() ?: return
+        localDataSource.saveCurrentWeather(locationId, weatherResponse)
+    }
+
+    private suspend fun saveForecast(forecastResponse: ForecastResponse) {
+        val locationId = getCurrentLocationId() ?: return
+        localDataSource.saveForecast(locationId, forecastResponse)
+    }
+
+    override suspend fun setCurrentLocation(lat: Double, lon: Double) {
+        withContext(Dispatchers.IO) {
+            localDataSource.clearCurrentLocationFlag()
+            val existingLocation = localDataSource.findLocationByCoordinates(lat, lon)
+            if (existingLocation != null) {
+                localDataSource.setCurrentLocation(existingLocation.id)
+            } else {
+                val newLocation = LocationEntity(
+                    id = UUID.randomUUID().toString(),
+                    name = "Current Location",
+                    latitude = lat,
+                    longitude = lon,
+                    isCurrent = true
+                )
+                localDataSource.saveLocation(newLocation)
+            }
+        }
+    }
+
+    override suspend fun getCurrentLocationWithWeather(
+        forceRefresh: Boolean,
+        isNetworkAvailable: Boolean
+    ): LocationWithWeather? {
+        return withContext(Dispatchers.IO) {
+            val currentLocation = localDataSource.getCurrentLocation() ?: return@withContext null
+            val locationId = currentLocation.id
+            val isStale = localDataSource.isWeatherDataStale(locationId)
+            if ((forceRefresh || isStale) && isNetworkAvailable) {
+                refreshLocationData(locationId)
+            }
+            localDataSource.getLocationWithWeather(locationId)
+        }
+    }
+
+    override suspend fun getCurrentLocationId(): String? {
+        return withContext(Dispatchers.IO) {
+            localDataSource.getCurrentLocation()?.id
+        }
+    }
+
+    override suspend fun addFavoriteLocation(
         lat: Double,
         lon: Double,
-        units: String
-    ) : WeatherResponse? {
-        return remote.makeNetworkCallToGetCurrentWeather(lat, lon, units)
+        name: String
+    ): Boolean {
+        return withContext(Dispatchers.IO) {
+            val existingLocation = localDataSource.findLocationByCoordinates(lat, lon)
+            if (existingLocation != null) {
+                localDataSource.setFavoriteStatus(existingLocation.id, true)
+                if (name.isNotEmpty()) {
+                    localDataSource.updateLocationName(existingLocation.id, name)
+                }
+                true
+            } else {
+                val newLocation = LocationEntity(
+                    id = UUID.randomUUID().toString(),
+                    name = name.ifEmpty { "Favorite Location" },
+                    latitude = lat,
+                    longitude = lon,
+                    isFavorite = true
+                )
+                localDataSource.saveLocation(newLocation)
+                true
+            }
+        }
     }
 
-    override suspend fun fetchFavouriteCitiesLocally(): List<City> {
-        return local_city.getAllCities()
+    override suspend fun removeFavoriteLocation(locationId: String) {
+        withContext(Dispatchers.IO) {
+            localDataSource.setFavoriteStatus(locationId, false)
+        }
     }
 
-    override suspend fun deleteCityFromFavourites(city: City) {
-        local_city.removeCity(city)
+    override suspend fun getFavoriteLocationsWithWeather(): List<LocationWithWeather> {
+        return withContext(Dispatchers.IO) {
+            localDataSource.getFavoriteLocationsWithWeather()
+        }
     }
 
-    override suspend fun addCityToFavourites(city: City) {
-        local_city.insertCity(city)
+    override suspend fun refreshLocation(locationId: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            val location = localDataSource.getLocation(locationId) ?: return@withContext false
+            refreshLocationData(locationId)
+            true
+        }
     }
 
-    override suspend fun getCityByID(id: Int): City? {
-        return local_city.getCityByID(id)
+    override suspend fun deleteLocation(locationId: String) {
+        withContext(Dispatchers.IO) {
+            localDataSource.deleteLocation(locationId)
+        }
     }
 
-    override suspend fun updateCityInfo(city: City) {
-        local_city.updateCityInfo(city)
+    override fun getPreferredUnits(): String {
+        return preferredUnits
     }
 
-    override suspend fun isFavouriteCity(id: Int): Boolean {
-        return local_city.isFavouriteCity(id)
+    fun setPreferredUnits(units: String) {
+        preferredUnits = units
     }
 
-    override suspend fun fetchAllSavedLocationForecastDataLocally(): List<ForecastItem> {
-        return local_forecast.getAllForecastItems()
+    override fun getManualLocation(): Pair<Double, Double>? {
+        return manualLocation
     }
 
-    override suspend fun deleteAllSavedLocationForecastData() {
-        local_forecast.deleteAllForecastItems()
+    override fun getLocationMethod(): String {
+        return locationMethod
     }
 
-    override suspend fun saveLocationForecastData(forecastItems: List<ForecastItem>) {
-        local_forecast.insertAllForecastItems(forecastItems)
+    override suspend fun setManualLocation(lat: Double, lon: Double, address: String) {
+        withContext(Dispatchers.IO) {
+            manualLocation = Pair(lat, lon)
+            manualAddress = address
+            locationMethod = "manual"
+            setCurrentLocation(lat, lon)
+            val existingLocation = localDataSource.findLocationByCoordinates(lat, lon)
+            existingLocation?.let {
+                localDataSource.updateLocationAddress(it.id, address)
+            }
+        }
     }
 
-    override suspend fun saveLocationSingleForecastData(forecastItem: ForecastItem) {
-        local_forecast.insertForecastItem(forecastItem)
+    override fun getManualLocationWithAddress(): Triple<Double, Double, String>? {
+        return manualLocation?.let { (lat, lon) ->
+            manualAddress?.let { address ->
+                Triple(lat, lon, address)
+            }
+        }
     }
 
-    override suspend fun deleteLocationSingleForecastData(forecastItem: ForecastItem) {
-        local_forecast.removeForecastItem(forecastItem)
+    override suspend fun getLocationWithWeather(locationId: String): LocationWithWeather? {
+        return withContext(Dispatchers.IO) {
+            localDataSource.getLocationWithWeather(locationId)
+        }
     }
 
-    override suspend fun getForecastItemsByCityID(id: Int): List<ForecastItem> {
-        return local_forecast.getForcastItemsByCityID(id)
-    }
-
-    override suspend fun updateForecastItem(forecastItem: ForecastItem) {
-        local_forecast.updateForecastItem(forecastItem)
-    }
-
-    override suspend fun insertCurrentWeather(currentWeather: CurrentWeather) {
-        local_currWeather.insertCurrentWeather(currentWeather)
-    }
-
-    override suspend fun removeCurrentWeather(currentWeather: CurrentWeather) {
-        local_currWeather.removeCurrentWeather(currentWeather)
-    }
-
-    override suspend fun getAllCurrentWeather(): List<CurrentWeather> {
-        return local_currWeather.getAllCurrentWeather()
-    }
-
-    override suspend fun deleteAllCurrentWeather() {
-        local_currWeather.deleteAllCurrentWeather()
-    }
-
-    override suspend fun getCurrentWeatherByCityID(id: Int): CurrentWeather? {
-        return local_currWeather.getCurrentWeatherByCityID(id)
-    }
-
-    override suspend fun updateCurrentWeather(currentWeather: CurrentWeather) {
-        local_currWeather.updateCurrentWeather(currentWeather)
-    }
-
-    override suspend fun deleteCurrentWeatherByCityID(id: Int) {
-        local_currWeather.deleteCurrentWeatherByCityID(id)
-    }
-
-    override suspend fun doesCurrentWeatherExistForCity(id: Int): Boolean {
-        return local_currWeather.doesCurrentWeatherExistForCity(id)
+    private suspend fun refreshLocationData(locationId: String) {
+        val location = localDataSource.getLocation(locationId) ?: return
+        try {
+            val weatherResponse = remoteDataSource.makeNetworkCallToGetCurrentWeather(
+                location.latitude,
+                location.longitude,
+                getPreferredUnits(),
+                "en"
+            )
+            val forecastResponse = remoteDataSource.makeNetworkCallToGetForecast(
+                location.latitude,
+                location.longitude,
+                getPreferredUnits(),
+                "en" 
+            )
+            weatherResponse?.let {
+                localDataSource.saveCurrentWeather(locationId, it)
+            }
+            forecastResponse?.let {
+                localDataSource.saveForecast(locationId, it)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

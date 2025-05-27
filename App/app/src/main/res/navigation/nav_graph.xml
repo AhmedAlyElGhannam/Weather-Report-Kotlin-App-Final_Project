@@ -11,16 +11,16 @@
         tools:layout="@layout/fragment_home_screen" />
 
     <fragment
-        android:id="@+id/searchFragment"
-        android:name="com.example.weather_report.SearchFragment"
+        android:id="@+id/settingsFragment"
+        android:name="com.example.weather_report.features.settings.view.SettingsFragment"
         android:label="Search"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_settings" />
 
     <fragment
-        android:id="@+id/favLocationsFragment"
-        android:name="com.example.weather_report.FavouriteLocationsFragment"
-        android:label="Favourites"
-        tools:layout="@layout/fragment_favourite_locations" />
+        android:id="@+id/alarmFragment"
+        android:name="com.example.weather_report.features.alarm.view.AlarmsFragment"
+        android:label="Alerts"
+        tools:layout="@layout/fragment_alarm" />
 
     <fragment
         android:id="@+id/aboutFragment"

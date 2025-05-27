@@ -10,6 +10,34 @@ class Converters {
     private val gson = Gson()
 
     @TypeConverter
+    fun fromCity(city: City): String = gson.toJson(city)
+
+    @TypeConverter
+    fun toCity(json: String): City = gson.fromJson(json, City::class.java)
+
+    @TypeConverter
+    fun fromForecastItemList(list: List<ForecastItem>): String = gson.toJson(list)
+
+    @TypeConverter
+    fun toForecastItemList(json: String): List<ForecastItem> {
+        return gson.fromJson(json, object : TypeToken<List<ForecastItem>>() {}.type)
+    }
+
+    @TypeConverter
+    fun weatherResponseToJson(response: WeatherResponse): String = gson.toJson(response)
+
+    @TypeConverter
+    fun jsonToWeatherResponse(json: String): WeatherResponse =
+        gson.fromJson(json, WeatherResponse::class.java)
+
+    @TypeConverter
+    fun forecastResponseToJson(response: ForecastResponse): String = gson.toJson(response)
+
+    @TypeConverter
+    fun jsonToForecastResponse(json: String): ForecastResponse =
+        gson.fromJson(json, ForecastResponse::class.java)
+
+    @TypeConverter
     fun fromCoordinates(coord: Coordinates): String = gson.toJson(coord)
 
     @TypeConverter

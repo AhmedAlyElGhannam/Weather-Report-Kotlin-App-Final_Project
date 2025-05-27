@@ -1,28 +1,41 @@
 package com.example.weather_report.features.home.view
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.weather_report.IGPSCoordinatesCallback
+import com.example.weather_report.ISelectedCoordinatesOnMapCallback
+import com.example.weather_report.MainActivity
 import com.example.weather_report.MainActivityViewModel
 import com.example.weather_report.R
 import com.example.weather_report.databinding.FragmentHomeScreenBinding
+import com.example.weather_report.features.mapdialog.view.MapDialog
 import com.example.weather_report.model.pojo.ForecastResponse
 import com.example.weather_report.model.pojo.WeatherResponse
 import com.example.weather_report.utils.AppliedSystemSettings
+import com.example.weather_report.utils.GPSUtil
+import com.example.weather_report.utils.UnitSystem
+import com.example.weather_report.utils.UnitSystemsConversions
+import com.example.weather_report.utils.Units
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class HomeScreenFragment : Fragment() {
+class HomeScreenFragment : Fragment(),
+    ISelectedCoordinatesOnMapCallback {
     lateinit var binding: FragmentHomeScreenBinding
     lateinit var hourlyWeatherAdapter: HourlyWeatherAdapter
     lateinit var dailyWeatherForecastAdapter: DailyWeatherForecastAdapter
@@ -30,6 +43,9 @@ class HomeScreenFragment : Fragment() {
     private var hasFetchedForecastData = false
     private var weather: WeatherResponse? = null
     private var forecast: ForecastResponse? = null
+    private val appliedSettings by lazy { AppliedSystemSettings.getInstance(requireContext()) }
+    private val gpsUtils by lazy { GPSUtil(requireContext()) }
+
     val formatUnixTime: (Long) -> String = { unixTime ->
         val date = Date(unixTime * 1000)
         val format = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -84,6 +100,26 @@ class HomeScreenFragment : Fragment() {
         binding.dailyWeatherRecyclerView.adapter = dailyWeatherForecastAdapter
 
         setupObservers()
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            if (appliedSettings.getSelectedLocationOption().optName == "GPS") {
+                gpsUtils.getCurrentLocation(object : GPSUtil.GPSLocationCallback {
+                    override fun onLocationResult(latitude: Double, longitude: Double) {
+                        onCoordinatesSelected(latitude, longitude)
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+
+                    override fun onLocationError(errorMessage: String) {
+                        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+                })
+            } else {
+                activity?.let { MapDialog(this).show(it.supportFragmentManager, "MapDialog") }
+            }
+            hasFetchedWeatherData = false
+            hasFetchedForecastData = false
+        }
     }
 
     private fun setupObservers() {
@@ -94,8 +130,10 @@ class HomeScreenFragment : Fragment() {
                 hasFetchedWeatherData = true
 
                 weather?.let {
-                    updateWeatherUI(it)
-                    updateExtraInfo(it)
+                    applyUnits()
+                    updateWeatherUI()
+                    updateExtraInfo()
+                    binding.swipeRefreshLayout.isRefreshing = false
                 }
             }
         }
@@ -107,7 +145,9 @@ class HomeScreenFragment : Fragment() {
                     hasFetchedForecastData = true
 
                     forecast?.let {
-                        updateForecastUI(it)
+                        applyUnits()
+                        updateForecastUI()
+                        binding.swipeRefreshLayout.isRefreshing = false
                     }
                 }
             }
@@ -126,9 +166,9 @@ class HomeScreenFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateWeatherUI(weather: WeatherResponse) {
+    private fun updateWeatherUI() {
         binding.weatherImg.setAnimation(
-            when(weather.weather[0].main) {
+            when(weather!!.weather[0].main) {
                 "Thunderstorm" -> R.raw.thunderstorm
                 "Drizzle" -> R.raw.drizzle
                 "Rain" -> R.raw.rainy
@@ -148,28 +188,117 @@ class HomeScreenFragment : Fragment() {
             }
         )
 
-        binding.weatherConditionTxt.text = weather.weather[0].main
+        binding.weatherConditionTxt.text = weather!!.weather[0].main
 
-        binding.locationTxt.text = weather.name
+        binding.locationTxt.text = weather!!.name
 
-        binding.highLowTempTxt.text = "↑ ${weather.main.temp_max}°${AppliedSystemSettings.getTempUnit().symbol} ↓ ${weather.main.temp_min}°${AppliedSystemSettings.getTempUnit().symbol}"
+        binding.highLowTempTxt.text = "↑ ${weather!!.main.temp_max}°${appliedSettings.getTempUnit().symbol} ↓ ${weather!!.main.temp_min}°${appliedSettings.getTempUnit().symbol}"
 
-        binding.tempTxt.text = "${weather.main.temp}°${AppliedSystemSettings.getTempUnit().symbol}"
+        binding.tempTxt.text = "${weather!!.main.temp}°${appliedSettings.getTempUnit().symbol}"
 
-        binding.feelslikeTempTxt.text = "Feels Like ${weather.main.feels_like}°${AppliedSystemSettings.getTempUnit().symbol}"
+        binding.feelslikeTempTxt.text = "Feels Like ${weather!!.main.feels_like}°${appliedSettings.getTempUnit().symbol}"
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateExtraInfo(weather: WeatherResponse) {
-        binding.windSpeedTxt.text = "${weather.wind.speed}${AppliedSystemSettings.getSpeedUnit().symbol}"
-        binding.sunsetTxt.text = formatUnixTime.invoke(weather.sys.sunset)
-        binding.pressureTxt.text = "${weather.main.pressure}${AppliedSystemSettings.getPressureUnit().symbol}"
-        binding.humidityTxt.text = "${weather.main.humidity}%"
-        binding.sunriseTxt.text = formatUnixTime.invoke(weather.sys.sunrise)
-        binding.cloudCoverageTxt.text = "${weather.clouds.all}%"
+    private fun updateExtraInfo() {
+        binding.windSpeedTxt.text = "${weather!!.wind.speed}${appliedSettings.getSpeedUnit().symbol}"
+        binding.sunsetTxt.text = formatUnixTime.invoke(weather!!.sys.sunset)
+        binding.pressureTxt.text = "${weather!!.main.pressure}${appliedSettings.getPressureUnit().symbol}"
+        binding.humidityTxt.text = "${weather!!.main.humidity}%"
+        binding.sunriseTxt.text = formatUnixTime.invoke(weather!!.sys.sunrise)
+        binding.cloudCoverageTxt.text = "${weather!!.clouds.all}%"
     }
 
-    private fun updateForecastUI(forecast: ForecastResponse) {
+    private fun updateForecastUI() {
 
+    }
+
+    private fun applyUnits() {
+        if (weather != null) {
+            when (appliedSettings.getUnitSystem()) {
+                UnitSystem.CUSTOM -> {
+                    weather!!.main.temp = convertTemperature(weather!!.main.temp)
+
+                    weather!!.main.temp_kf = convertTemperature(weather!!.main.temp_kf)
+
+                    weather!!.main.feels_like = convertTemperature(weather!!.main.feels_like)
+
+                    weather!!.main.temp_min = convertTemperature(weather!!.main.temp_min)
+
+                    weather!!.main.temp_max = convertTemperature(weather!!.main.temp_max)
+
+                    weather!!.wind.speed = when(appliedSettings.getSpeedUnit().symbol) {
+                        Units.KILOMETERS_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToKilometerPerHour(weather!!.wind.speed)
+                        Units.MILES_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToMilePerHour(weather!!.wind.speed)
+                        Units.FEET_PER_SECOND.symbol -> UnitSystemsConversions.meterPerSecondToFeetPerSecond(weather!!.wind.speed)
+                        else -> weather!!.wind.speed
+                    }
+
+                    weather!!.main.pressure = when(appliedSettings.getPressureUnit().symbol) {
+                        Units.ATMOSPHERE.symbol -> UnitSystemsConversions.hectopascalToAtm(weather!!.main.pressure.toDouble()).toInt()
+                        Units.BAR.symbol -> UnitSystemsConversions.hectopascalToBar(weather!!.main.pressure.toDouble()).toInt()
+                        Units.PSI.symbol -> UnitSystemsConversions.hectopascalToPsi(weather!!.main.pressure.toDouble()).toInt()
+                        else -> weather!!.main.pressure
+                    }
+                }
+                UnitSystem.IMPERIAL -> {} // should be applied automatically
+                UnitSystem.STANDARD -> {} // should be applied automatically
+            }
+        }
+    }
+
+    private fun convertTemperature(tempCelsius: Double): Double {
+        return when (appliedSettings.getTempUnit()) {
+            Units.FAHRENHEIT -> UnitSystemsConversions.celsiusToFahrenheit(tempCelsius)
+            Units.KELVIN -> UnitSystemsConversions.celsiusToKelvin(tempCelsius)
+            else -> tempCelsius
+        }
+    }
+
+    override fun onCoordinatesSelected(lat: Double, lon: Double) {
+        (activity as? MainActivity)?.onCoordinatesSelected(lat, lon)
+    }
+
+    private fun checkNetworkConnection(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            else -> false
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        gpsUtils.handlePermissionResult(
+            requestCode,
+            grantResults,
+            onPermissionGranted = {
+                // Retry getting location if permission was granted
+                binding.swipeRefreshLayout.isRefreshing = true
+                gpsUtils.getCurrentLocation(object : GPSUtil.GPSLocationCallback {
+                    override fun onLocationResult(latitude: Double, longitude: Double) {
+                        onCoordinatesSelected(latitude, longitude)
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+
+                    override fun onLocationError(errorMessage: String) {
+                        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+                })
+            },
+            onPermissionDenied = {
+                Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+                binding.swipeRefreshLayout.isRefreshing = false
+            }
+        )
     }
 }

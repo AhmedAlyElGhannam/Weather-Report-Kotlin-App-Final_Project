@@ -1,45 +1,41 @@
 package com.example.weather_report.model.repository
 
-import com.example.weather_report.model.pojo.City
-import com.example.weather_report.model.pojo.CurrentWeather
-import com.example.weather_report.model.pojo.ForecastItem
 import com.example.weather_report.model.pojo.ForecastResponse
+import com.example.weather_report.model.pojo.LocationWithWeather
 import com.example.weather_report.model.pojo.WeatherResponse
 
 interface IWeatherRepository {
     suspend fun fetchForecastDataRemotely(
         lat : Double,
         lon : Double,
-        units : String
+        units : String,
+        lang: String
     ) : ForecastResponse?
 
     suspend fun fetchCurrentWeatherDataRemotely(
         lat : Double,
         lon : Double,
-        units : String
+        units : String,
+        lang: String
     ) : WeatherResponse?
 
-    suspend fun fetchFavouriteCitiesLocally(): List<City>
-    suspend fun deleteCityFromFavourites(city: City)
-    suspend fun addCityToFavourites(city: City)
-    suspend fun getCityByID(id: Int): City?
-    suspend fun updateCityInfo(city: City)
-    suspend fun isFavouriteCity(id: Int): Boolean
+    suspend fun setCurrentLocation(lat: Double, lon: Double)
+    suspend fun getCurrentLocationWithWeather(forceRefresh: Boolean, isNetworkAvailable: Boolean): LocationWithWeather?
+    suspend fun getCurrentLocationId(): String?
 
-    suspend fun fetchAllSavedLocationForecastDataLocally(): List<ForecastItem>
-    suspend fun deleteAllSavedLocationForecastData()
-    suspend fun saveLocationForecastData(forecastItems: List<ForecastItem>)
-    suspend fun saveLocationSingleForecastData(forecastItem: ForecastItem)
-    suspend fun deleteLocationSingleForecastData(forecastItem: ForecastItem)
-    suspend fun getForecastItemsByCityID(id: Int): List<ForecastItem>
-    suspend fun updateForecastItem(forecastItem: ForecastItem)
+    suspend fun addFavoriteLocation(lat: Double, lon: Double, name: String): Boolean
+    suspend fun removeFavoriteLocation(locationId: String)
+    suspend fun getFavoriteLocationsWithWeather(): List<LocationWithWeather>
+    suspend fun refreshLocation(locationId: String): Boolean
+    suspend fun deleteLocation(locationId: String)
 
-    suspend fun insertCurrentWeather(currentWeather: CurrentWeather)
-    suspend fun removeCurrentWeather(currentWeather: CurrentWeather)
-    suspend fun getAllCurrentWeather(): List<CurrentWeather>
-    suspend fun deleteAllCurrentWeather()
-    suspend fun getCurrentWeatherByCityID(id: Int): CurrentWeather?
-    suspend fun updateCurrentWeather(currentWeather: CurrentWeather)
-    suspend fun deleteCurrentWeatherByCityID(id: Int)
-    suspend fun doesCurrentWeatherExistForCity(id: Int): Boolean
+    fun getPreferredUnits(): String
+
+    fun getManualLocation(): Pair<Double, Double>?
+    fun getLocationMethod(): String
+    suspend fun setManualLocation(lat: Double, lon: Double, address: String)
+    fun getManualLocationWithAddress(): Triple<Double, Double, String>?
+    suspend fun getLocationWithWeather(locationId: String): LocationWithWeather?
+
+
 }

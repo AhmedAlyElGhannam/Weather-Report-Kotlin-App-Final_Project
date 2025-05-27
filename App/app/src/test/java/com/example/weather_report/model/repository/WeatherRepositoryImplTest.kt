@@ -3,6 +3,8 @@ package com.example.weather_report.model.repository
 import com.example.weather_report.model.local.ICityLocalDataSource
 import com.example.weather_report.model.local.ICurrentWeatherLocalDataSource
 import com.example.weather_report.model.local.IForecastItemLocalDataSource
+import com.example.weather_report.model.local.ILocalDataSource
+import com.example.weather_report.model.local.LocalDataSourceImpl
 import com.example.weather_report.model.pojo.City
 import com.example.weather_report.model.pojo.Clouds
 import com.example.weather_report.model.pojo.Coordinates
@@ -32,9 +34,7 @@ import kotlin.reflect.KMutableProperty1
 
 class WeatherRepositoryImplTest {
 
-    private lateinit var cityLocal: ICityLocalDataSource
-    private lateinit var forecastLocal: IForecastItemLocalDataSource
-    private lateinit var currentWeatherLocal: ICurrentWeatherLocalDataSource
+    private lateinit var local: ILocalDataSource
     private lateinit var remote: IWeatherAndForecastRemoteDataSource
     private lateinit var repository: WeatherRepositoryImpl
 
@@ -67,7 +67,14 @@ class WeatherRepositoryImplTest {
         gust = 1.18
     )
 
-    val sys1 = Sys(pod = "d")
+    val sys1 = Sys(
+        pod = "d",
+        type = 0,
+        id = 1,
+        country = "Hi",
+        sunrise = 123,
+        sunset = 456
+    )
 
 
     val main2 = MainWeather(
@@ -99,7 +106,14 @@ class WeatherRepositoryImplTest {
         gust = 3.39
     )
 
-    val sys2 = Sys(pod = "n")
+    val sys2 = Sys(
+    pod = "d",
+    type = 0,
+    id = 1,
+    country = "Hi",
+    sunrise = 123,
+    sunset = 456
+    )
 
     val mockForecastItems = listOf(
         ForecastItem(
@@ -173,12 +187,10 @@ class WeatherRepositoryImplTest {
         // prevent repo singleton behaviour by reflection
         resetRepoInstanceByReflection()
 
-        cityLocal = mockk(relaxed = true)
-        forecastLocal = mockk(relaxed = true)
-        currentWeatherLocal = mockk(relaxed = true)
+        local = mockk(relaxed = true)
         remote = mockk(relaxed = true)
         repository = WeatherRepositoryImpl.getInstance(
-            cityLocal, forecastLocal, currentWeatherLocal, remote
+            remote, local
         )
     }
 
@@ -189,11 +201,11 @@ class WeatherRepositoryImplTest {
 
     @Test
     fun fetchForecastDataRemotely_takesValidCoordinates_returnsDataFromRemoteSource() = runTest {
-        coEvery { remote.makeNetworkCallToGetForecast(1.0, 1.0, "metric") } returns mockResponse
+        coEvery { remote.makeNetworkCallToGetForecast(1.0, 1.0, "metric", "en") } returns mockResponse
 
-        val result = repository.fetchForecastDataRemotely(1.0, 1.0, "metric")
+        val result = repository.fetchForecastDataRemotely(1.0, 1.0, "metric", "en")
 
         Assertions.assertEquals(mockResponse, result)
-        coVerify { remote.makeNetworkCallToGetForecast(1.0, 1.0, "metric") }
+        coVerify { remote.makeNetworkCallToGetForecast(1.0, 1.0, "metric", "en") }
     }
 }
