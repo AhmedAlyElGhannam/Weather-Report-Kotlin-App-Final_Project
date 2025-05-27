@@ -277,6 +277,14 @@ class MainActivity : AppCompatActivity(),
                     bindingMainScreen.drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
+                R.id.nav_fav -> {
+                    if (navController.currentDestination?.id != R.id.favouriteLocationsFragment) {
+                        bindingMainScreen.toolbar.title = "Favourite Locations"
+                        navController.navigate(R.id.favouriteLocationsFragment)
+                    }
+                    bindingMainScreen.drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
                 // Add other menu items here
                 else -> false
             }

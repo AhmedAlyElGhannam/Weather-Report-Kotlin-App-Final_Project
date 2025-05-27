@@ -1,8 +1,5 @@
 package com.example.weather_report.model.repository
 
-import com.example.weather_report.model.local.ICityLocalDataSource
-import com.example.weather_report.model.local.ICurrentWeatherLocalDataSource
-import com.example.weather_report.model.local.IForecastItemLocalDataSource
 import com.example.weather_report.model.local.ILocalDataSource
 import com.example.weather_report.model.local.LocalDataSourceImpl
 import com.example.weather_report.model.pojo.City

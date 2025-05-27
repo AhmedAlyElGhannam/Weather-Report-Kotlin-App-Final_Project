@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardBackgroundColor="#00000000"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:stateListAnimator="@animator/card_elevation">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/dailyWeatherIcon"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="Weather animation"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/cloudy"
+            app:lottie_speed="1.2" />
+
+        <LinearLayout
+            android:id="@+id/textContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/favButton"
+            app:layout_constraintStart_toEndOf="@id/dailyWeatherIcon"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/locName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/interreg"
+                android:text="Monday"
+                android:textAlignment="center"
+                android:textColor="@color/soft_gray_mist_d9d9d9"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/locTempTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/interreg"
+                android:text="↑ 38° ↓ 22°"
+                android:textAlignment="center"
+                android:textColor="@color/soft_gray_mist_d9d9d9"
+                android:textSize="16dp" />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/favButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="Favorite button"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_fav"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/soft_gray_mist_d9d9d9" />
+
+        <ImageView
+            android:id="@+id/markedIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:contentDescription="Marked icon"
+            android:src="@drawable/ic_marked"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            app:tint="@color/soft_gray_mist_d9d9d9" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

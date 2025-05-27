@@ -12,19 +12,17 @@ import com.example.weather_report.model.pojo.ForecastItem
 import com.example.weather_report.model.pojo.ForecastWeatherEntity
 import com.example.weather_report.model.pojo.LocationEntity
 
-@Database(entities = [LocationEntity::class, CurrentWeatherEntity::class, ForecastWeatherEntity::class], version = 1)
+@Database(entities = [LocationEntity::class, CurrentWeatherEntity::class, ForecastWeatherEntity::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class LocalDB: RoomDatabase() {
     abstract fun weatherDao(): WeatherDao
-
-
 
     companion object {
         @Volatile
         private var INSTANCE : LocalDB? = null
         fun getInstance(context: Context) : LocalDB {
             return INSTANCE ?: synchronized(this){
-                val temp= Room.databaseBuilder(context.applicationContext, LocalDB::class.java , "local_db").build()
+                val temp= Room.databaseBuilder(context.applicationContext, LocalDB::class.java , "local_db").fallbackToDestructiveMigration().build()
                 INSTANCE= temp
                 temp
             }

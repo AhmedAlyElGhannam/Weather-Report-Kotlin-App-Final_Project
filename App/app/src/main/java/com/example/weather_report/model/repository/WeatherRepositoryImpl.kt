@@ -130,29 +130,45 @@ class WeatherRepositoryImpl private constructor(
         }
     }
 
-    override suspend fun addFavoriteLocation(
-        lat: Double,
-        lon: Double,
-        name: String
-    ): Boolean {
+    override suspend fun addFavoriteLocation(lat: Double, lon: Double, name: String): Boolean {
         return withContext(Dispatchers.IO) {
             val existingLocation = localDataSource.findLocationByCoordinates(lat, lon)
-            if (existingLocation != null) {
+            val locationId = if (existingLocation != null) {
                 localDataSource.setFavoriteStatus(existingLocation.id, true)
-                if (name.isNotEmpty()) {
-                    localDataSource.updateLocationName(existingLocation.id, name)
-                }
-                true
+                localDataSource.updateLocationName(existingLocation.id, name) // Update name if exists
+                existingLocation.id
             } else {
                 val newLocation = LocationEntity(
                     id = UUID.randomUUID().toString(),
-                    name = name.ifEmpty { "Favorite Location" },
+                    name = name, // Use the provided name
                     latitude = lat,
                     longitude = lon,
                     isFavorite = true
                 )
                 localDataSource.saveLocation(newLocation)
+                newLocation.id
+            }
+
+            // Fetch and save weather data
+            try {
+                val weather = remoteDataSource.makeNetworkCallToGetCurrentWeather(
+                    lat, lon,
+                    getPreferredUnits(),
+                    "en"
+                )
+                val forecast = remoteDataSource.makeNetworkCallToGetForecast(
+                    lat, lon,
+                    getPreferredUnits(),
+                    "en"
+                )
+
+                weather?.let { localDataSource.saveCurrentWeather(locationId, it) }
+                forecast?.let { localDataSource.saveForecast(locationId, it) }
+
                 true
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false
             }
         }
     }
