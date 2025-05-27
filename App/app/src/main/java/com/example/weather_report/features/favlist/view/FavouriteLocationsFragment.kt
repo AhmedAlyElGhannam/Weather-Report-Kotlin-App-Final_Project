@@ -13,7 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weather_report.ISelectedCoordinatesOnMapCallback
+import com.example.weather_report.utils.ISelectedCoordinatesOnMapCallback
 import com.example.weather_report.databinding.FragmentFavouritesBinding
 import com.example.weather_report.features.details.viewmodel.WeatherDetailsViewModel
 import com.example.weather_report.features.favlist.view.FavouriteLocationsAdapter

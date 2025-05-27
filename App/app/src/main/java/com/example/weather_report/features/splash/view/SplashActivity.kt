@@ -1,13 +1,12 @@
-package com.example.weather_report
+package com.example.weather_report.features.splash.view
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
+import com.example.weather_report.main.view.MainActivity
 import com.example.weather_report.databinding.ActivitySplashBinding
 
 @SuppressLint("CustomSplashScreen")

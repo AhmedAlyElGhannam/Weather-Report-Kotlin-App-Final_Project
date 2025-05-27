@@ -27,7 +27,7 @@
         tools:targetApi="tiramisu">
 
         <activity
-            android:name=".SplashActivity"
+            android:name=".features.splash.view.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,11 +36,11 @@
         </activity>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".main.view.MainActivity"
             android:exported="true" />
 
         <receiver
-            android:name=".AlarmReceiver"
+            android:name=".utils.AlarmReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -60,7 +60,7 @@
         </receiver>
 
         <service
-            android:name=".OverlayService"
+            android:name=".utils.OverlayService"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.SYSTEM_ALERT_WINDOW"/>

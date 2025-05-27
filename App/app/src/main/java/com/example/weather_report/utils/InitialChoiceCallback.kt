@@ -1,4 +1,4 @@
-package com.example.weather_report
+package com.example.weather_report.utils
 
 interface InitialChoiceCallback {
     fun onGpsChosen()

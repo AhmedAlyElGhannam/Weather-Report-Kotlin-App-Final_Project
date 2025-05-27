@@ -20,8 +20,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.example.weather_report.AlarmReceiver
-import com.example.weather_report.R
+import com.example.weather_report.utils.AlarmReceiver
 import com.example.weather_report.databinding.FragmentAlarmBinding
 import java.util.Calendar
 
@@ -31,7 +30,6 @@ class AlarmsFragment : Fragment() {
         requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
     }
 
-    // Notification permission launcher
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -111,7 +109,6 @@ class AlarmsFragment : Fragment() {
 
     @SuppressLint("ScheduleExactAlarm")
     private fun scheduleAlarm(triggerTime: Long) {
-        // Check exact alarm permission for Android 12+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
             !alarmManager.canScheduleExactAlarms()
         ) {

@@ -18,7 +18,6 @@ import kotlin.math.abs
 
 class WeatherDetailsViewModel() : ViewModel() {
     private val _selectedFavoriteLocation = MutableLiveData<LocationWithWeather?>()
-    val selectedFavoriteLocation: LiveData<LocationWithWeather?> = _selectedFavoriteLocation
 
     private val _hourlyWeatherItemsList = MutableLiveData<List<ForecastItem>?>()
     val hourlyWeatherItemsList: LiveData<List<ForecastItem>?> = _hourlyWeatherItemsList
@@ -28,7 +27,6 @@ class WeatherDetailsViewModel() : ViewModel() {
 
     private val _weatherResponse = MutableLiveData<WeatherResponse?>()
     val weatherResponse: LiveData<WeatherResponse?> = _weatherResponse
-
 
     fun setFavoriteLocationData(locationWithWeather: LocationWithWeather) {
         viewModelScope.launch {

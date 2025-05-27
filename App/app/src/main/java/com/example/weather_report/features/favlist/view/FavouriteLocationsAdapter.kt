@@ -5,8 +5,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather_report.R
@@ -37,7 +35,6 @@ class FavouriteLocationsAdapter(
         val currObj = getItem(position)
         if (currObj.location.isCurrent) {
             holder.binding.markedIcon.visibility = View.VISIBLE
-//            holder.binding.markedIcon.isVisible = true
         }
         holder.binding.dailyWeatherIcon.setAnimation(
             when (currObj.currentWeather?.weather?.get(0)?.main) {

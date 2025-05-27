@@ -1,16 +1,16 @@
-package com.example.weather_report
+package com.example.weather_report.utils
 
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
-import android.os.Build
 import android.os.IBinder
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
+import com.example.weather_report.R
 
 class OverlayService : Service() {
     private lateinit var windowManager: WindowManager

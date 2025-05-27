@@ -16,9 +16,9 @@ class DailyWeatherForecastAdapter:
     ListAdapter<ForecastItem, DailyWeatherForecastAdapter.DailyWeatherViewHolder>(ForecastItemDiffUtil()) {
     lateinit var context: Context
 
-    lateinit var binding: ItemDailyWeatherBinding
+    private lateinit var binding: ItemDailyWeatherBinding
 
-    lateinit var appliedSettings: AppliedSystemSettings
+    private lateinit var appliedSettings: AppliedSystemSettings
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DailyWeatherViewHolder {

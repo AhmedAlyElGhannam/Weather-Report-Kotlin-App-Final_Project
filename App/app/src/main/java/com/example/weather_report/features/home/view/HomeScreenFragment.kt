@@ -1,10 +1,6 @@
 package com.example.weather_report.features.home.view
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -13,26 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.weather_report.IGPSCoordinatesCallback
-import com.example.weather_report.ISelectedCoordinatesOnMapCallback
-import com.example.weather_report.MainActivity
-import com.example.weather_report.MainActivityViewModel
+import com.example.weather_report.utils.ISelectedCoordinatesOnMapCallback
+import com.example.weather_report.main.view.MainActivity
+import com.example.weather_report.main.viewmodel.MainActivityViewModel
 import com.example.weather_report.R
 import com.example.weather_report.databinding.FragmentHomeScreenBinding
-import com.example.weather_report.features.home.viewmodel.HomeScreenViewModel
-import com.example.weather_report.features.home.viewmodel.HomeScreenViewModelFactory
 import com.example.weather_report.features.mapdialog.view.MapDialog
-import com.example.weather_report.model.local.LocalDB
-import com.example.weather_report.model.local.LocalDataSourceImpl
-import com.example.weather_report.model.pojo.ForecastResponse
 import com.example.weather_report.model.pojo.WeatherResponse
-import com.example.weather_report.model.remote.IWeatherService
-import com.example.weather_report.model.remote.RetrofitHelper
-import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
-import com.example.weather_report.model.repository.WeatherRepositoryImpl
 import com.example.weather_report.utils.AppliedSystemSettings
 import com.example.weather_report.utils.GPSUtil
 import com.example.weather_report.utils.UnitSystem
@@ -51,7 +36,6 @@ class HomeScreenFragment : Fragment(),
     private var hasFetchedWeatherData = false
     private var hasFetchedForecastData = false
     private var weather: WeatherResponse? = null
-    private var forecast: ForecastResponse? = null
     private val appliedSettings by lazy { AppliedSystemSettings.getInstance(requireContext()) }
     private val gpsUtils by lazy { GPSUtil(requireContext()) }
 
@@ -62,15 +46,6 @@ class HomeScreenFragment : Fragment(),
         format.format(date)
     }
     private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
-    private val homeViewModel : HomeScreenViewModel by viewModels {
-        HomeScreenViewModelFactory(
-            WeatherRepositoryImpl.getInstance(
-                WeatherAndForecastRemoteDataSourceImpl(
-                RetrofitHelper.retrofit.create(IWeatherService::class.java))
-                , LocalDataSourceImpl(LocalDB.getInstance(requireContext()).weatherDao())
-            )
-        )
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -144,20 +119,6 @@ class HomeScreenFragment : Fragment(),
             }
         }
 
-        mainActivityViewModel.forecastResponse
-            .observe(viewLifecycleOwner) {
-                if (!hasFetchedForecastData) {
-                    forecast = mainActivityViewModel.forecastResponse.value
-                    hasFetchedForecastData = true
-
-                    forecast?.let {
-                        applyUnits()
-                        updateForecastUI()
-                        binding.swipeRefreshLayout.isRefreshing = false
-                    }
-                }
-            }
-
         mainActivityViewModel.hourlyWeatherItemsList
             .observe(viewLifecycleOwner) { filteredList ->
                 Log.i("TAG", "Observing hourly list: ${filteredList?.size}")
@@ -215,10 +176,6 @@ class HomeScreenFragment : Fragment(),
         binding.cloudCoverageTxt.text = "${weather!!.clouds.all}%"
     }
 
-    private fun updateForecastUI() {
-
-    }
-
     private fun applyUnits() {
         if (weather != null) {
             when (appliedSettings.getUnitSystem()) {
@@ -265,17 +222,6 @@ class HomeScreenFragment : Fragment(),
         (activity as? MainActivity)?.onCoordinatesSelected(lat, lon)
     }
 
-    private fun checkNetworkConnection(): Boolean {
-        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork ?: return false
-        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
-        return when {
-            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-            else -> false
-        }
-    }
-
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -287,7 +233,6 @@ class HomeScreenFragment : Fragment(),
             requestCode,
             grantResults,
             onPermissionGranted = {
-                // Retry getting location if permission was granted
                 binding.swipeRefreshLayout.isRefreshing = true
                 gpsUtils.getCurrentLocation(object : GPSUtil.GPSLocationCallback {
                     override fun onLocationResult(latitude: Double, longitude: Double) {

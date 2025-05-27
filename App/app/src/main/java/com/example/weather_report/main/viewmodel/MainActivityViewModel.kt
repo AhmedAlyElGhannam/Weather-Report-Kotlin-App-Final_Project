@@ -1,4 +1,4 @@
-package com.example.weather_report
+package com.example.weather_report.main.viewmodel
 
 import android.annotation.SuppressLint
 import android.util.Log

@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import com.example.weather_report.InitialChoiceCallback
+import com.example.weather_report.utils.InitialChoiceCallback
 import com.example.weather_report.databinding.DialogInitialSetupBinding
 
 class InitialSetupDialog(private val listener: InitialChoiceCallback) : DialogFragment() {

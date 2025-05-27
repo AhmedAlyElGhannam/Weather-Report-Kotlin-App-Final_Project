@@ -1,12 +1,11 @@
 package com.example.weather_report.features.settings.view
 
-import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.weather_report.MainActivity
+import com.example.weather_report.main.view.MainActivity
 import com.example.weather_report.R
 import com.example.weather_report.databinding.FragmentSettingsBinding
 import com.example.weather_report.utils.AppliedSystemSettings
@@ -38,7 +37,6 @@ class SettingsFragment : Fragment() {
     }
 
     private fun initSettings() {
-        // Language
         when (appliedSettings.getLanguage().lang_name) {
             AvailableLanguages.ARABIC.lang_name -> binding.rbArabic.isChecked = true
             AvailableLanguages.ENGLISH.lang_name -> binding.rbEnglish.isChecked = true
@@ -53,17 +51,13 @@ class SettingsFragment : Fragment() {
             UnitSystem.CUSTOM -> {
                 binding.rbCustom.isChecked = true
                 setCustomUnitsEnabled(true)
-                // Set custom units from saved settings
                 updateCustomUnitSelections()
             }
-            else -> {}
         }
 
-        // Notifications
         binding.toggleNotifications.isChecked =
             appliedSettings.getSelectedNotificationOption() == NotificationsOptions.NOTIFICATIONS_ON
 
-        // Location
         when (appliedSettings.getSelectedLocationOption().desc) {
             LocationOptions.GPS.desc -> binding.rbGps.isChecked = true
             LocationOptions.MAP.desc -> binding.rbMap.isChecked = true
@@ -83,7 +77,6 @@ class SettingsFragment : Fragment() {
             updateAppLanguage()
         }
 
-        // Location selection
         binding.rgLocationOptions.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rb_gps -> appliedSettings.setSelectedLocationOption(LocationOptions.GPS)
@@ -91,13 +84,11 @@ class SettingsFragment : Fragment() {
             }
         }
 
-        // Notifications toggle
         binding.toggleNotifications.setOnCheckedChangeListener { _, isChecked ->
             val option = if (isChecked) NotificationsOptions.NOTIFICATIONS_ON else NotificationsOptions.NOTIFICATIONS_OFF
             appliedSettings.setSelectedNotificationOption(option)
         }
 
-        // Unit System selection
         binding.rgUnitSys.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rb_si -> {
@@ -120,7 +111,6 @@ class SettingsFragment : Fragment() {
             }
         }
 
-        // Custom Units Listeners
         binding.rgTemperatureUnit.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rb_celsius -> appliedSettings.setTempUnit(Units.CELSIUS)
@@ -149,16 +139,16 @@ class SettingsFragment : Fragment() {
     }
 
     private fun setCustomUnitsEnabled(enable: Boolean) {
-        // Temperature Units
+
         binding.rbCelsius.isEnabled = enable
         binding.rbFahrenheit.isEnabled = enable
         binding.rbKelvin.isEnabled = enable
-        // Speed Units
+
         binding.rbMps.isEnabled = enable
         binding.rbKmh.isEnabled = enable
         binding.rbMph.isEnabled = enable
         binding.rbFps.isEnabled = enable
-        // Pressure Units
+
         binding.rbHpa.isEnabled = enable
         binding.rbAtm.isEnabled = enable
         binding.rbBar.isEnabled = enable

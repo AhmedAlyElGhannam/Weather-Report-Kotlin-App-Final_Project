@@ -1,41 +1,22 @@
 package com.example.weather_report.features.details.view
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.weather_report.ISelectedCoordinatesOnMapCallback
-import com.example.weather_report.MainActivity
-import com.example.weather_report.MainActivityViewModel
 import com.example.weather_report.R
 import com.example.weather_report.databinding.FragmentHomeScreenBinding
 import com.example.weather_report.features.details.viewmodel.WeatherDetailsViewModel
 import com.example.weather_report.features.home.view.DailyWeatherForecastAdapter
 import com.example.weather_report.features.home.view.HourlyWeatherAdapter
-import com.example.weather_report.features.home.viewmodel.HomeScreenViewModel
-import com.example.weather_report.features.home.viewmodel.HomeScreenViewModelFactory
-import com.example.weather_report.features.mapdialog.view.MapDialog
-import com.example.weather_report.model.local.LocalDB
-import com.example.weather_report.model.local.LocalDataSourceImpl
-import com.example.weather_report.model.pojo.ForecastResponse
 import com.example.weather_report.model.pojo.WeatherResponse
-import com.example.weather_report.model.remote.IWeatherService
-import com.example.weather_report.model.remote.RetrofitHelper
-import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
-import com.example.weather_report.model.repository.WeatherRepositoryImpl
 import com.example.weather_report.utils.AppliedSystemSettings
-import com.example.weather_report.utils.GPSUtil
 import com.example.weather_report.utils.UnitSystem
 import com.example.weather_report.utils.UnitSystemsConversions
 import com.example.weather_report.utils.Units
@@ -49,26 +30,15 @@ class WeatherDetailsFragment : Fragment() {
     lateinit var hourlyWeatherAdapter: HourlyWeatherAdapter
     lateinit var dailyWeatherForecastAdapter: DailyWeatherForecastAdapter
     private var weather: WeatherResponse? = null
-    private var forecast: ForecastResponse? = null
     private val weatherDetailsViewModel: WeatherDetailsViewModel by activityViewModels()
 
     private val appliedSettings by lazy { AppliedSystemSettings.getInstance(requireContext()) }
 
-    val formatUnixTime: (Long) -> String = { unixTime ->
+    private val formatUnixTime: (Long) -> String = { unixTime ->
         val date = Date(unixTime * 1000)
         val format = SimpleDateFormat("HH:mm", Locale.getDefault())
         format.timeZone = TimeZone.getDefault()
         format.format(date)
-    }
-    private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
-    private val homeViewModel : HomeScreenViewModel by viewModels {
-        HomeScreenViewModelFactory(
-            WeatherRepositoryImpl.getInstance(
-                WeatherAndForecastRemoteDataSourceImpl(
-                RetrofitHelper.retrofit.create(IWeatherService::class.java))
-                , LocalDataSourceImpl(LocalDB.getInstance(requireContext()).weatherDao())
-            )
-        )
     }
 
     override fun onCreateView(

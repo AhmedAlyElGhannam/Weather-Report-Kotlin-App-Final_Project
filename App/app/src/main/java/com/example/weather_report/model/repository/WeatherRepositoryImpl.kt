@@ -16,7 +16,6 @@ class WeatherRepositoryImpl private constructor(
 ) : IWeatherRepository {
 
     companion object {
-        private const val DATA_FRESHNESS_THRESHOLD = 30 * 60 * 1000 // 30 minutes in milliseconds
         @Volatile
         private var instance: WeatherRepositoryImpl? = null
 
@@ -32,11 +31,10 @@ class WeatherRepositoryImpl private constructor(
         }
     }
 
-    // Added: In-memory storage for preferences (replacing SharedPreferences)
-    private var preferredUnits: String = "metric" // Default to metric
+    private var preferredUnits: String = "metric"
     private var manualLocation: Pair<Double, Double>? = null
     private var manualAddress: String? = null
-    private var locationMethod: String = "auto" // Default to auto
+    private var locationMethod: String = "auto"
 
     override suspend fun fetchCurrentWeatherDataRemotely(
         lat: Double,
@@ -135,7 +133,7 @@ class WeatherRepositoryImpl private constructor(
             val existingLocation = localDataSource.findLocationByCoordinates(lat, lon)
             val locationId = if (existingLocation != null) {
                 localDataSource.setFavoriteStatus(existingLocation.id, true)
-                localDataSource.updateLocationName(existingLocation.id, name) // Update name if exists
+                localDataSource.updateLocationName(existingLocation.id, name)
                 existingLocation.id
             } else {
                 val newLocation = LocationEntity(
@@ -149,7 +147,6 @@ class WeatherRepositoryImpl private constructor(
                 newLocation.id
             }
 
-            // Fetch and save weather data
             try {
                 val weather = remoteDataSource.makeNetworkCallToGetCurrentWeather(
                     lat, lon,
@@ -201,10 +198,6 @@ class WeatherRepositoryImpl private constructor(
 
     override fun getPreferredUnits(): String {
         return preferredUnits
-    }
-
-    fun setPreferredUnits(units: String) {
-        preferredUnits = units
     }
 
     override fun getManualLocation(): Pair<Double, Double>? {

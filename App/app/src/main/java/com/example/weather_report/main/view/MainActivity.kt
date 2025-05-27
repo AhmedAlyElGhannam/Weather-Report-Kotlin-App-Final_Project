@@ -1,8 +1,7 @@
-package com.example.weather_report
+package com.example.weather_report.main.view
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -22,28 +21,25 @@ import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
-import android.os.Build
-import android.os.Looper
 import android.provider.Settings
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.example.weather_report.main.viewmodel.MainActivityViewModel
+import com.example.weather_report.main.viewmodel.MainActivityViewModelFactory
+import com.example.weather_report.R
 import com.example.weather_report.databinding.MainScreenBinding
 import com.example.weather_report.features.mapdialog.view.MapDialog
 
-import com.example.weather_report.model.local.ILocalDataSource
 import com.example.weather_report.model.local.LocalDataSourceImpl
 import com.example.weather_report.utils.AppliedSystemSettings
 import com.example.weather_report.utils.GPSUtil
+import com.example.weather_report.utils.ISelectedCoordinatesOnMapCallback
+import com.example.weather_report.utils.InitialChoiceCallback
 import com.example.weather_report.utils.LocaleHelper
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 
 
 class MainActivity : AppCompatActivity(),

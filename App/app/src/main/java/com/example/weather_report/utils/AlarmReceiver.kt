@@ -1,4 +1,4 @@
-package com.example.weather_report
+package com.example.weather_report.utils
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -8,6 +8,7 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import com.example.weather_report.R
 
 class AlarmReceiver : BroadcastReceiver() {
     companion object {

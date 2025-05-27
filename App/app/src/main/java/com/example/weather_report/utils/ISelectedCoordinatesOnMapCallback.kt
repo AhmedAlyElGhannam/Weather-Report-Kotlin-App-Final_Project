@@ -1,4 +1,4 @@
-package com.example.weather_report
+package com.example.weather_report.utils
 
 interface ISelectedCoordinatesOnMapCallback {
     fun onCoordinatesSelected(lat : Double, lon : Double)

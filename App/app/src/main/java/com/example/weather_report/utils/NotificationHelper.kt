@@ -1,4 +1,4 @@
-package com.example.weather_report
+package com.example.weather_report.utils
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -16,6 +16,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.example.weather_report.main.view.MainActivity
+import com.example.weather_report.R
 
 class NotificationHelper(private val context: Context) {
     private val channelId = "alarm_channel"
@@ -26,30 +28,28 @@ class NotificationHelper(private val context: Context) {
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Alarm Notifications",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Channel for alarm notifications"
-                enableLights(true)
-                lightColor = ContextCompat.getColor(context, R.color.light_cloud_purple_8c68b2)
-                enableVibration(true)
+        val channel = NotificationChannel(
+            channelId,
+            "Alarm Notifications",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Channel for alarm notifications"
+            enableLights(true)
+            lightColor = ContextCompat.getColor(context, R.color.light_cloud_purple_8c68b2)
+            enableVibration(true)
 
-                setSound(
-                    RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM),
-                    AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_ALARM)
-                        .build()
-                )
-            }
-
-            val notificationManager = context.getSystemService(
-                NotificationManager::class.java
+            setSound(
+                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM),
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ALARM)
+                    .build()
             )
-            notificationManager.createNotificationChannel(channel)
         }
+
+        val notificationManager = context.getSystemService(
+            NotificationManager::class.java
+        )
+        notificationManager.createNotificationChannel(channel)
     }
 
     fun showNotification(title: String, message: String, soundUri: Uri? = null) {
