@@ -116,37 +116,36 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
 
         /*************************************************************************************************/
 
-        InitialSetupDialog(this@MainActivity).show(supportFragmentManager, "InitialSetupDialog")
+        if (isConnected) {
+            // is initial setup or not
+            if (appliedSettings.getIsInitialSetup()) {
+                appliedSettings.setIsInitialSetup()
+                // show initial setup dialog
+                InitialSetupDialog(this@MainActivity).show(supportFragmentManager, "InitialSetupDialog")
+            }
+            else {
+                // proceed with rest of logic
+                mainActivityViewModel.loadLocalWeatherData()
+                mainActivityViewModel.loadLocalForecastData()
+            }
+        }
+        else {
+            // is initial setup or not
+            if (appliedSettings.getIsInitialSetup()) {
+                appliedSettings.setIsInitialSetup()
+                // show initial setup dialog
+                Toast.makeText(this@MainActivity, "Please reconnect to the internet and restart the app", Toast.LENGTH_LONG).show()
+                finish()
+            }
+            else {
+                // fetch data from db
+                mainActivityViewModel.loadLocalWeatherData()
+                mainActivityViewModel.loadLocalForecastData()
+            }
+        }
 
-
-//        if (isConnected) {
-//            // is initial setup or not
-//            if (appliedSettings.getIsInitialSetup()) {
-//                appliedSettings.setIsInitialSetup()
-//                // show initial setup dialog
-//                InitialSetupDialog(this@MainActivity).show(supportFragmentManager, "InitialSetupDialog")
-//            }
-//            else {
-//                // proceed with rest of logic
-//
-//                bindingMainScreen.fragmentContainer.isActivated = true
-//                initializeNavigationDrawer()
-//            }
-//        }
-//        else {
-//            // is initial setup or not
-//            if (appliedSettings.getIsInitialSetup()) {
-//                appliedSettings.setIsInitialSetup()
-//                // show initial setup dialog
-//                Toast.makeText(this@MainActivity, "Please reconnect to the internet and restart the app", Toast.LENGTH_LONG).show()
-//            }
-//            else {
-//                // fetch data from db
-//
-//                bindingMainScreen.fragmentContainer.isActivated = true
-//                initializeNavigationDrawer()
-//            }
-//        }
+        bindingMainScreen.fragmentContainer.isActivated = true
+        initializeNavigationDrawer()
 
     }
 
@@ -310,8 +309,6 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
             ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS,LOCATION_PERMISSION_REQUESTCODE)
         }
 
-        bindingMainScreen.fragmentContainer.isActivated = true
-        initializeNavigationDrawer()
     }
 
     override fun onMapChosen() {
@@ -320,10 +317,10 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
 
     override fun onNotificationsEnabled() {
         // will come back to that
-//        if (!Settings.canDrawOverlays(this)) {
-//            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
-//            startActivityForResult(intent, NOTIFICATION_REQUESTCODE)
-//        }
+        if (!Settings.canDrawOverlays(this)) {
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+            startActivityForResult(intent, NOTIFICATION_REQUESTCODE)
+        }
 
         if (!Settings.canDrawOverlays(this)) {
             val overlayIntent = Intent(
@@ -336,7 +333,7 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
             return
         }
 
-//        Toast.makeText(this@MainActivity, "Notifications enabled", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@MainActivity, "Notifications enabled", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCoordinatesSelected(lat: Double, lon: Double) {
@@ -355,9 +352,6 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
             appliedSettings.getUnitSystem().code,
             appliedSettings.getLanguage().code
         )
-
-        bindingMainScreen.fragmentContainer.isActivated = true
-        initializeNavigationDrawer()
     }
 
     override fun attachBaseContext(newBase: Context) {
@@ -367,26 +361,13 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
         )
     }
 
-    public fun refreshDataWithCurrentSettings() {
-//        mainActivityViewModel.lastCoordinates.value?.let { coordinates ->
-//            mainActivityViewModel.fetchWeatherData(
-//                coordinates.lat,
-//                coordinates.lon,
-//                appliedSettings.getUnitSystem().code,
-//                appliedSettings.getLanguage().code
-//            )
-//            mainActivityViewModel.fetchForecastData(
-//                coordinates.lat,
-//                coordinates.lon,
-//                appliedSettings.getUnitSystem().code,
-//                appliedSettings.getLanguage().code
-//            )
-//        } ?: getFreshLocation()
-    }
-
     private fun isDataFresh(lastUpdated: Long): Boolean {
         val currentTime = System.currentTimeMillis()
         val twentyFourHoursInMillis = 24 * 60 * 60 * 1000
         return (currentTime - lastUpdated) < twentyFourHoursInMillis
+    }
+
+    fun refreshDataWithCurrentSettings() {
+
     }
 }

@@ -183,12 +183,10 @@ class WeatherRepositoryImpl private constructor(
         }
     }
 
-    // Fixed: Replaced SharedPreferences with in-memory storage
     override fun getPreferredUnits(): String {
         return preferredUnits
     }
 
-    // Added: Method to set units (e.g., from UI)
     fun setPreferredUnits(units: String) {
         preferredUnits = units
     }
@@ -235,13 +233,13 @@ class WeatherRepositoryImpl private constructor(
                 location.latitude,
                 location.longitude,
                 getPreferredUnits(),
-                "en" // TODO: Implement device language detection
+                "en"
             )
             val forecastResponse = remoteDataSource.makeNetworkCallToGetForecast(
                 location.latitude,
                 location.longitude,
                 getPreferredUnits(),
-                "en" // TODO: Implement device language detection
+                "en" 
             )
             weatherResponse?.let {
                 localDataSource.saveCurrentWeather(locationId, it)

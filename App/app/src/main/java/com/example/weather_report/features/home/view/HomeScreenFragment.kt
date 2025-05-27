@@ -1,6 +1,10 @@
 package com.example.weather_report.features.home.view
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,10 +14,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.weather_report.ISelectedCoordinatesOnMapCallback
 import com.example.weather_report.MainActivity
 import com.example.weather_report.MainActivityViewModel
 import com.example.weather_report.R
 import com.example.weather_report.databinding.FragmentHomeScreenBinding
+import com.example.weather_report.features.mapdialog.view.MapDialog
 import com.example.weather_report.model.pojo.ForecastResponse
 import com.example.weather_report.model.pojo.WeatherResponse
 import com.example.weather_report.utils.AppliedSystemSettings
@@ -25,7 +31,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class HomeScreenFragment : Fragment() {
+class HomeScreenFragment : Fragment(), ISelectedCoordinatesOnMapCallback {
     lateinit var binding: FragmentHomeScreenBinding
     lateinit var hourlyWeatherAdapter: HourlyWeatherAdapter
     lateinit var dailyWeatherForecastAdapter: DailyWeatherForecastAdapter
@@ -91,8 +97,14 @@ class HomeScreenFragment : Fragment() {
         setupObservers()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            (activity as MainActivity).refreshDataWithCurrentSettings()
-            binding.swipeRefreshLayout.isRefreshing = false
+            if (appliedSettings.getSelectedLocationOption().optName == "GPS") {
+                (activity as? MainActivity)?.getFreshLocation()
+            }
+            else {
+                activity?.let { MapDialog(this).show(it.supportFragmentManager, "MapDialog") }
+            }
+            hasFetchedWeatherData = false
+            hasFetchedForecastData = false
         }
     }
 
@@ -107,6 +119,7 @@ class HomeScreenFragment : Fragment() {
                     applyUnits()
                     updateWeatherUI()
                     updateExtraInfo()
+                    binding.swipeRefreshLayout.isRefreshing = false
                 }
             }
         }
@@ -120,6 +133,7 @@ class HomeScreenFragment : Fragment() {
                     forecast?.let {
                         applyUnits()
                         updateForecastUI()
+                        binding.swipeRefreshLayout.isRefreshing = false
                     }
                 }
             }
@@ -224,6 +238,21 @@ class HomeScreenFragment : Fragment() {
             Units.FAHRENHEIT -> UnitSystemsConversions.celsiusToFahrenheit(tempCelsius)
             Units.KELVIN -> UnitSystemsConversions.celsiusToKelvin(tempCelsius)
             else -> tempCelsius
+        }
+    }
+
+    override fun onCoordinatesSelected(lat: Double, lon: Double) {
+        (activity as? MainActivity)?.onCoordinatesSelected(lat, lon)
+    }
+
+    private fun checkNetworkConnection(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            else -> false
         }
     }
 }
