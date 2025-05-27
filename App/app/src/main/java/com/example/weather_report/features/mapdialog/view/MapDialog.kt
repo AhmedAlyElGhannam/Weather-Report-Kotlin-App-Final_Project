@@ -1,14 +1,14 @@
 package com.example.weather_report.features.mapdialog.view
 
-import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.app.Dialog
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceManager
-import android.util.Log
 import androidx.core.content.ContextCompat
 import com.example.weather_report.utils.ISelectedCoordinatesOnMapCallback
 import com.example.weather_report.R
@@ -19,54 +19,63 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONArray
+import java.net.URLEncoder
 
-class MapDialog(private val listener : ISelectedCoordinatesOnMapCallback) : DialogFragment() {
+class MapDialog(private val listener: ISelectedCoordinatesOnMapCallback) : DialogFragment() {
 
-    lateinit var binding: FragmentMapBinding
-    lateinit var currentMarker: Marker
+    private var _binding: FragmentMapBinding? = null
+    private val binding get() = _binding!!
+    private var currentMarker: Marker? = null
+    private val suggestions = mutableListOf<String>()
+    private lateinit var adapter: ArrayAdapter<String>
+    private var searchJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.FullScreenDialogTheme) // Full-screen theme
         isCancelable = false
-    }
 
-    @SuppressLint("UseGetLayoutInflater")
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(requireContext())
-        binding = FragmentMapBinding.inflate(LayoutInflater.from(context))
-        builder.setView(binding.root)
-
-        // set user agent
+        // Initialize osmdroid configuration
         Configuration.getInstance().userAgentValue = requireContext().packageName
         Configuration.getInstance().load(requireContext(), PreferenceManager.getDefaultSharedPreferences(requireContext()))
+    }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentMapBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Initialize map
         val map = binding.map
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setBuiltInZoomControls(true)
         map.setMultiTouchControls(true)
-
         map.minZoomLevel = 4.0
         map.maxZoomLevel = 18.0
-
         map.controller.setZoom(4.0)
+        map.visibility = View.VISIBLE
+        android.util.Log.d("MapDialog", "MapView initialized with size: ${map.width}x${map.height}")
 
-        // create the map event receiver
+        // Map tap event
         val mapEventsReceiver = object : MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
-                if (!::currentMarker.isInitialized) {
-                    // First time: create the marker
-                    currentMarker = Marker(map).apply {
-                        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                        title = "Pinned Location"
-                        icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_pin_red)
-                        map.overlays.add(this)
-                    }
-                }
-
-                // update the marker position
-                currentMarker.position = p
-                map.invalidate()
-
+                updateMarker(p, "Pinned Location")
                 return true
             }
 
@@ -74,25 +83,178 @@ class MapDialog(private val listener : ISelectedCoordinatesOnMapCallback) : Dial
                 return false
             }
         }
+        map.overlays.add(MapEventsOverlay(mapEventsReceiver))
 
-        val overlayEvents = MapEventsOverlay(mapEventsReceiver)
-        map.overlays.add(overlayEvents)
+        // Initialize AutoCompleteTextView
+        adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, suggestions)
+        binding.searchBar.setAdapter(adapter)
+        binding.searchBar.setOnItemClickListener { _, _, position, _ ->
+            val selectedCity = suggestions[position]
+            searchCity(selectedCity)
+        }
 
-        binding.btnProceed.setOnClickListener {
-            if (currentMarker != null) {
-                listener.onCoordinatesSelected(
-                    currentMarker.position.latitude,
-                    currentMarker.position.longitude
-                )
-                Log.i("TAG", "From Map DialogFragment: ${currentMarker.position.latitude} && ${currentMarker.position.longitude}" )
-                dismiss()
-            }
-            else {
-                Toast.makeText(requireContext(), "Please mark a place on the map to continue", Toast.LENGTH_SHORT).show()
+        // Handle Enter key
+        binding.searchBar.setOnKeyListener { _, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                val query = binding.searchBar.text.toString().trim()
+                if (query.isNotEmpty()) {
+                    searchCity(query)
+                    binding.searchBar.dismissDropDown() // Hide suggestions
+                }
+                true
+            } else {
+                false
             }
         }
 
-        return builder.create()
+        // Handle search input with debouncing
+        binding.searchBar.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                searchJob?.cancel()
+                val query = s.toString().trim()
+                if (query.length >= 2) {
+                    searchJob = CoroutineScope(Dispatchers.Main).launch {
+                        delay(300) // Debounce for 300ms
+                        fetchCitySuggestions(query)
+                    }
+                }
+            }
+        })
+
+        // Proceed button
+        binding.btnProceed.setOnClickListener {
+            if (currentMarker != null) {
+                listener.onCoordinatesSelected(
+                    currentMarker!!.position.latitude,
+                    currentMarker!!.position.longitude
+                )
+                android.util.Log.i("MapDialog", "Coordinates: ${currentMarker!!.position.latitude}, ${currentMarker!!.position.longitude}")
+                dismiss()
+            } else {
+                Toast.makeText(requireContext(), "Please mark a place or select a city to continue", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.map.onResume()
+        android.util.Log.d("MapDialog", "MapView onResume called")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.map.onPause()
+        android.util.Log.d("MapDialog", "MapView onPause called")
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun updateMarker(geoPoint: GeoPoint, title: String) {
+        val map = binding.map
+        if (currentMarker == null) {
+            currentMarker = Marker(map).apply {
+                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                icon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_map_pin_red)
+                map.overlays.add(this)
+            }
+        }
+        currentMarker?.position = geoPoint
+        currentMarker?.title = title
+        map.controller.animateTo(geoPoint)
+        map.controller.setZoom(8.0) // Reduced zoom level
+        map.invalidate()
+        android.util.Log.d("MapDialog", "Marker updated at: $geoPoint")
+    }
+
+    private fun fetchCitySuggestions(query: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val client = OkHttpClient()
+                val url = "https://nominatim.openstreetmap.org/search?q=${URLEncoder.encode(query, "UTF-8")}&format=json&addressdetails=1&limit=5"
+                val request = Request.Builder()
+                    .url(url)
+                    .header("User-Agent", requireContext().packageName)
+                    .build()
+
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(requireContext(), "Search failed: ${response.message}", Toast.LENGTH_SHORT).show()
+                        }
+                        return@launch
+                    }
+
+                    val json = response.body?.string() ?: return@launch
+                    val jsonArray = JSONArray(json)
+                    val newSuggestions = mutableListOf<String>()
+                    for (i in 0 until jsonArray.length()) {
+                        val result = jsonArray.getJSONObject(i)
+                        newSuggestions.add(result.getString("display_name"))
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        suggestions.clear()
+                        suggestions.addAll(newSuggestions)
+                        adapter.notifyDataSetChanged()
+                        android.util.Log.d("MapDialog", "Suggestions updated: $suggestions")
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Search failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun searchCity(cityName: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val client = OkHttpClient()
+                val url = "https://nominatim.openstreetmap.org/search?q=${URLEncoder.encode(cityName, "UTF-8")}&format=json&limit=1"
+                val request = Request.Builder()
+                    .url(url)
+                    .header("User-Agent", requireContext().packageName)
+                    .build()
+
+                client.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(requireContext(), "Search failed: ${response.message}", Toast.LENGTH_SHORT).show()
+                        }
+                        return@launch
+                    }
+
+                    val json = response.body?.string() ?: return@launch
+                    val jsonArray = JSONArray(json)
+                    if (jsonArray.length() == 0) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(requireContext(), "No results found", Toast.LENGTH_SHORT).show()
+                        }
+                        return@launch
+                    }
+
+                    val result = jsonArray.getJSONObject(0)
+                    val lat = result.getDouble("lat")
+                    val lon = result.getDouble("lon")
+                    val displayName = result.getString("display_name")
+
+                    withContext(Dispatchers.Main) {
+                        val geoPoint = GeoPoint(lat, lon)
+                        updateMarker(geoPoint, displayName)
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Search failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 }
-

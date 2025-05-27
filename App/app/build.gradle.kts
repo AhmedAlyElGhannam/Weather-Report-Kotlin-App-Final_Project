@@ -141,5 +141,4 @@ dependencies {
 
     // coroutine worker
     implementation("androidx.work:work-runtime-ktx:2.10.1")
-
 }

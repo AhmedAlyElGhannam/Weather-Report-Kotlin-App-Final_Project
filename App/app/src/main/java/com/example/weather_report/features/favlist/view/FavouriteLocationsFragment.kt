@@ -104,7 +104,7 @@ class FavouriteLocationsFragment : Fragment(), ISelectedCoordinatesOnMapCallback
         }
         else {
             val address = addresses[0]
-            val city = address.locality ?: address.subAdminArea // fallback if locality is null
+            val city = address.locality ?: "Unknown"
             val country = address.countryCode
             cityWithCountryCode = "${city}, ${country}"
         }
