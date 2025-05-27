@@ -11,9 +11,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.weather_report.IGPSCoordinatesCallback
 import com.example.weather_report.ISelectedCoordinatesOnMapCallback
 import com.example.weather_report.MainActivity
 import com.example.weather_report.MainActivityViewModel
@@ -23,6 +25,7 @@ import com.example.weather_report.features.mapdialog.view.MapDialog
 import com.example.weather_report.model.pojo.ForecastResponse
 import com.example.weather_report.model.pojo.WeatherResponse
 import com.example.weather_report.utils.AppliedSystemSettings
+import com.example.weather_report.utils.GPSUtil
 import com.example.weather_report.utils.UnitSystem
 import com.example.weather_report.utils.UnitSystemsConversions
 import com.example.weather_report.utils.Units
@@ -31,7 +34,8 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class HomeScreenFragment : Fragment(), ISelectedCoordinatesOnMapCallback {
+class HomeScreenFragment : Fragment(),
+    ISelectedCoordinatesOnMapCallback {
     lateinit var binding: FragmentHomeScreenBinding
     lateinit var hourlyWeatherAdapter: HourlyWeatherAdapter
     lateinit var dailyWeatherForecastAdapter: DailyWeatherForecastAdapter
@@ -40,6 +44,7 @@ class HomeScreenFragment : Fragment(), ISelectedCoordinatesOnMapCallback {
     private var weather: WeatherResponse? = null
     private var forecast: ForecastResponse? = null
     private val appliedSettings by lazy { AppliedSystemSettings.getInstance(requireContext()) }
+    private val gpsUtils by lazy { GPSUtil(requireContext()) }
 
     val formatUnixTime: (Long) -> String = { unixTime ->
         val date = Date(unixTime * 1000)
@@ -98,9 +103,18 @@ class HomeScreenFragment : Fragment(), ISelectedCoordinatesOnMapCallback {
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             if (appliedSettings.getSelectedLocationOption().optName == "GPS") {
-                (activity as? MainActivity)?.getFreshLocation()
-            }
-            else {
+                gpsUtils.getCurrentLocation(object : GPSUtil.GPSLocationCallback {
+                    override fun onLocationResult(latitude: Double, longitude: Double) {
+                        onCoordinatesSelected(latitude, longitude)
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+
+                    override fun onLocationError(errorMessage: String) {
+                        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+                })
+            } else {
                 activity?.let { MapDialog(this).show(it.supportFragmentManager, "MapDialog") }
             }
             hasFetchedWeatherData = false
@@ -254,5 +268,37 @@ class HomeScreenFragment : Fragment(), ISelectedCoordinatesOnMapCallback {
             activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
             else -> false
         }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        gpsUtils.handlePermissionResult(
+            requestCode,
+            grantResults,
+            onPermissionGranted = {
+                // Retry getting location if permission was granted
+                binding.swipeRefreshLayout.isRefreshing = true
+                gpsUtils.getCurrentLocation(object : GPSUtil.GPSLocationCallback {
+                    override fun onLocationResult(latitude: Double, longitude: Double) {
+                        onCoordinatesSelected(latitude, longitude)
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+
+                    override fun onLocationError(errorMessage: String) {
+                        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                        binding.swipeRefreshLayout.isRefreshing = false
+                    }
+                })
+            },
+            onPermissionDenied = {
+                Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+                binding.swipeRefreshLayout.isRefreshing = false
+            }
+        )
     }
 }

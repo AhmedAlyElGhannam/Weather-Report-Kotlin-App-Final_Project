@@ -36,6 +36,7 @@ import com.example.weather_report.features.mapdialog.view.MapDialog
 import com.example.weather_report.model.local.ILocalDataSource
 import com.example.weather_report.model.local.LocalDataSourceImpl
 import com.example.weather_report.utils.AppliedSystemSettings
+import com.example.weather_report.utils.GPSUtil
 import com.example.weather_report.utils.LocaleHelper
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -45,13 +46,17 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
 
-class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordinatesOnMapCallback {
+class MainActivity : AppCompatActivity(),
+    InitialChoiceCallback,
+    ISelectedCoordinatesOnMapCallback {
 
     lateinit var bindingMainScreen : MainScreenBinding
 
     private lateinit var navController: NavController
 
     private var isConnected: Boolean = false
+
+    private val gpsUtils by lazy { GPSUtil(this) }
 
     private val appliedSettings by lazy { AppliedSystemSettings.getInstance(this@MainActivity) }
 
@@ -149,19 +154,58 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
 
     }
 
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        if (requestCode == LOCATION_PERMISSION_REQUESTCODE) {
+//            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                getFreshLocation()
+//            } else {
+//                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//    }
+
+    override fun onGpsChosen() {
+        if (gpsUtils.checkPermissions()) {
+            if (gpsUtils.isLocationEnabled()) {
+                getFreshLocation()
+            } else {
+                gpsUtils.enableLocationServices()
+            }
+        } else {
+            gpsUtils.requestPermissions(this)
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun getFreshLocation() {
+        gpsUtils.getCurrentLocation(object : GPSUtil.GPSLocationCallback {
+            override fun onLocationResult(latitude: Double, longitude: Double) {
+                onCoordinatesSelected(latitude, longitude)
+            }
+
+            override fun onLocationError(errorMessage: String) {
+                Toast.makeText(this@MainActivity, errorMessage, Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUESTCODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getFreshLocation()
-            } else {
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
-            }
-        }
+        gpsUtils.handlePermissionResult(
+            requestCode,
+            grantResults,
+            onPermissionGranted = { getFreshLocation() },
+            onPermissionDenied = { Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show() }
+        )
     }
 
     private fun checkPermissions() : Boolean {
@@ -239,77 +283,59 @@ class MainActivity : AppCompatActivity(), InitialChoiceCallback, ISelectedCoordi
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    fun getFreshLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                LOCATION_PERMISSIONS,
-                LOCATION_PERMISSION_REQUESTCODE
-            )
-            return
-        }
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
-        fusedLocationProviderClient.requestLocationUpdates(
-            LocationRequest.Builder(0).apply {
-            setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-        }.build(),
-            object : LocationCallback() {
-                override fun onLocationResult(locationResult: LocationResult) {
-                    super.onLocationResult(locationResult)
-                    val location = locationResult.lastLocation
-
-                    if (location != null) {
-                        Log.i("TAG", "onLocationResult: ${location.latitude} && ${location.longitude}")
-
-                        mainActivityViewModel.fetchWeatherData(
-                            isConnected,
-                            location.latitude,
-                            location.longitude,
-                            appliedSettings.getUnitSystem().code,
-                            appliedSettings.getLanguage().code
-                        )
-
-                        mainActivityViewModel.fetchForecastData(
-                            isConnected,
-                            location.latitude,
-                            location.longitude,
-                            appliedSettings.getUnitSystem().code,
-                            appliedSettings.getLanguage().code
-                        )
-
-                        Log.i("TAG", "Location Secured. Coordinates: ${location.latitude}lat, ${location.longitude}")
-
-                        // stop location updates
-                        fusedLocationProviderClient.removeLocationUpdates(this)
-                    }
-                }}, Looper.myLooper())
-    }
-
-    override fun onGpsChosen() {
-        if (checkPermissions()) {
-            if (isLocationEnable()) {
-                getFreshLocation()
-            }
-            else {
-                enableLocationServices()
-            }
-        }
-        else {
-            ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS,LOCATION_PERMISSION_REQUESTCODE)
-        }
-
-    }
+//    @OptIn(DelicateCoroutinesApi::class)
+//    fun getFreshLocation() {
+//        if (ActivityCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED &&
+//            ActivityCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.ACCESS_COARSE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            ActivityCompat.requestPermissions(
+//                this,
+//                LOCATION_PERMISSIONS,
+//                LOCATION_PERMISSION_REQUESTCODE
+//            )
+//            return
+//        }
+//
+//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+//
+//        fusedLocationProviderClient.requestLocationUpdates(
+//            LocationRequest.Builder(0).apply {
+//            setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+//        }.build(),
+//            object : LocationCallback() {
+//                override fun onLocationResult(locationResult: LocationResult) {
+//                    super.onLocationResult(locationResult)
+//                    if (locationResult.lastLocation != null) {
+//                        onCoordinatesSelected(
+//                            locationResult.lastLocation!!.latitude,
+//                            locationResult.lastLocation!!.longitude
+//                        )
+//                        // stop location updates
+//                        fusedLocationProviderClient.removeLocationUpdates(this)
+//                    }
+//                }}, Looper.myLooper())
+//    }
+//
+//    override fun onGpsChosen() {
+//        if (checkPermissions()) {
+//            if (isLocationEnable()) {
+//                getFreshLocation()
+//            }
+//            else {
+//                enableLocationServices()
+//            }
+//        }
+//        else {
+//            ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS,LOCATION_PERMISSION_REQUESTCODE)
+//        }
+//
+//    }
 
     override fun onMapChosen() {
         MapDialog(this@MainActivity).show(supportFragmentManager, "MapDialog")

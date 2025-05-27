@@ -140,6 +140,7 @@ class MainActivityViewModel(private val repo: IWeatherRepository) : ViewModel() 
         }
     }
 
+    @SuppressLint("DefaultLocale")
     private fun filterDailyForecast(forecastResponse: ForecastResponse): List<ForecastItem> {
         val totalSeconds = forecastResponse.city.timezone
         val hours = totalSeconds / 3600
