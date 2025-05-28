@@ -186,22 +186,6 @@ class WeatherRepositoryImpl private constructor(
         }
     }
 
-    override suspend fun deleteLocation(locationId: String) {
-        withContext(Dispatchers.IO) {
-            localDataSource.deleteLocation(locationId)
-        }
-    }
-
-    override suspend fun setManualLocation(lat: Double, lon: Double, address: String) {
-        withContext(Dispatchers.IO) {
-            setCurrentLocation(lat, lon)
-            val existingLocation = localDataSource.findLocationByCoordinates(lat, lon)
-            existingLocation?.let {
-                localDataSource.updateLocationAddress(it.id, address)
-            }
-        }
-    }
-
     override suspend fun getLocationWithWeather(locationId: String): LocationWithWeather? {
         return withContext(Dispatchers.IO) {
             localDataSource.getLocationWithWeather(locationId)
