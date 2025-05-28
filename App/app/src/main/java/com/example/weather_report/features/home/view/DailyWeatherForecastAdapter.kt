@@ -20,7 +20,6 @@ class DailyWeatherForecastAdapter:
 
     private lateinit var appliedSettings: AppliedSystemSettings
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DailyWeatherViewHolder {
         val inflater: LayoutInflater = LayoutInflater.from(parent.context)
         context = parent.context

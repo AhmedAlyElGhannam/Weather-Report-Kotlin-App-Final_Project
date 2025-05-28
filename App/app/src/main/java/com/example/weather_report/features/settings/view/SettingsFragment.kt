@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.weather_report.main.view.MainActivity
 import com.example.weather_report.R
+import com.example.weather_report.contracts.SettingsScreenContract
 import com.example.weather_report.databinding.FragmentSettingsBinding
 import com.example.weather_report.utils.AppliedSystemSettings
 import com.example.weather_report.utils.AvailableLanguages
@@ -16,7 +17,8 @@ import com.example.weather_report.utils.NotificationsOptions
 import com.example.weather_report.utils.UnitSystem
 import com.example.weather_report.utils.Units
 
-class SettingsFragment : Fragment() {
+class SettingsFragment
+    : Fragment(), SettingsScreenContract.View {
 
     lateinit var binding: FragmentSettingsBinding
     private val appliedSettings by lazy { AppliedSystemSettings.getInstance(requireContext()) }
@@ -36,7 +38,7 @@ class SettingsFragment : Fragment() {
         setupListeners()
     }
 
-    private fun initSettings() {
+    override fun initSettings() {
         when (appliedSettings.getLanguage().lang_name) {
             AvailableLanguages.ARABIC.lang_name -> binding.rbArabic.isChecked = true
             AvailableLanguages.ENGLISH.lang_name -> binding.rbEnglish.isChecked = true
@@ -64,7 +66,7 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun setupListeners() {
+    override fun setupListeners() {
         // Language selection
         binding.rgLanguage.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
@@ -135,6 +137,15 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    override fun updateAppLanguage() {
+        val languageCode = appliedSettings.getLanguage().code
+        LocaleHelper.applyLanguage(requireContext(), languageCode)
+        activity?.window?.decorView?.layoutDirection =
+            if (languageCode == "ar") View.LAYOUT_DIRECTION_RTL
+            else View.LAYOUT_DIRECTION_LTR
+        activity?.recreate()
+    }
+
     private fun setCustomUnitsEnabled(enable: Boolean) {
 
         binding.rbCelsius.isEnabled = enable
@@ -200,12 +211,4 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun updateAppLanguage() {
-        val languageCode = appliedSettings.getLanguage().code
-        LocaleHelper.applyLanguage(requireContext(), languageCode)
-        activity?.window?.decorView?.layoutDirection =
-            if (languageCode == "ar") View.LAYOUT_DIRECTION_RTL
-            else View.LAYOUT_DIRECTION_LTR
-        activity?.recreate()
-    }
 }

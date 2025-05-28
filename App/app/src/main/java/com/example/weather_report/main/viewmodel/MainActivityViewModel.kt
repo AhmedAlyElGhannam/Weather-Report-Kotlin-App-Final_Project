@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weather_report.contracts.MainActivityContract
 import com.example.weather_report.model.pojo.ForecastItem
 import com.example.weather_report.model.pojo.ForecastResponse
 import com.example.weather_report.model.pojo.WeatherResponse
@@ -15,13 +16,13 @@ import java.util.Calendar
 import java.util.TimeZone
 import kotlin.math.abs
 
-class MainActivityViewModel(private val repo: IWeatherRepository) : ViewModel() {
+class MainActivityViewModel(private val repo: IWeatherRepository)
+    : ViewModel(), MainActivityContract.ViewModel {
 
     private val _weatherResponse = MutableLiveData<WeatherResponse?>()
     val weatherResponse: LiveData<WeatherResponse?> = _weatherResponse
 
     private val _forecastResponse = MutableLiveData<ForecastResponse?>()
-    val forecastResponse: LiveData<ForecastResponse?> = _forecastResponse
 
     private val _hourlyWeatherItemsList = MutableLiveData<List<ForecastItem>?>()
     val hourlyWeatherItemsList: LiveData<List<ForecastItem>?> = _hourlyWeatherItemsList
@@ -29,15 +30,9 @@ class MainActivityViewModel(private val repo: IWeatherRepository) : ViewModel() 
     private val _dailyWeatherItemsList = MutableLiveData<List<ForecastItem>>()
     val dailyWeatherItemsList: LiveData<List<ForecastItem>> = _dailyWeatherItemsList
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> = _errorMessage
-
-    fun fetchWeatherData(isConnected: Boolean, lat: Double, lon: Double) {
+    override fun fetchWeatherData(isConnected: Boolean, lat: Double, lon: Double) {
         viewModelScope.launch {
-            _isLoading.postValue(true)
             try {
                 if (isConnected) {
                     val response = repo.fetchCurrentWeatherDataRemotely(lat, lon, "standard", "en")
@@ -45,24 +40,21 @@ class MainActivityViewModel(private val repo: IWeatherRepository) : ViewModel() 
                         _weatherResponse.postValue(response)
                     } else {
                         loadLocalWeatherData()
-                        _errorMessage.postValue("Failed to fetch weather data, using cached data")
+                        Log.i("TAG", "fetchWeatherData: " + "Failed to fetch weather data, using cached data")
                     }
                 } else {
                     loadLocalWeatherData()
-                    _errorMessage.postValue("Offline mode: Using cached weather data")
+                    Log.i("TAG", "fetchWeatherData: " + "Offline mode: Using cached weather data")
                 }
             } catch (e: Exception) {
-                _errorMessage.postValue("Error loading weather data: ${e.message}")
+                Log.i("TAG", "fetchWeatherData: " + "Error loading weather data: ${e.message}")
                 loadLocalWeatherData()
-            } finally {
-                _isLoading.postValue(false)
             }
         }
     }
 
-    fun fetchForecastData(isConnected: Boolean, lat: Double, lon: Double) {
+    override fun fetchForecastData(isConnected: Boolean, lat: Double, lon: Double) {
         viewModelScope.launch {
-            _isLoading.postValue(true)
             try {
                 if (isConnected) {
                     val response = repo.fetchForecastDataRemotely(lat, lon, "standard", "en")
@@ -70,29 +62,27 @@ class MainActivityViewModel(private val repo: IWeatherRepository) : ViewModel() 
                         processForecastResponse(response)
                     } else {
                         loadLocalForecastData()
-                        _errorMessage.postValue("Failed to fetch forecast data, using cached data")
+                        Log.i("TAG", "fetchForecastData: " + "Failed to fetch forecast data, using cached data")
                     }
                 } else {
                     loadLocalForecastData()
-                    _errorMessage.postValue("Offline mode: Using cached forecast data")
+                    Log.i("TAG", "fetchForecastData: " + "Offline mode: Using cached forecast data")
                 }
             } catch (e: Exception) {
-                _errorMessage.postValue("Error loading forecast data: ${e.message}")
+                Log.i("TAG", "fetchForecastData: " + "Error loading forecast data: ${e.message}")
                 loadLocalForecastData()
-            } finally {
-                _isLoading.postValue(false)
             }
         }
     }
 
-    fun loadLocalWeatherData() {
+    override fun loadLocalWeatherData() {
         viewModelScope.launch {
             val localData = repo.getCurrentLocationWithWeather(false, false)
             _weatherResponse.postValue(localData?.currentWeather)
         }
     }
 
-    fun loadLocalForecastData() {
+    override fun loadLocalForecastData() {
         viewModelScope.launch {
             val localData = repo.getCurrentLocationWithWeather(false, false)
             localData?.forecast?.let {

@@ -14,6 +14,8 @@ import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourc
 import com.example.weather_report.model.repository.WeatherRepositoryImpl
 import kotlinx.coroutines.DelicateCoroutinesApi
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -30,6 +32,8 @@ import androidx.navigation.fragment.NavHostFragment
 import com.example.weather_report.main.viewmodel.MainActivityViewModel
 import com.example.weather_report.main.viewmodel.MainActivityViewModelFactory
 import com.example.weather_report.R
+import com.example.weather_report.contracts.MainActivityContract
+import com.example.weather_report.databinding.ActivitySplashBinding
 import com.example.weather_report.databinding.MainScreenBinding
 import com.example.weather_report.features.mapdialog.view.MapDialog
 
@@ -45,18 +49,14 @@ import com.google.android.gms.location.FusedLocationProviderClient
 
 class MainActivity : AppCompatActivity(),
     InitialChoiceCallback,
-    ISelectedCoordinatesOnMapCallback {
+    ISelectedCoordinatesOnMapCallback,
+    MainActivityContract.View {
 
-    lateinit var bindingMainScreen : MainScreenBinding
-
+    private lateinit var bindingMainScreen : MainScreenBinding
     private lateinit var navController: NavController
-
-    private var isConnected: Boolean = false
-
     private val gpsUtils by lazy { GPSUtil(this) }
-
     private val appliedSettings by lazy { AppliedSystemSettings.getInstance(this@MainActivity) }
-
+    private val NOTIFICATION_REQUESTCODE: Int = 9642
     private val mainActivityViewModel : MainActivityViewModel by viewModels() {
         MainActivityViewModelFactory(
             WeatherRepositoryImpl.getInstance(WeatherAndForecastRemoteDataSourceImpl(
@@ -65,27 +65,19 @@ class MainActivity : AppCompatActivity(),
         ))
     }
 
-    private val LOCATION_PERMISSION_REQUESTCODE : Int = 1006
-    private val NOTIFICATION_REQUESTCODE: Int = 9642
-    private val LOCATION_PERMISSIONS : Array<String> = arrayOf(
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    )
-
-    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-
     companion object {
         init {
+            // unit conversion jni lib init
             System.loadLibrary("weather_report")
         }
 
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // hanging instance of viewmodel to solve an error
         mainActivityViewModel
 
         // start data fetcher worker
@@ -93,35 +85,22 @@ class MainActivity : AppCompatActivity(),
 
         /*************************************************************************************************/
 
-
-
+        // view binding shenanigans
         bindingMainScreen = MainScreenBinding.inflate(layoutInflater)
         setContentView(bindingMainScreen.root)
 
         bindingMainScreen.fragmentContainer.isActivated = false
 
-
         /*************************************************************************************************/
 
-        // network check
-        val connectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkCapabilities = connectivityManager.activeNetwork?.let {
-            connectivityManager.getNetworkCapabilities(it)
-        }
-        isConnected = networkCapabilities?.let {
-            it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                    it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-        } ?: false
-
-        /*************************************************************************************************/
-
+        // navigation controller shenanigans
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
         navController = navHostFragment.navController
 
-
         /*************************************************************************************************/
 
-        if (isConnected) {
+        // initial setup
+        if (isConnectedToInternet()) {
             // is initial setup or not
             if (appliedSettings.getIsInitialSetup()) {
                 appliedSettings.setIsInitialSetup()
@@ -149,6 +128,9 @@ class MainActivity : AppCompatActivity(),
             }
         }
 
+        /*************************************************************************************************/
+
+        // initialize drawer
         bindingMainScreen.fragmentContainer.isActivated = true
         initializeNavigationDrawer()
 
@@ -166,8 +148,7 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    fun getFreshLocation() {
+    override fun getFreshLocation() {
         gpsUtils.getCurrentLocation(object : GPSUtil.GPSLocationCallback {
             override fun onLocationResult(latitude: Double, longitude: Double) {
                 onCoordinatesSelected(latitude, longitude)
@@ -193,33 +174,7 @@ class MainActivity : AppCompatActivity(),
         )
     }
 
-    private fun checkPermissions() : Boolean {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return false
-        }
-
-        return true
-    }
-
-    private fun enableLocationServices() {
-        Toast.makeText(this , "Please Turn on Location" , Toast.LENGTH_LONG).show()
-        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-        startActivity(intent)
-    }
-
-    private fun isLocationEnable() : Boolean {
-        val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)|| locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-    }
-
-    private fun initializeNavigationDrawer() {
+    override fun initializeNavigationDrawer() {
         // set up Toolbar
         setSupportActionBar(bindingMainScreen.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -302,13 +257,13 @@ class MainActivity : AppCompatActivity(),
 
     override fun onCoordinatesSelected(lat: Double, lon: Double) {
         mainActivityViewModel.fetchWeatherData(
-            isConnected,
+            isConnectedToInternet(),
             lat,
             lon
         )
 
         mainActivityViewModel.fetchForecastData(
-            isConnected,
+            isConnectedToInternet(),
             lat,
             lon
         )
@@ -319,5 +274,16 @@ class MainActivity : AppCompatActivity(),
         super.attachBaseContext(
             LocaleHelper.applyLanguage(newBase, appliedSettings.getLanguage().code)
         )
+    }
+
+    private fun isConnectedToInternet(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkCapabilities = connectivityManager.activeNetwork?.let {
+            connectivityManager.getNetworkCapabilities(it)
+        }
+        return networkCapabilities?.let {
+            it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                    it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+        } ?: false
     }
 }
