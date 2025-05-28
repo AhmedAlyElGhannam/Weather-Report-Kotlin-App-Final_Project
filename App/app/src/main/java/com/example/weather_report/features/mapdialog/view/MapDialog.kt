@@ -1,6 +1,7 @@
 package com.example.weather_report.features.mapdialog.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -32,8 +33,7 @@ import java.net.URLEncoder
 
 class MapDialog(private val listener: ISelectedCoordinatesOnMapCallback) : DialogFragment() {
 
-    private var _binding: FragmentMapBinding? = null
-    private val binding get() = _binding!!
+    lateinit var binding : FragmentMapBinding
     private var currentMarker: Marker? = null
     private val suggestions = mutableListOf<String>()
     private lateinit var adapter: ArrayAdapter<String>
@@ -41,10 +41,10 @@ class MapDialog(private val listener: ISelectedCoordinatesOnMapCallback) : Dialo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.FullScreenDialogTheme) // Full-screen theme
+        setStyle(STYLE_NORMAL, R.style.FullScreenDialogTheme)
         isCancelable = false
 
-        // Initialize osmdroid configuration
+        // initializing osmdroid configuration
         Configuration.getInstance().userAgentValue = requireContext().packageName
         Configuration.getInstance().load(requireContext(), PreferenceManager.getDefaultSharedPreferences(requireContext()))
     }
@@ -54,25 +54,25 @@ class MapDialog(private val listener: ISelectedCoordinatesOnMapCallback) : Dialo
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMapBinding.inflate(inflater, container, false)
+        binding = FragmentMapBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize map
+        // map initialization
         val map = binding.map
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setBuiltInZoomControls(true)
         map.setMultiTouchControls(true)
         map.minZoomLevel = 4.0
-        map.maxZoomLevel = 18.0
+        map.maxZoomLevel = 15.0
         map.controller.setZoom(4.0)
         map.visibility = View.VISIBLE
-        android.util.Log.d("MapDialog", "MapView initialized with size: ${map.width}x${map.height}")
+        Log.d("TAG", "MapView initialized with size: ${map.width}x${map.height}")
 
-        // Map tap event
+        // tap event
         val mapEventsReceiver = object : MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
                 updateMarker(p, "Pinned Location")
@@ -85,7 +85,7 @@ class MapDialog(private val listener: ISelectedCoordinatesOnMapCallback) : Dialo
         }
         map.overlays.add(MapEventsOverlay(mapEventsReceiver))
 
-        // Initialize AutoCompleteTextView
+        // AutoCompleteTextView shenanigans
         adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, suggestions)
         binding.searchBar.setAdapter(adapter)
         binding.searchBar.setOnItemClickListener { _, _, position, _ ->
@@ -93,13 +93,13 @@ class MapDialog(private val listener: ISelectedCoordinatesOnMapCallback) : Dialo
             searchCity(selectedCity)
         }
 
-        // Handle Enter key
+        // handling enter key press (to do a search by name)
         binding.searchBar.setOnKeyListener { _, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
                 val query = binding.searchBar.text.toString().trim()
                 if (query.isNotEmpty()) {
                     searchCity(query)
-                    binding.searchBar.dismissDropDown() // Hide suggestions
+                    binding.searchBar.dismissDropDown()
                 }
                 true
             } else {
@@ -107,7 +107,7 @@ class MapDialog(private val listener: ISelectedCoordinatesOnMapCallback) : Dialo
             }
         }
 
-        // Handle search input with debouncing
+        // search input with debouncing shenanigans
         binding.searchBar.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -116,43 +116,26 @@ class MapDialog(private val listener: ISelectedCoordinatesOnMapCallback) : Dialo
                 val query = s.toString().trim()
                 if (query.length >= 2) {
                     searchJob = CoroutineScope(Dispatchers.Main).launch {
-                        delay(300) // Debounce for 300ms
+                        delay(325) // debounce for 300ms to avoid headaches
                         fetchCitySuggestions(query)
                     }
                 }
             }
         })
 
-        // Proceed button
+        // proceed button handler
         binding.btnProceed.setOnClickListener {
             if (currentMarker != null) {
                 listener.onCoordinatesSelected(
                     currentMarker!!.position.latitude,
                     currentMarker!!.position.longitude
                 )
-                android.util.Log.i("MapDialog", "Coordinates: ${currentMarker!!.position.latitude}, ${currentMarker!!.position.longitude}")
+                Log.i("TAG", "Coordinates: ${currentMarker!!.position.latitude}, ${currentMarker!!.position.longitude}")
                 dismiss()
             } else {
                 Toast.makeText(requireContext(), "Please mark a place or select a city to continue", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        binding.map.onResume()
-        android.util.Log.d("MapDialog", "MapView onResume called")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        binding.map.onPause()
-        android.util.Log.d("MapDialog", "MapView onPause called")
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun updateMarker(geoPoint: GeoPoint, title: String) {
@@ -167,9 +150,8 @@ class MapDialog(private val listener: ISelectedCoordinatesOnMapCallback) : Dialo
         currentMarker?.position = geoPoint
         currentMarker?.title = title
         map.controller.animateTo(geoPoint)
-        map.controller.setZoom(8.0) // Reduced zoom level
         map.invalidate()
-        android.util.Log.d("MapDialog", "Marker updated at: $geoPoint")
+        Log.d("TAG", "Marker updated at: $geoPoint")
     }
 
     private fun fetchCitySuggestions(query: String) {
@@ -202,7 +184,7 @@ class MapDialog(private val listener: ISelectedCoordinatesOnMapCallback) : Dialo
                         suggestions.clear()
                         suggestions.addAll(newSuggestions)
                         adapter.notifyDataSetChanged()
-                        android.util.Log.d("MapDialog", "Suggestions updated: $suggestions")
+                        Log.d("TAG", "Suggestions updated: $suggestions")
                     }
                 }
             } catch (e: Exception) {
