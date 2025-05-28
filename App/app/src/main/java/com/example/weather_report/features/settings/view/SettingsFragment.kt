@@ -15,6 +15,7 @@ import com.example.weather_report.utils.settings.loc.LocationOptions
 import com.example.weather_report.utils.settings.notif.NotificationsOptions
 import com.example.weather_report.utils.settings.units.UnitSystem
 import com.example.weather_report.utils.settings.units.Units
+import java.util.Locale
 
 class SettingsFragment
     : Fragment(), SettingsScreenContract.View {
@@ -41,8 +42,6 @@ class SettingsFragment
         when (appliedSettings.getLanguage().lang_name) {
             AvailableLanguages.ARABIC.lang_name -> binding.rbArabic.isChecked = true
             AvailableLanguages.ENGLISH.lang_name -> binding.rbEnglish.isChecked = true
-            AvailableLanguages.FRENCH.lang_name -> binding.rbFrench.isChecked = true
-            AvailableLanguages.SPANISH.lang_name -> binding.rbSpanish.isChecked = true
         }
 
         // Unit System
@@ -71,8 +70,6 @@ class SettingsFragment
             when (checkedId) {
                 R.id.rb_arabic -> appliedSettings.setLanguage(AvailableLanguages.ARABIC)
                 R.id.rb_english -> appliedSettings.setLanguage(AvailableLanguages.ENGLISH)
-                R.id.rb_french -> appliedSettings.setLanguage(AvailableLanguages.FRENCH)
-                R.id.rb_spanish -> appliedSettings.setLanguage(AvailableLanguages.SPANISH)
             }
 
             updateAppLanguage()
@@ -138,12 +135,25 @@ class SettingsFragment
 
     override fun updateAppLanguage() {
         val languageCode = appliedSettings.getLanguage().code
-        LocaleHelper.applyLanguage(requireContext(), languageCode)
+        val context = LocaleHelper.applyLanguage(requireContext(), languageCode)
+
+        val resources = context.resources
+        val config = resources.configuration
+
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+        config.setLocale(locale)
+        config.setLayoutDirection(locale)
+
+        resources.updateConfiguration(config, resources.displayMetrics)
+
         activity?.window?.decorView?.layoutDirection =
             if (languageCode == "ar") View.LAYOUT_DIRECTION_RTL
             else View.LAYOUT_DIRECTION_LTR
+
         activity?.recreate()
     }
+
 
     private fun setCustomUnitsEnabled(enable: Boolean) {
 

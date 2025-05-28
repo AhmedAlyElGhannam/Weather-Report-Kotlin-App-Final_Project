@@ -5,13 +5,12 @@ import android.content.res.Configuration
 import java.util.Locale
 
 object LocaleHelper {
-    fun applyLanguage(context: Context, languageCode: String): Context {
-        val locale = Locale(languageCode)
+    fun applyLanguage(context: Context, language: String): Context {
+        val locale = Locale(language)
         Locale.setDefault(locale)
-        val resources = context.resources
-        val configuration = Configuration(resources.configuration)
-        configuration.setLocale(locale)
-        resources.updateConfiguration(configuration, resources.displayMetrics)
-        return context
+        val config = Configuration(context.resources.configuration)
+        config.setLocale(locale)
+        config.setLayoutDirection(locale)
+        return context.createConfigurationContext(config)
     }
 }
