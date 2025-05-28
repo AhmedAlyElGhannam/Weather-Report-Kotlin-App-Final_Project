@@ -1,13 +1,16 @@
 package com.example.weather_report.contracts
 
+import com.example.weather_report.model.pojo.LocationWithWeather
+
 interface WeatherDetailsContract {
     interface View {
-
+        fun setupAdaptersAndRVs()
+        fun setupObservers()
+        fun updateWeatherUI()
+        fun updateExtraInfo()
     }
     interface ViewModel {
-
+        fun setFavoriteLocationData(locationWithWeather: LocationWithWeather)
     }
-    interface Model {
-
-    }
+    interface Model
 }

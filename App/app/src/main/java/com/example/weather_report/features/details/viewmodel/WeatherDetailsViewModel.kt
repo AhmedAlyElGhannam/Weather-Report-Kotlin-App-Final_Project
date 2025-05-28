@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weather_report.contracts.WeatherDetailsContract
 import com.example.weather_report.model.pojo.ForecastItem
 import com.example.weather_report.model.pojo.ForecastResponse
 import com.example.weather_report.model.pojo.LocationWithWeather
@@ -16,7 +17,8 @@ import java.util.Calendar
 import java.util.TimeZone
 import kotlin.math.abs
 
-class WeatherDetailsViewModel() : ViewModel() {
+class WeatherDetailsViewModel()
+    : ViewModel(), WeatherDetailsContract.ViewModel {
     private val _selectedFavoriteLocation = MutableLiveData<LocationWithWeather?>()
 
     private val _hourlyWeatherItemsList = MutableLiveData<List<ForecastItem>?>()
@@ -28,7 +30,7 @@ class WeatherDetailsViewModel() : ViewModel() {
     private val _weatherResponse = MutableLiveData<WeatherResponse?>()
     val weatherResponse: LiveData<WeatherResponse?> = _weatherResponse
 
-    fun setFavoriteLocationData(locationWithWeather: LocationWithWeather) {
+    override fun setFavoriteLocationData(locationWithWeather: LocationWithWeather) {
         viewModelScope.launch {
             _selectedFavoriteLocation.value = locationWithWeather
             _hourlyWeatherItemsList.postValue(locationWithWeather.forecast?.let {

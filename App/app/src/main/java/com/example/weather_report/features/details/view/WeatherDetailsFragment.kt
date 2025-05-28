@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather_report.R
+import com.example.weather_report.contracts.WeatherDetailsContract
 import com.example.weather_report.databinding.FragmentHomeScreenBinding
 import com.example.weather_report.features.details.viewmodel.WeatherDetailsViewModel
 import com.example.weather_report.features.home.view.DailyWeatherForecastAdapter
@@ -25,7 +26,8 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class WeatherDetailsFragment : Fragment() {
+class WeatherDetailsFragment
+    : Fragment(), WeatherDetailsContract.View {
     lateinit var binding: FragmentHomeScreenBinding
     lateinit var hourlyWeatherAdapter: HourlyWeatherAdapter
     lateinit var dailyWeatherForecastAdapter: DailyWeatherForecastAdapter
@@ -52,6 +54,12 @@ class WeatherDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupAdaptersAndRVs()
+
+        setupObservers()
+    }
+
+    override fun setupAdaptersAndRVs() {
         // layout manager for hourly
         binding.hourlyWeatherRecyclerView.hasFixedSize()
         val layoutManagerHourly : LinearLayoutManager = LinearLayoutManager(requireContext())
@@ -73,11 +81,9 @@ class WeatherDetailsFragment : Fragment() {
         dailyWeatherForecastAdapter = DailyWeatherForecastAdapter()
         dailyWeatherForecastAdapter.submitList(listOf())
         binding.dailyWeatherRecyclerView.adapter = dailyWeatherForecastAdapter
-
-        setupObservers()
     }
 
-    private fun setupObservers() {
+    override fun setupObservers() {
         weatherDetailsViewModel.weatherResponse
             .observe(viewLifecycleOwner) {
                 weather = weatherDetailsViewModel.weatherResponse.value
@@ -102,7 +108,7 @@ class WeatherDetailsFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateWeatherUI() {
+    override fun updateWeatherUI() {
         binding.weatherImg.setAnimation(
             when(weather!!.weather[0].main) {
                 "Thunderstorm" -> R.raw.thunderstorm
@@ -144,7 +150,7 @@ class WeatherDetailsFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateExtraInfo() {
+    override fun updateExtraInfo() {
         binding.windSpeedTxt.text = "${appliedSettings.convertToSpeedUnit(weather!!.wind.speed)}${appliedSettings.getSpeedUnit().symbol}"
         binding.sunsetTxt.text = formatUnixTime.invoke(weather!!.sys.sunset)
         binding.pressureTxt.text = "${appliedSettings.convertToPressureUnit(weather!!.main.pressure.toDouble())}${appliedSettings.getPressureUnit().symbol}"
