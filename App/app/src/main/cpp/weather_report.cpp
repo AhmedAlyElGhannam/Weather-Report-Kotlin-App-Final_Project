@@ -1,11 +1,9 @@
 #include <jni.h>
 #include <string>
 
-
-/******************************TEMP********************************/
 extern "C"
 JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_celsiusToKelvin(
+Java_com_example_weather_1report_utils_settings_units_UnitSystemsConversions_00024Companion_celsiusToKelvin(
         JNIEnv *env, jobject thiz, jdouble temp) {
     jdouble res = 0.0;
 
@@ -15,7 +13,7 @@ Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_cel
 }
 extern "C"
 JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_celsiusToFahrenheit(
+Java_com_example_weather_1report_utils_settings_units_UnitSystemsConversions_00024Companion_celsiusToFahrenheit(
         JNIEnv *env, jobject thiz, jdouble temp) {
     jdouble res = 0.0;
 
@@ -23,10 +21,9 @@ Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_cel
 
     return res;
 }
-
 extern "C"
 JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_kelvinToCelsius(
+Java_com_example_weather_1report_utils_settings_units_UnitSystemsConversions_00024Companion_kelvinToCelsius(
         JNIEnv *env, jobject thiz, jdouble temp) {
     jdouble res = 0.0;
 
@@ -36,7 +33,7 @@ Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_kel
 }
 extern "C"
 JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_kelvinToFahrenheit(
+Java_com_example_weather_1report_utils_settings_units_UnitSystemsConversions_00024Companion_kelvinToFahrenheit(
         JNIEnv *env, jobject thiz, jdouble temp) {
     jdouble res = 0.0;
 
@@ -44,10 +41,9 @@ Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_kel
 
     return res;
 }
-/******************************SPEED********************************/
 extern "C"
 JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_meterPerSecondToKilometerPerHour(
+Java_com_example_weather_1report_utils_settings_units_UnitSystemsConversions_00024Companion_meterPerSecondToKilometerPerHour(
         JNIEnv *env, jobject thiz, jdouble wind_speed) {
     jdouble res = 0.0;
 
@@ -57,7 +53,7 @@ Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_met
 }
 extern "C"
 JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_meterPerSecondToMilePerHour(
+Java_com_example_weather_1report_utils_settings_units_UnitSystemsConversions_00024Companion_meterPerSecondToMilePerHour(
         JNIEnv *env, jobject thiz, jdouble wind_speed) {
     jdouble res = 0.0;
 
@@ -67,7 +63,7 @@ Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_met
 }
 extern "C"
 JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_meterPerSecondToFeetPerSecond(
+Java_com_example_weather_1report_utils_settings_units_UnitSystemsConversions_00024Companion_meterPerSecondToFeetPerSecond(
         JNIEnv *env, jobject thiz, jdouble wind_speed) {
     jdouble res = 0.0;
 
@@ -75,10 +71,9 @@ Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_met
 
     return res;
 }
-/******************************PRESSURE********************************/
 extern "C"
 JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_hectopascalToPsi(
+Java_com_example_weather_1report_utils_settings_units_UnitSystemsConversions_00024Companion_hectopascalToPsi(
         JNIEnv *env, jobject thiz, jdouble pressure) {
     jdouble res = 0.0;
 
@@ -88,7 +83,7 @@ Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_hec
 }
 extern "C"
 JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_hectopascalToAtm(
+Java_com_example_weather_1report_utils_settings_units_UnitSystemsConversions_00024Companion_hectopascalToAtm(
         JNIEnv *env, jobject thiz, jdouble pressure) {
     jdouble res = 0.0;
 
@@ -98,7 +93,7 @@ Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_hec
 }
 extern "C"
 JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_hectopascalToBar(
+Java_com_example_weather_1report_utils_settings_units_UnitSystemsConversions_00024Companion_hectopascalToBar(
         JNIEnv *env, jobject thiz, jdouble pressure) {
     jdouble res = 0.0;
 

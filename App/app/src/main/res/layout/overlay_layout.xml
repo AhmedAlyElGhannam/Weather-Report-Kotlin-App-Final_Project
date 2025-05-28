@@ -19,7 +19,7 @@
         android:letterSpacing="0.03"
         android:layout_marginBottom="16dp"/>
 
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/btn_dismiss"
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -28,9 +28,9 @@
         android:textSize="16sp"
         android:textStyle="bold"
         android:textColor="@color/pure_snow_white_ffffff"
-        android:paddingHorizontal="32dp"
-        app:backgroundTint="@color/light_cloud_purple_8c68b2"
-        app:cornerRadius="12dp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:background="@drawable/button_background"
         android:layout_marginTop="16dp"/>
 
 </LinearLayout>

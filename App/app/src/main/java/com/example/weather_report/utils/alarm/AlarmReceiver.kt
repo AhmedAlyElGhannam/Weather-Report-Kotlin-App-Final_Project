@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import com.example.weather_report.R
+import com.example.weather_report.utils.settings.AppliedSystemSettings
 import com.example.weather_report.utils.settings.notif.NotificationHelper
 
 class AlarmReceiver : BroadcastReceiver() {
@@ -18,15 +19,15 @@ class AlarmReceiver : BroadcastReceiver() {
         fun dismissAlarm(context: Context) {
             mediaPlayer?.release()
             mediaPlayer = null
+            val appliedSystemSettings = AppliedSystemSettings.getInstance(context)
             context.stopService(Intent(context, OverlayService::class.java))
+//            appliedSystemSettings.set
         }
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
         context?.let { ctx ->
-            // Check overlay permission
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                !Settings.canDrawOverlays(ctx)) {
+            if (!Settings.canDrawOverlays(ctx)) {
                 val overlayIntent = Intent(
                     Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:${ctx.packageName}")
@@ -43,14 +44,12 @@ class AlarmReceiver : BroadcastReceiver() {
                 start()
             }
 
-            // Show notification
             NotificationHelper(ctx).showNotification(
                 "Alarm",
                 "Time's up!",
                 soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             )
 
-            // Start overlay service
             val overlayIntent = Intent(ctx, OverlayService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 ctx.startForegroundService(overlayIntent)
