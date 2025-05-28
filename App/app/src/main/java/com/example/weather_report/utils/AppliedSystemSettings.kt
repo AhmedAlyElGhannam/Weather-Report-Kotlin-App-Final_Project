@@ -133,15 +133,15 @@ class AppliedSystemSettings private constructor(context: Context) {
     fun convertToPressureUnit(pressure: Double): Int {
         return when (getPressureUnit().symbol) {
             Units.PSI.symbol -> {
-                setSpeedUnit(Units.PSI)
+                setPressureUnit(Units.PSI)
                 UnitSystemsConversions.hectopascalToPsi(pressure).roundToInt()
             }
             Units.ATMOSPHERE.symbol -> {
-                setSpeedUnit(Units.ATMOSPHERE)
+                setPressureUnit(Units.ATMOSPHERE)
                 UnitSystemsConversions.hectopascalToAtm(pressure).roundToInt()
             }
             Units.BAR.symbol -> {
-                setSpeedUnit(Units.BAR)
+                setPressureUnit(Units.BAR)
                 UnitSystemsConversions.hectopascalToBar(pressure).roundToInt()
             }
             else -> {

@@ -145,53 +145,11 @@ class WeatherDetailsFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun updateExtraInfo() {
-        binding.windSpeedTxt.text = "${weather!!.wind.speed}${appliedSettings.getSpeedUnit().symbol}"
+        binding.windSpeedTxt.text = "${appliedSettings.convertToSpeedUnit(weather!!.wind.speed)}${appliedSettings.getSpeedUnit().symbol}"
         binding.sunsetTxt.text = formatUnixTime.invoke(weather!!.sys.sunset)
-        binding.pressureTxt.text = "${weather!!.main.pressure}${appliedSettings.getPressureUnit().symbol}"
+        binding.pressureTxt.text = "${appliedSettings.convertToPressureUnit(weather!!.main.pressure.toDouble())}${appliedSettings.getPressureUnit().symbol}"
         binding.humidityTxt.text = "${weather!!.main.humidity}%"
         binding.sunriseTxt.text = formatUnixTime.invoke(weather!!.sys.sunrise)
         binding.cloudCoverageTxt.text = "${weather!!.clouds.all}%"
-    }
-
-//    private fun applyUnits() {
-//        if (weather != null) {
-//            when (appliedSettings.getUnitSystem()) {
-//                UnitSystem.CUSTOM -> {
-//                    weather!!.main.temp = convertTemperature(weather!!.main.temp)
-//
-//                    weather!!.main.temp_kf = convertTemperature(weather!!.main.temp_kf)
-//
-//                    weather!!.main.feels_like = convertTemperature(weather!!.main.feels_like)
-//
-//                    weather!!.main.temp_min = convertTemperature(weather!!.main.temp_min)
-//
-//                    weather!!.main.temp_max = convertTemperature(weather!!.main.temp_max)
-//
-//                    weather!!.wind.speed = when(appliedSettings.getSpeedUnit().symbol) {
-//                        Units.KILOMETERS_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToKilometerPerHour(weather!!.wind.speed)
-//                        Units.MILES_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToMilePerHour(weather!!.wind.speed)
-//                        Units.FEET_PER_SECOND.symbol -> UnitSystemsConversions.meterPerSecondToFeetPerSecond(weather!!.wind.speed)
-//                        else -> weather!!.wind.speed
-//                    }
-//
-//                    weather!!.main.pressure = when(appliedSettings.getPressureUnit().symbol) {
-//                        Units.ATMOSPHERE.symbol -> UnitSystemsConversions.hectopascalToAtm(weather!!.main.pressure.toDouble()).toInt()
-//                        Units.BAR.symbol -> UnitSystemsConversions.hectopascalToBar(weather!!.main.pressure.toDouble()).toInt()
-//                        Units.PSI.symbol -> UnitSystemsConversions.hectopascalToPsi(weather!!.main.pressure.toDouble()).toInt()
-//                        else -> weather!!.main.pressure
-//                    }
-//                }
-//                UnitSystem.IMPERIAL -> {} // should be applied automatically
-//                UnitSystem.STANDARD -> {} // should be applied automatically
-//            }
-//        }
-//    }
-
-    private fun convertTemperature(tempCelsius: Double): Double {
-        return when (appliedSettings.getTempUnit()) {
-            Units.FAHRENHEIT -> UnitSystemsConversions.celsiusToFahrenheit(tempCelsius)
-            Units.KELVIN -> UnitSystemsConversions.celsiusToKelvin(tempCelsius)
-            else -> tempCelsius
-        }
     }
 }
