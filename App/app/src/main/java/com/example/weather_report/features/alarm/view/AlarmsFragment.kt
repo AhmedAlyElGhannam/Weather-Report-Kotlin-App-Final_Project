@@ -22,10 +22,12 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.weather_report.utils.alarm.AlarmReceiver
 import com.example.weather_report.databinding.FragmentAlarmBinding
+import com.example.weather_report.utils.settings.AppliedSystemSettings
 import java.util.Calendar
 
 class AlarmsFragment : Fragment() {
     private lateinit var binding: FragmentAlarmBinding
+    private lateinit var appliedSystemSettings: AppliedSystemSettings
     private val alarmManager by lazy {
         requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
     }
@@ -54,7 +56,17 @@ class AlarmsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         checkNotificationPermission()
-        binding.fabAdd.setOnClickListener { showDateTimePicker() }
+
+        appliedSystemSettings = AppliedSystemSettings.getInstance(requireContext())
+
+        binding.fabAdd.setOnClickListener {
+            if (appliedSystemSettings.isAlarmActive()) {
+                Toast.makeText(requireContext(), "An alarm is already running.", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                showDateTimePicker()
+            }
+        }
     }
 
     private fun checkNotificationPermission() {
@@ -134,6 +146,8 @@ class AlarmsFragment : Fragment() {
             pendingIntent
         )
 
+        appliedSystemSettings.setIsAlarmActive(true)
+        // show something on the screen
         Toast.makeText(requireContext(), "Alarm set!", Toast.LENGTH_SHORT).show()
     }
 }

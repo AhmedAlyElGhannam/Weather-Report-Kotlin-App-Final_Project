@@ -19,9 +19,10 @@ class AlarmReceiver : BroadcastReceiver() {
         fun dismissAlarm(context: Context) {
             mediaPlayer?.release()
             mediaPlayer = null
-            val appliedSystemSettings = AppliedSystemSettings.getInstance(context)
+            var appliedSystemSettings: AppliedSystemSettings = AppliedSystemSettings.getInstance(context)
+            appliedSystemSettings.setIsAlarmActive(false)
             context.stopService(Intent(context, OverlayService::class.java))
-//            appliedSystemSettings.set
+
         }
     }
 
@@ -44,12 +45,14 @@ class AlarmReceiver : BroadcastReceiver() {
                 start()
             }
 
+            // Show notification
             NotificationHelper(ctx).showNotification(
                 "Alarm",
                 "Time's up!",
                 soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             )
 
+            // Start overlay service
             val overlayIntent = Intent(ctx, OverlayService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 ctx.startForegroundService(overlayIntent)

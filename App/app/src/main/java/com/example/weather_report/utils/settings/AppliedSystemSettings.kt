@@ -25,6 +25,14 @@ class AppliedSystemSettings private constructor(context: Context) {
         }
     }
 
+    fun setIsAlarmActive(stat: Boolean) {
+        prefs.edit { putBoolean("alarm_active", stat) }
+    }
+
+    fun isAlarmActive(): Boolean {
+        return prefs.getBoolean("alarm_active", false)
+    }
+
     fun getIsInitialSetup(): Boolean {
         val value = prefs.getBoolean("initial_setup", true)
         return value
@@ -32,6 +40,7 @@ class AppliedSystemSettings private constructor(context: Context) {
 
     fun setIsInitialSetup() {
         prefs.edit { putBoolean("initial_setup", false) }
+        prefs.edit { putBoolean("alarm_active", false) }
         setUnitSystem(UnitSystem.STANDARD)
         setLanguage(AvailableLanguages.ENGLISH)
         setTempUnit(Units.CELSIUS)
