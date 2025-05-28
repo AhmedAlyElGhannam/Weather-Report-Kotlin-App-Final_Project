@@ -2,10 +2,10 @@ package com.example.weather_report.model.repository
 
 import com.example.weather_report.contracts.FavouriteLocationsContract
 import com.example.weather_report.model.local.ILocalDataSource
-import com.example.weather_report.model.pojo.ForecastResponse
-import com.example.weather_report.model.pojo.LocationEntity
-import com.example.weather_report.model.pojo.LocationWithWeather
-import com.example.weather_report.model.pojo.WeatherResponse
+import com.example.weather_report.model.pojo.response.ForecastResponse
+import com.example.weather_report.model.pojo.entity.LocationEntity
+import com.example.weather_report.model.pojo.entity.LocationWithWeather
+import com.example.weather_report.model.pojo.response.WeatherResponse
 import com.example.weather_report.model.remote.IWeatherAndForecastRemoteDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

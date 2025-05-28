@@ -5,17 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.weather_report.main.view.MainActivity
 import com.example.weather_report.R
 import com.example.weather_report.contracts.SettingsScreenContract
 import com.example.weather_report.databinding.FragmentSettingsBinding
-import com.example.weather_report.utils.AppliedSystemSettings
-import com.example.weather_report.utils.AvailableLanguages
-import com.example.weather_report.utils.LocaleHelper
-import com.example.weather_report.utils.LocationOptions
-import com.example.weather_report.utils.NotificationsOptions
-import com.example.weather_report.utils.UnitSystem
-import com.example.weather_report.utils.Units
+import com.example.weather_report.utils.settings.AppliedSystemSettings
+import com.example.weather_report.utils.settings.lang.AvailableLanguages
+import com.example.weather_report.utils.settings.lang.LocaleHelper
+import com.example.weather_report.utils.settings.loc.LocationOptions
+import com.example.weather_report.utils.settings.notif.NotificationsOptions
+import com.example.weather_report.utils.settings.units.UnitSystem
+import com.example.weather_report.utils.settings.units.Units
 
 class SettingsFragment
     : Fragment(), SettingsScreenContract.View {

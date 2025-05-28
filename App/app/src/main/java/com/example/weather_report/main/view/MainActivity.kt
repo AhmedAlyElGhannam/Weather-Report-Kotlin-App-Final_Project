@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import com.example.weather_report.features.initialdialog.view.InitialSetupDialog
 
 import com.example.weather_report.model.local.LocalDB
@@ -12,14 +11,8 @@ import com.example.weather_report.model.remote.IWeatherService
 import com.example.weather_report.model.remote.RetrofitHelper
 import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
 import com.example.weather_report.model.repository.WeatherRepositoryImpl
-import kotlinx.coroutines.DelicateCoroutinesApi
-import android.Manifest
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
@@ -33,18 +26,16 @@ import com.example.weather_report.main.viewmodel.MainActivityViewModel
 import com.example.weather_report.main.viewmodel.MainActivityViewModelFactory
 import com.example.weather_report.R
 import com.example.weather_report.contracts.MainActivityContract
-import com.example.weather_report.databinding.ActivitySplashBinding
 import com.example.weather_report.databinding.MainScreenBinding
 import com.example.weather_report.features.mapdialog.view.MapDialog
 
 import com.example.weather_report.model.local.LocalDataSourceImpl
-import com.example.weather_report.utils.AppliedSystemSettings
-import com.example.weather_report.utils.GPSUtil
-import com.example.weather_report.utils.ISelectedCoordinatesOnMapCallback
-import com.example.weather_report.utils.InitialChoiceCallback
-import com.example.weather_report.utils.LocaleHelper
+import com.example.weather_report.utils.settings.AppliedSystemSettings
+import com.example.weather_report.utils.gps.GPSUtil
+import com.example.weather_report.utils.callback.ISelectedCoordinatesOnMapCallback
+import com.example.weather_report.utils.callback.InitialChoiceCallback
+import com.example.weather_report.utils.settings.lang.LocaleHelper
 import com.example.weather_report.utils.WorkScheduler
-import com.google.android.gms.location.FusedLocationProviderClient
 
 
 class MainActivity : AppCompatActivity(),

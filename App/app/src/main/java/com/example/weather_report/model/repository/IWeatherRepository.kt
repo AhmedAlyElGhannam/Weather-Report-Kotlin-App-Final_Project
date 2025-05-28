@@ -1,8 +1,8 @@
 package com.example.weather_report.model.repository
 
-import com.example.weather_report.model.pojo.ForecastResponse
-import com.example.weather_report.model.pojo.LocationWithWeather
-import com.example.weather_report.model.pojo.WeatherResponse
+import com.example.weather_report.model.pojo.response.ForecastResponse
+import com.example.weather_report.model.pojo.entity.LocationWithWeather
+import com.example.weather_report.model.pojo.response.WeatherResponse
 
 interface IWeatherRepository {
     suspend fun fetchForecastDataRemotely(

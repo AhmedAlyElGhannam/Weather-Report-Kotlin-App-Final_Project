@@ -32,7 +32,7 @@ import com.example.weather_report.model.remote.IWeatherService
 import com.example.weather_report.model.remote.RetrofitHelper
 import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
 import com.example.weather_report.model.repository.WeatherRepositoryImpl
-import com.example.weather_report.utils.ISelectedCoordinatesOnMapCallback
+import com.example.weather_report.utils.callback.ISelectedCoordinatesOnMapCallback
 import java.util.Locale
 
 

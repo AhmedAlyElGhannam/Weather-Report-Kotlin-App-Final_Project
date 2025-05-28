@@ -5,10 +5,10 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.weather_report.model.pojo.CurrentWeatherEntity
-import com.example.weather_report.model.pojo.ForecastWeatherEntity
-import com.example.weather_report.model.pojo.LocationEntity
-import com.example.weather_report.model.pojo.LocationWithWeatherDB
+import com.example.weather_report.model.pojo.entity.CurrentWeatherEntity
+import com.example.weather_report.model.pojo.entity.ForecastWeatherEntity
+import com.example.weather_report.model.pojo.entity.LocationEntity
+import com.example.weather_report.model.pojo.entity.LocationWithWeatherDB
 
 @Dao
 interface WeatherDao {

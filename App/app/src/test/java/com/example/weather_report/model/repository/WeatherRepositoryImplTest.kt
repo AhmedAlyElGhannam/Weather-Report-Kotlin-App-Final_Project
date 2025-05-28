@@ -1,16 +1,15 @@
 package com.example.weather_report.model.repository
 
 import com.example.weather_report.model.local.ILocalDataSource
-import com.example.weather_report.model.local.LocalDataSourceImpl
-import com.example.weather_report.model.pojo.City
-import com.example.weather_report.model.pojo.Clouds
-import com.example.weather_report.model.pojo.Coordinates
-import com.example.weather_report.model.pojo.ForecastItem
-import com.example.weather_report.model.pojo.ForecastResponse
-import com.example.weather_report.model.pojo.MainWeather
-import com.example.weather_report.model.pojo.Sys
-import com.example.weather_report.model.pojo.Weather
-import com.example.weather_report.model.pojo.Wind
+import com.example.weather_report.model.pojo.sub.City
+import com.example.weather_report.model.pojo.sub.Clouds
+import com.example.weather_report.model.pojo.sub.Coordinates
+import com.example.weather_report.model.pojo.sub.ForecastItem
+import com.example.weather_report.model.pojo.response.ForecastResponse
+import com.example.weather_report.model.pojo.sub.MainWeather
+import com.example.weather_report.model.pojo.sub.Sys
+import com.example.weather_report.model.pojo.sub.Weather
+import com.example.weather_report.model.pojo.sub.Wind
 import com.example.weather_report.model.remote.IWeatherAndForecastRemoteDataSource
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -18,9 +17,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
 import org.junit.Test
 // imports necessary for singleton reflection
 import kotlin.reflect.full.companionObjectInstance

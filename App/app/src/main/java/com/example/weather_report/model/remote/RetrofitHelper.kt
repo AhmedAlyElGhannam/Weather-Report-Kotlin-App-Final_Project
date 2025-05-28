@@ -1,7 +1,6 @@
 package com.example.weather_report.model.remote
 
 import com.example.weather_report.BuildConfig
-import com.example.weather_report.utils.AppliedSystemSettings
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response

@@ -1,7 +1,7 @@
 package com.example.weather_report.model.remote
 
-import com.example.weather_report.model.pojo.ForecastResponse
-import com.example.weather_report.model.pojo.WeatherResponse
+import com.example.weather_report.model.pojo.response.ForecastResponse
+import com.example.weather_report.model.pojo.response.WeatherResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

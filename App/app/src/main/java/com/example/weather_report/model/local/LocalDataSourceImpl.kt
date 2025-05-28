@@ -1,11 +1,11 @@
 package com.example.weather_report.model.local
 
-import com.example.weather_report.model.pojo.CurrentWeatherEntity
-import com.example.weather_report.model.pojo.ForecastWeatherEntity
-import com.example.weather_report.model.pojo.LocationEntity
-import com.example.weather_report.model.pojo.LocationWithWeather
-import com.example.weather_report.model.pojo.WeatherResponse
-import com.example.weather_report.model.pojo.ForecastResponse
+import com.example.weather_report.model.pojo.entity.CurrentWeatherEntity
+import com.example.weather_report.model.pojo.entity.ForecastWeatherEntity
+import com.example.weather_report.model.pojo.entity.LocationEntity
+import com.example.weather_report.model.pojo.entity.LocationWithWeather
+import com.example.weather_report.model.pojo.response.WeatherResponse
+import com.example.weather_report.model.pojo.response.ForecastResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

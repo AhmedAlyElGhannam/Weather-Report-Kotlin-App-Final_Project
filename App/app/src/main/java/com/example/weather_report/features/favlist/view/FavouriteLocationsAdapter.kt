@@ -9,14 +9,16 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather_report.R
 import com.example.weather_report.databinding.ItemFavouriteLocationBinding
-import com.example.weather_report.model.pojo.LocationWithWeather
-import com.example.weather_report.utils.AppliedSystemSettings
-import com.example.weather_report.utils.FavouriteLocationDiffUtil
+import com.example.weather_report.model.pojo.entity.LocationWithWeather
+import com.example.weather_report.utils.settings.AppliedSystemSettings
+import com.example.weather_report.utils.diff.FavouriteLocationDiffUtil
 
 class FavouriteLocationsAdapter(
     private val onItemClick: (LocationWithWeather) -> Unit,
     private val onRemoveClick: (String) -> Unit,
-) : ListAdapter<LocationWithWeather, FavouriteLocationsAdapter.FavouriteLocationViewHolder>(FavouriteLocationDiffUtil()) {
+) : ListAdapter<LocationWithWeather, FavouriteLocationsAdapter.FavouriteLocationViewHolder>(
+    FavouriteLocationDiffUtil()
+) {
 
     lateinit var context: Context
     lateinit var appliedSettings: AppliedSystemSettings

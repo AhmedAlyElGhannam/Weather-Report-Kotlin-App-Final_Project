@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather_report.R
 import com.example.weather_report.databinding.ItemHourlyWeatherBinding
-import com.example.weather_report.model.pojo.ForecastItem
-import com.example.weather_report.utils.ForecastItemDiffUtil
+import com.example.weather_report.model.pojo.sub.ForecastItem
+import com.example.weather_report.utils.diff.ForecastItemDiffUtil
 
 class HourlyWeatherAdapter:
     ListAdapter<ForecastItem, HourlyWeatherAdapter.HourlyWeatherViewHolder>(ForecastItemDiffUtil()) {

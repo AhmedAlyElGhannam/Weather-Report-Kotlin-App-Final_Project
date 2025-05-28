@@ -9,8 +9,8 @@ import com.example.weather_report.model.remote.IWeatherService
 import com.example.weather_report.model.remote.RetrofitHelper
 import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
 import com.example.weather_report.model.repository.WeatherRepositoryImpl
-import com.example.weather_report.utils.AppliedSystemSettings
-import com.example.weather_report.utils.GPSUtil
+import com.example.weather_report.utils.settings.AppliedSystemSettings
+import com.example.weather_report.utils.gps.GPSUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

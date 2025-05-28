@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weather_report.contracts.FavouriteLocationsContract
-import com.example.weather_report.model.pojo.LocationWithWeather
+import com.example.weather_report.model.pojo.entity.LocationWithWeather
 import com.example.weather_report.model.repository.IWeatherRepository
 import kotlinx.coroutines.launch
 

@@ -5,12 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.weather_report.model.pojo.City
-import com.example.weather_report.model.pojo.CurrentWeather
-import com.example.weather_report.model.pojo.CurrentWeatherEntity
-import com.example.weather_report.model.pojo.ForecastItem
-import com.example.weather_report.model.pojo.ForecastWeatherEntity
-import com.example.weather_report.model.pojo.LocationEntity
+import com.example.weather_report.model.pojo.entity.CurrentWeatherEntity
+import com.example.weather_report.model.pojo.entity.ForecastWeatherEntity
+import com.example.weather_report.model.pojo.entity.LocationEntity
 
 @Database(entities = [LocationEntity::class, CurrentWeatherEntity::class, ForecastWeatherEntity::class], version = 2)
 @TypeConverters(Converters::class)

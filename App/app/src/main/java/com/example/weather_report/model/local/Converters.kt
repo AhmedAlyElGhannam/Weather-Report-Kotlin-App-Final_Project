@@ -1,9 +1,9 @@
 package com.example.weather_report.model.local
 
 import androidx.room.TypeConverter
-import com.example.weather_report.model.pojo.*
+import com.example.weather_report.model.pojo.response.ForecastResponse
+import com.example.weather_report.model.pojo.response.WeatherResponse
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 class Converters {
 

@@ -7,10 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weather_report.contracts.WeatherDetailsContract
-import com.example.weather_report.model.pojo.ForecastItem
-import com.example.weather_report.model.pojo.ForecastResponse
-import com.example.weather_report.model.pojo.LocationWithWeather
-import com.example.weather_report.model.pojo.WeatherResponse
+import com.example.weather_report.model.pojo.sub.ForecastItem
+import com.example.weather_report.model.pojo.response.ForecastResponse
+import com.example.weather_report.model.pojo.entity.LocationWithWeather
+import com.example.weather_report.model.pojo.response.WeatherResponse
 import com.example.weather_report.model.repository.IWeatherRepository
 import kotlinx.coroutines.launch
 import java.util.Calendar

@@ -23,6 +23,27 @@ Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_cel
 
     return res;
 }
+
+extern "C"
+JNIEXPORT jdouble JNICALL
+Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_kelvinToCelsius(
+        JNIEnv *env, jobject thiz, jdouble temp) {
+    jdouble res = 0.0;
+
+    res = temp - 273.15;
+
+    return res;
+}
+extern "C"
+JNIEXPORT jdouble JNICALL
+Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_kelvinToFahrenheit(
+        JNIEnv *env, jobject thiz, jdouble temp) {
+    jdouble res = 0.0;
+
+    res = (temp - 273.15) * (9.0 / 5.0) + 32;
+
+    return res;
+}
 /******************************SPEED********************************/
 extern "C"
 JNIEXPORT jdouble JNICALL
@@ -82,28 +103,6 @@ Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_hec
     jdouble res = 0.0;
 
     res = pressure / 1000;
-
-    return res;
-}
-
-
-extern "C"
-JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_kelvinToCelsius(
-        JNIEnv *env, jobject thiz, jdouble temp) {
-    jdouble res = 0.0;
-
-    res = temp - 273.15;
-
-    return res;
-}
-extern "C"
-JNIEXPORT jdouble JNICALL
-Java_com_example_weather_1report_utils_UnitSystemsConversions_00024Companion_kelvinToFahrenheit(
-        JNIEnv *env, jobject thiz, jdouble temp) {
-    jdouble res = 0.0;
-
-    res = (temp - 273.15) * (9.0 / 5.0) + 32;
 
     return res;
 }

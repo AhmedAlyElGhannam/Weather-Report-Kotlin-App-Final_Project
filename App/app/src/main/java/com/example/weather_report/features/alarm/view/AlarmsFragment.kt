@@ -20,7 +20,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.example.weather_report.utils.AlarmReceiver
+import com.example.weather_report.utils.alarm.AlarmReceiver
 import com.example.weather_report.databinding.FragmentAlarmBinding
 import java.util.Calendar
 

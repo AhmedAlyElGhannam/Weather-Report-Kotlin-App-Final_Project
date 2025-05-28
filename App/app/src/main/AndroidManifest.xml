@@ -40,7 +40,7 @@
             android:exported="true" />
 
         <receiver
-            android:name=".utils.AlarmReceiver"
+            android:name=".utils.alarm.AlarmReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -48,19 +48,8 @@
             </intent-filter>
         </receiver>
 
-
-        <receiver
-            android:name=".utils.BootReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-            </intent-filter>
-        </receiver>
-
         <service
-            android:name=".utils.OverlayService"
+            android:name=".utils.alarm.OverlayService"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.SYSTEM_ALERT_WINDOW"/>

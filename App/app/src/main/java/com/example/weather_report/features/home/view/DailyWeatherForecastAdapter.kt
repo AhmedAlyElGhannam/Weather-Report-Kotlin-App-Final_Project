@@ -8,12 +8,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weather_report.R
 import com.example.weather_report.databinding.ItemDailyWeatherBinding
-import com.example.weather_report.model.pojo.ForecastItem
-import com.example.weather_report.utils.AppliedSystemSettings
-import com.example.weather_report.utils.ForecastItemDiffUtil
+import com.example.weather_report.model.pojo.sub.ForecastItem
+import com.example.weather_report.utils.settings.AppliedSystemSettings
+import com.example.weather_report.utils.diff.ForecastItemDiffUtil
 
 class DailyWeatherForecastAdapter:
-    ListAdapter<ForecastItem, DailyWeatherForecastAdapter.DailyWeatherViewHolder>(ForecastItemDiffUtil()) {
+    ListAdapter<ForecastItem, DailyWeatherForecastAdapter.DailyWeatherViewHolder>(
+        ForecastItemDiffUtil()
+    ) {
     lateinit var context: Context
 
     private lateinit var binding: ItemDailyWeatherBinding

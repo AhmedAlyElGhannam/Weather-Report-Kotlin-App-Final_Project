@@ -1,6 +1,6 @@
 package com.example.weather_report.contracts
 
-import com.example.weather_report.model.pojo.LocationWithWeather
+import com.example.weather_report.model.pojo.entity.LocationWithWeather
 
 interface WeatherDetailsContract {
     interface View {

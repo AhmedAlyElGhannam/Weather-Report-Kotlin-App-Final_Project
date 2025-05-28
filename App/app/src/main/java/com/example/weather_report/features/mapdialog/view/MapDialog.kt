@@ -11,7 +11,7 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceManager
 import androidx.core.content.ContextCompat
-import com.example.weather_report.utils.ISelectedCoordinatesOnMapCallback
+import com.example.weather_report.utils.callback.ISelectedCoordinatesOnMapCallback
 import com.example.weather_report.R
 import com.example.weather_report.databinding.FragmentMapBinding
 import org.osmdroid.config.Configuration
