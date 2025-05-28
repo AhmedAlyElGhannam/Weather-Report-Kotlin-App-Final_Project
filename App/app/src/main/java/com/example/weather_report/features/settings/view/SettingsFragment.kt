@@ -71,7 +71,6 @@ class SettingsFragment
                 R.id.rb_arabic -> appliedSettings.setLanguage(AvailableLanguages.ARABIC)
                 R.id.rb_english -> appliedSettings.setLanguage(AvailableLanguages.ENGLISH)
             }
-
             updateAppLanguage()
         }
 

@@ -58,30 +58,30 @@ class AppliedSystemSettings private constructor(context: Context) {
     }
 
     fun getSpeedUnit(): Units {
-        val value = prefs.getString("speed_unit", Units.METERS_PER_SECOND.symbol) ?: Units.METERS_PER_SECOND.symbol
-        return Units.entries.find { it.symbol == value } ?: Units.METERS_PER_SECOND
+        val value = prefs.getString("speed_unit", Units.METERS_PER_SECOND.name) ?: Units.METERS_PER_SECOND.name
+        return Units.entries.find { it.name == value } ?: Units.METERS_PER_SECOND
     }
 
     fun setSpeedUnit(value: Units) {
-        prefs.edit { putString("speed_unit", value.symbol) }
+        prefs.edit { putString("speed_unit", value.name) }
     }
 
     fun getTempUnit(): Units {
-        val value = prefs.getString("temp_unit", Units.CELSIUS.symbol) ?: Units.CELSIUS.symbol
-        return Units.entries.find { it.symbol == value } ?: Units.CELSIUS
+        val value = prefs.getString("temp_unit", Units.CELSIUS.name) ?: Units.CELSIUS.name
+        return Units.entries.find { it.name == value } ?: Units.CELSIUS
     }
 
     fun setTempUnit(value: Units) {
-        prefs.edit { putString("temp_unit", value.symbol) }
+        prefs.edit { putString("temp_unit", value.name) }
     }
 
     fun getPressureUnit(): Units {
-        val value = prefs.getString("pressure_unit", Units.HECTOPASCAL.symbol) ?: Units.HECTOPASCAL.symbol
-        return Units.entries.find { it.symbol == value } ?: Units.HECTOPASCAL
+        val value = prefs.getString("pressure_unit", Units.HECTOPASCAL.name) ?: Units.HECTOPASCAL.name
+        return Units.entries.find { it.name == value } ?: Units.HECTOPASCAL
     }
 
     fun setPressureUnit(value: Units) {
-        prefs.edit { putString("pressure_unit", value.symbol) }
+        prefs.edit { putString("pressure_unit", value.name) }
     }
 
     fun getLanguage(): AvailableLanguages {
@@ -112,11 +112,11 @@ class AppliedSystemSettings private constructor(context: Context) {
     }
 
     fun convertToTempUnit(tempKelvin: Double): Int {
-        return when (getTempUnit().symbol) {
-            Units.CELSIUS.symbol -> {
+        return when (getTempUnit().name) {
+            Units.CELSIUS.name -> {
                 UnitSystemsConversions.kelvinToCelsius(tempKelvin).roundToInt()
             }
-            Units.FAHRENHEIT.symbol -> {
+            Units.FAHRENHEIT.name -> {
                 UnitSystemsConversions.kelvinToFahrenheit(tempKelvin).roundToInt()
             }
             else -> {
@@ -126,16 +126,16 @@ class AppliedSystemSettings private constructor(context: Context) {
     }
 
     fun convertToSpeedUnit(speed: Double): Int {
-        return when (getSpeedUnit().symbol) {
-            Units.KILOMETERS_PER_HOUR.symbol -> {
+        return when (getSpeedUnit().name) {
+            Units.KILOMETERS_PER_HOUR.name -> {
                 setSpeedUnit(Units.KILOMETERS_PER_HOUR)
                 UnitSystemsConversions.meterPerSecondToKilometerPerHour(speed).roundToInt()
             }
-            Units.MILES_PER_HOUR.symbol -> {
+            Units.MILES_PER_HOUR.name -> {
                 setSpeedUnit(Units.MILES_PER_HOUR)
                 UnitSystemsConversions.meterPerSecondToMilePerHour(speed).roundToInt()
             }
-            Units.FEET_PER_SECOND.symbol -> {
+            Units.FEET_PER_SECOND.name -> {
                 setSpeedUnit(Units.FEET_PER_SECOND)
                 UnitSystemsConversions.meterPerSecondToFeetPerSecond(speed).roundToInt()
             }
@@ -146,16 +146,16 @@ class AppliedSystemSettings private constructor(context: Context) {
     }
 
     fun convertToPressureUnit(pressure: Double): Int {
-        return when (getPressureUnit().symbol) {
-            Units.PSI.symbol -> {
+        return when (getPressureUnit().name) {
+            Units.PSI.name -> {
                 setPressureUnit(Units.PSI)
                 UnitSystemsConversions.hectopascalToPsi(pressure).roundToInt()
             }
-            Units.ATMOSPHERE.symbol -> {
+            Units.ATMOSPHERE.name -> {
                 setPressureUnit(Units.ATMOSPHERE)
                 UnitSystemsConversions.hectopascalToAtm(pressure).roundToInt()
             }
-            Units.BAR.symbol -> {
+            Units.BAR.name -> {
                 setPressureUnit(Units.BAR)
                 UnitSystemsConversions.hectopascalToBar(pressure).roundToInt()
             }

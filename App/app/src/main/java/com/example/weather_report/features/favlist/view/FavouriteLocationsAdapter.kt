@@ -2,6 +2,7 @@ package com.example.weather_report.features.favlist.view
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.provider.Settings.Global.getString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import com.example.weather_report.databinding.ItemFavouriteLocationBinding
 import com.example.weather_report.model.pojo.entity.LocationWithWeather
 import com.example.weather_report.utils.settings.AppliedSystemSettings
 import com.example.weather_report.utils.diff.FavouriteLocationDiffUtil
+import java.text.NumberFormat
 
 class FavouriteLocationsAdapter(
     private val onItemClick: (LocationWithWeather) -> Unit,
@@ -38,31 +40,87 @@ class FavouriteLocationsAdapter(
         if (currObj.location.isCurrent) {
             holder.binding.markedIcon.visibility = View.VISIBLE
         }
-        holder.binding.dailyWeatherIcon.setAnimation(
-            when (currObj.currentWeather?.weather?.get(0)?.main) {
-                "Thunderstorm" -> R.raw.thunderstorm
-                "Drizzle" -> R.raw.drizzle
-                "Rain" -> R.raw.rainy
-                "Snow" -> R.raw.snowy
-                "Mist" -> R.raw.misty
-                "Smoke" -> R.raw.misty
-                "Haze" -> R.raw.misty
-                "Dust" -> R.raw.misty
-                "Fog" -> R.raw.misty
-                "Sand" -> R.raw.misty
-                "Ash" -> R.raw.misty
-                "Squall" -> R.raw.misty
-                "Tornado" -> R.raw.misty
-                "Clear" -> R.raw.sunny
-                "Clouds" -> R.raw.cloudy
-                else -> R.raw.sunny
+
+        val animationRes: Int
+        val condition: String
+
+        when (currObj.currentWeather?.weather?.get(0)?.main) {
+            "Thunderstorm" -> {
+                animationRes = R.raw.thunderstorm
+                condition = context.getString(R.string.condition_thunderstorm)
             }
-        )
+            "Drizzle" -> {
+                animationRes = R.raw.drizzle
+                condition = context.getString(R.string.condition_drizzle)
+            }
+            "Rain" -> {
+                animationRes = R.raw.rainy
+                condition = context.getString(R.string.condition_rain)
+            }
+            "Snow" -> {
+                animationRes = R.raw.snowy
+                condition = context.getString(R.string.condition_snow)
+            }
+            "Mist" -> {
+                animationRes = R.raw.misty
+                condition = context.getString(R.string.condition_mist)
+            }
+            "Smoke" -> {
+                animationRes = R.raw.misty
+                condition = context.getString(R.string.condition_smoke)
+            }
+            "Haze" -> {
+                animationRes = R.raw.misty
+                condition = context.getString(R.string.condition_haze)
+            }
+            "Dust" -> {
+                animationRes = R.raw.misty
+                condition = context.getString(R.string.condition_dust)
+            }
+            "Fog" -> {
+                animationRes = R.raw.misty
+                condition = context.getString(R.string.condition_fog)
+            }
+            "Sand" -> {
+                animationRes = R.raw.misty
+                condition = context.getString(R.string.condition_sand)
+            }
+            "Ash" -> {
+                animationRes = R.raw.misty
+                condition = context.getString(R.string.condition_ash)
+            }
+            "Squall" -> {
+                animationRes = R.raw.misty
+                condition = context.getString(R.string.condition_squall)
+            }
+            "Tornado" -> {
+                animationRes = R.raw.misty
+                condition = context.getString(R.string.condition_tornado)
+            }
+            "Clear" -> {
+                animationRes = R.raw.sunny
+                condition = context.getString(R.string.condition_clear)
+            }
+            "Clouds" -> {
+                animationRes = R.raw.cloudy
+                condition = context.getString(R.string.condition_clouds)
+            }
+            else -> {
+                animationRes = R.raw.sunny
+                condition = context.getString(R.string.condition_clear)
+            }
+        }
+
+
+        holder.binding.dailyWeatherIcon.setAnimation(animationRes)
 
         holder.binding.locName.text = currObj.location.name
-        holder.binding.locTempTextView.text = "${currObj.currentWeather?.main?.temp?.let {
-            appliedSettings.convertToTempUnit(it)
-        }}°${appliedSettings.getTempUnit().symbol}"
+        holder.binding.locTempTextView.text = "${
+            currObj!!.currentWeather?.main?.let {
+                appliedSettings.convertToTempUnit(
+                    it.temp)
+            }?.let { formatNumberAccordingToLocale(it, context) }
+        }°${appliedSettings.getTempUnit().getLocalizedSymbol(context)}"
 
         holder.binding.item.setOnClickListener {
             onItemClick.invoke(currObj)
@@ -71,6 +129,12 @@ class FavouriteLocationsAdapter(
         holder.binding.favButton.setOnClickListener {
             onRemoveClick.invoke(currObj.location.id)
         }
+    }
+
+    private fun formatNumberAccordingToLocale(number: Number, context: Context): String {
+        val locale = context.resources.configuration.locales.get(0)
+        val formatter = NumberFormat.getInstance(locale)
+        return formatter.format(number)
     }
 
     inner class FavouriteLocationViewHolder(var binding: ItemFavouriteLocationBinding) : RecyclerView.ViewHolder(binding.root)

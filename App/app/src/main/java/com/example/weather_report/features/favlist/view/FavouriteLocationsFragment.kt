@@ -18,6 +18,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.weather_report.R
 import com.example.weather_report.contracts.FavouriteLocationsContract
 import com.example.weather_report.databinding.FragmentFavouritesBinding
 import com.example.weather_report.features.details.viewmodel.WeatherDetailsViewModel
@@ -139,7 +140,7 @@ class FavouriteLocationsFragment
         }
         else {
             val address = addresses[0]
-            val city = address.locality ?: "Unknown"
+            val city = address.locality ?: getString(R.string.unknown)
             val country = address.countryCode
             cityWithCountryCode = "${city}, ${country}"
         }

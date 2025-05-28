@@ -11,6 +11,7 @@ import com.example.weather_report.databinding.ItemDailyWeatherBinding
 import com.example.weather_report.model.pojo.sub.ForecastItem
 import com.example.weather_report.utils.settings.AppliedSystemSettings
 import com.example.weather_report.utils.diff.ForecastItemDiffUtil
+import java.text.NumberFormat
 
 class DailyWeatherForecastAdapter:
     ListAdapter<ForecastItem, DailyWeatherForecastAdapter.DailyWeatherViewHolder>(
@@ -34,7 +35,7 @@ class DailyWeatherForecastAdapter:
     override fun onBindViewHolder(holder: DailyWeatherViewHolder, position: Int) {
         val currentObj = getItem(position)
         currentObj?.let { item ->
-            holder.binding.dailyTempTextView.text = "${appliedSettings.convertToTempUnit(item.main.temp)}°${appliedSettings.getTempUnit().symbol}"
+            holder.binding.dailyTempTextView.text = "${formatNumberAccordingToLocale(appliedSettings.convertToTempUnit(item.main.temp), context)}°${appliedSettings.getTempUnit().getLocalizedSymbol(context)}"
             holder.binding.dailyDayTextView.text = item.dt_txt.substringBefore(" ")
             holder.binding.dailyWeatherIcon.setImageResource(
                 when(item.weather[0].main) {
@@ -59,6 +60,12 @@ class DailyWeatherForecastAdapter:
         } ?: run {
             // display nothing
         }
+    }
+
+    private fun formatNumberAccordingToLocale(number: Number, context: Context): String {
+        val locale = context.resources.configuration.locales.get(0)
+        val formatter = NumberFormat.getInstance(locale)
+        return formatter.format(number)
     }
 
     class DailyWeatherViewHolder(var binding: ItemDailyWeatherBinding) : RecyclerView.ViewHolder(binding.root)

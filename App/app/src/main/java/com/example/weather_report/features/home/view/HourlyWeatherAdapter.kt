@@ -27,34 +27,81 @@ class HourlyWeatherAdapter:
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: HourlyWeatherViewHolder, position: Int) {
         val currentObj = getItem(position)
-        currentObj?.let { item ->
-            holder.binding.hourlyTempTextView.text = item.weather[0].main
 
-            holder.binding.hourlyTimeTextView.text = item.dt_txt.substringAfter(" ")
+        val iconRes: Int
+        val condition: String
 
-            holder.binding.hourlyWeatherIcon.setImageResource(
-                when(item.weather[0].main) {
-                    "Thunderstorm" -> R.drawable.ic_thunderstormy
-                    "Drizzle" -> R.drawable.ic_drizzley
-                    "Rain" -> R.drawable.ic_rainy
-                    "Snow" -> R.drawable.ic_snowy
-                    "Mist" -> R.drawable.ic_misty
-                    "Smoke" -> R.drawable.ic_misty
-                    "Haze" -> R.drawable.ic_misty
-                    "Dust" -> R.drawable.ic_misty
-                    "Fog" -> R.drawable.ic_misty
-                    "Sand" -> R.drawable.ic_misty
-                    "Ash" -> R.drawable.ic_misty
-                    "Squall" -> R.drawable.ic_misty
-                    "Tornado" -> R.drawable.ic_misty
-                    "Clear" -> R.drawable.ic_sunny
-                    "Clouds" -> R.drawable.ic_cloudy
-                    else -> R.drawable.ic_sunny
-                }
-            )
-        } ?: run {
-            // display nothing
+        when (currentObj.weather[0].main) {
+            "Thunderstorm" -> {
+                iconRes = R.drawable.ic_thunderstormy
+                condition = context.getString(R.string.condition_thunderstorm)
+            }
+            "Drizzle" -> {
+                iconRes = R.drawable.ic_drizzley
+                condition = context.getString(R.string.condition_drizzle)
+            }
+            "Rain" -> {
+                iconRes = R.drawable.ic_rainy
+                condition = context.getString(R.string.condition_rain)
+            }
+            "Snow" -> {
+                iconRes = R.drawable.ic_snowy
+                condition = context.getString(R.string.condition_snow)
+            }
+            "Mist" -> {
+                iconRes = R.drawable.ic_misty
+                condition = context.getString(R.string.condition_mist)
+            }
+            "Smoke" -> {
+                iconRes = R.drawable.ic_misty
+                condition = context.getString(R.string.condition_smoke)
+            }
+            "Haze" -> {
+                iconRes = R.drawable.ic_misty
+                condition = context.getString(R.string.condition_haze)
+            }
+            "Dust" -> {
+                iconRes = R.drawable.ic_misty
+                condition = context.getString(R.string.condition_dust)
+            }
+            "Fog" -> {
+                iconRes = R.drawable.ic_misty
+                condition = context.getString(R.string.condition_fog)
+            }
+            "Sand" -> {
+                iconRes = R.drawable.ic_misty
+                condition = context.getString(R.string.condition_sand)
+            }
+            "Ash" -> {
+                iconRes = R.drawable.ic_misty
+                condition = context.getString(R.string.condition_ash)
+            }
+            "Squall" -> {
+                iconRes = R.drawable.ic_misty
+                condition = context.getString(R.string.condition_squall)
+            }
+            "Tornado" -> {
+                iconRes = R.drawable.ic_misty
+                condition = context.getString(R.string.condition_tornado)
+            }
+            "Clear" -> {
+                iconRes = R.drawable.ic_sunny
+                condition = context.getString(R.string.condition_clear)
+            }
+            "Clouds" -> {
+                iconRes = R.drawable.ic_cloudy
+                condition = context.getString(R.string.condition_clouds)
+            }
+            else -> {
+                iconRes = R.drawable.ic_sunny
+                condition = context.getString(R.string.condition_clear)
+            }
         }
+
+        holder.binding.hourlyWeatherIcon.setImageResource(iconRes)
+        holder.binding.hourlyTempTextView.text = condition
+        holder.binding.hourlyTimeTextView.text = currentObj.dt_txt.substringAfter(" ")
+
     }
 
     class HourlyWeatherViewHolder(var binding: ItemHourlyWeatherBinding) : RecyclerView.ViewHolder(binding.root)
