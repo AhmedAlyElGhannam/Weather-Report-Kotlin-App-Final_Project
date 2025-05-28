@@ -25,7 +25,7 @@ interface IWeatherRepository {
     suspend fun addFavouriteLocation(lat: Double, lon: Double, name: String): Boolean
     suspend fun removeFavouriteLocation(locationId: String)
     suspend fun getFavouriteLocationsWithWeather(): List<LocationWithWeather>
-    suspend fun refreshLocation(locationId: String): Boolean
+    suspend fun refreshLocation(locationId: String)
     suspend fun deleteLocation(locationId: String)
     suspend fun setManualLocation(lat: Double, lon: Double, address: String)
     suspend fun getLocationWithWeather(locationId: String): LocationWithWeather?

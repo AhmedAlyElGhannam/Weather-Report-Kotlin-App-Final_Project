@@ -11,6 +11,7 @@ interface WeatherDetailsContract {
     }
     interface ViewModel {
         fun setFavoriteLocationData(locationWithWeather: LocationWithWeather)
+        fun refreshLocationData()
     }
     interface Model
 }

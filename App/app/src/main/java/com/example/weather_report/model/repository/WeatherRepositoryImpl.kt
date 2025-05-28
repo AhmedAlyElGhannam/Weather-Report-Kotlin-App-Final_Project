@@ -180,11 +180,9 @@ class WeatherRepositoryImpl private constructor(
         }
     }
 
-    override suspend fun refreshLocation(locationId: String): Boolean {
+    override suspend fun refreshLocation(locationId: String) {
         return withContext(Dispatchers.IO) {
-            val location = localDataSource.getLocation(locationId) ?: return@withContext false
             refreshLocationData(locationId)
-            true
         }
     }
 
@@ -196,7 +194,6 @@ class WeatherRepositoryImpl private constructor(
 
     override suspend fun setManualLocation(lat: Double, lon: Double, address: String) {
         withContext(Dispatchers.IO) {
-
             setCurrentLocation(lat, lon)
             val existingLocation = localDataSource.findLocationByCoordinates(lat, lon)
             existingLocation?.let {

@@ -17,7 +17,7 @@ import java.util.Calendar
 import java.util.TimeZone
 import kotlin.math.abs
 
-class WeatherDetailsViewModel()
+class WeatherDetailsViewModel(private val repo: IWeatherRepository)
     : ViewModel(), WeatherDetailsContract.ViewModel {
     private val _selectedFavoriteLocation = MutableLiveData<LocationWithWeather?>()
 
@@ -29,6 +29,19 @@ class WeatherDetailsViewModel()
 
     private val _weatherResponse = MutableLiveData<WeatherResponse?>()
     val weatherResponse: LiveData<WeatherResponse?> = _weatherResponse
+
+    override fun refreshLocationData() {
+        viewModelScope.launch {
+            _selectedFavoriteLocation.value?.location?.let { repo.refreshLocation(it.id) }
+            _selectedFavoriteLocation.value?.location?.let {
+                repo.getLocationWithWeather(it.id)?.let {
+                    setFavoriteLocationData(
+                        it
+                    )
+                }
+            }
+        }
+    }
 
     override fun setFavoriteLocationData(locationWithWeather: LocationWithWeather) {
         viewModelScope.launch {

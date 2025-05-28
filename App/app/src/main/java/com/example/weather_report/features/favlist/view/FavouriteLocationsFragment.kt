@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weather_report.contracts.FavouriteLocationsContract
 import com.example.weather_report.databinding.FragmentFavouritesBinding
 import com.example.weather_report.features.details.viewmodel.WeatherDetailsViewModel
+import com.example.weather_report.features.details.viewmodel.WeatherDetailsViewModelFactory
 import com.example.weather_report.features.favlist.view.FavouriteLocationsAdapter
 import com.example.weather_report.features.favlist.viewmodel.FavouriteLocationsViewModel
 import com.example.weather_report.features.favlist.viewmodel.FavouriteLocationsViewModelFactory
@@ -42,7 +43,15 @@ class FavouriteLocationsFragment
 
     private lateinit var binding: FragmentFavouritesBinding
     private lateinit var adapter: FavouriteLocationsAdapter
-    private val weatherDetailsViewModel: WeatherDetailsViewModel by activityViewModels()
+    private val weatherDetailsViewModel: WeatherDetailsViewModel by activityViewModels {
+        WeatherDetailsViewModelFactory(
+            WeatherRepositoryImpl.getInstance(
+                WeatherAndForecastRemoteDataSourceImpl(
+                    RetrofitHelper.retrofit.create(IWeatherService::class.java)),
+                LocalDataSourceImpl(LocalDB.getInstance(requireContext()).weatherDao())
+            )
+        )
+    }
 
     private val viewModel: FavouriteLocationsViewModel by viewModels {
         FavouriteLocationsViewModelFactory(

@@ -14,9 +14,17 @@ import com.example.weather_report.R
 import com.example.weather_report.contracts.WeatherDetailsContract
 import com.example.weather_report.databinding.FragmentHomeScreenBinding
 import com.example.weather_report.features.details.viewmodel.WeatherDetailsViewModel
+import com.example.weather_report.features.details.viewmodel.WeatherDetailsViewModelFactory
+import com.example.weather_report.features.favlist.viewmodel.FavouriteLocationsViewModelFactory
 import com.example.weather_report.features.home.view.DailyWeatherForecastAdapter
 import com.example.weather_report.features.home.view.HourlyWeatherAdapter
+import com.example.weather_report.model.local.LocalDB
+import com.example.weather_report.model.local.LocalDataSourceImpl
 import com.example.weather_report.model.pojo.WeatherResponse
+import com.example.weather_report.model.remote.IWeatherService
+import com.example.weather_report.model.remote.RetrofitHelper
+import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
+import com.example.weather_report.model.repository.WeatherRepositoryImpl
 import com.example.weather_report.utils.AppliedSystemSettings
 import com.example.weather_report.utils.UnitSystem
 import com.example.weather_report.utils.UnitSystemsConversions
@@ -32,7 +40,15 @@ class WeatherDetailsFragment
     lateinit var hourlyWeatherAdapter: HourlyWeatherAdapter
     lateinit var dailyWeatherForecastAdapter: DailyWeatherForecastAdapter
     private var weather: WeatherResponse? = null
-    private val weatherDetailsViewModel: WeatherDetailsViewModel by activityViewModels()
+    private val weatherDetailsViewModel: WeatherDetailsViewModel by activityViewModels {
+        WeatherDetailsViewModelFactory(
+            WeatherRepositoryImpl.getInstance(
+                WeatherAndForecastRemoteDataSourceImpl(
+                    RetrofitHelper.retrofit.create(IWeatherService::class.java)),
+                LocalDataSourceImpl(LocalDB.getInstance(requireContext()).weatherDao())
+            )
+        )
+    }
 
     private val appliedSettings by lazy { AppliedSystemSettings.getInstance(requireContext()) }
 
@@ -57,6 +73,10 @@ class WeatherDetailsFragment
         setupAdaptersAndRVs()
 
         setupObservers()
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            weatherDetailsViewModel.refreshLocationData()
+        }
     }
 
     override fun setupAdaptersAndRVs() {
