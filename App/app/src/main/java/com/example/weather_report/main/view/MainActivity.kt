@@ -370,17 +370,13 @@ class MainActivity : AppCompatActivity(),
         mainActivityViewModel.fetchWeatherData(
             isConnected,
             lat,
-            lon,
-            appliedSettings.getUnitSystem().code,
-            appliedSettings.getLanguage().code
+            lon
         )
 
         mainActivityViewModel.fetchForecastData(
             isConnected,
             lat,
-            lon,
-            appliedSettings.getUnitSystem().code,
-            appliedSettings.getLanguage().code
+            lon
         )
     }
 

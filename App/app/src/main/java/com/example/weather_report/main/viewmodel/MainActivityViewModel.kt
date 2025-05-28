@@ -35,12 +35,12 @@ class MainActivityViewModel(private val repo: IWeatherRepository) : ViewModel() 
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
-    fun fetchWeatherData(isConnected: Boolean, lat: Double, lon: Double, unit: String, lang: String) {
+    fun fetchWeatherData(isConnected: Boolean, lat: Double, lon: Double) {
         viewModelScope.launch {
             _isLoading.postValue(true)
             try {
                 if (isConnected) {
-                    val response = repo.fetchCurrentWeatherDataRemotely(lat, lon, unit, lang)
+                    val response = repo.fetchCurrentWeatherDataRemotely(lat, lon, "standard", "en")
                     if (response != null) {
                         _weatherResponse.postValue(response)
                     } else {
@@ -60,12 +60,12 @@ class MainActivityViewModel(private val repo: IWeatherRepository) : ViewModel() 
         }
     }
 
-    fun fetchForecastData(isConnected: Boolean, lat: Double, lon: Double, unit: String, lang: String) {
+    fun fetchForecastData(isConnected: Boolean, lat: Double, lon: Double) {
         viewModelScope.launch {
             _isLoading.postValue(true)
             try {
                 if (isConnected) {
-                    val response = repo.fetchForecastDataRemotely(lat, lon, unit, lang)
+                    val response = repo.fetchForecastDataRemotely(lat, lon, "standard", "en")
                     if (response != null) {
                         processForecastResponse(response)
                     } else {

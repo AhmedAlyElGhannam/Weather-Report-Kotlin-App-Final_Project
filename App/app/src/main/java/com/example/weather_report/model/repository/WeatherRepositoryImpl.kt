@@ -148,12 +148,12 @@ class WeatherRepositoryImpl private constructor(
             try {
                 val weather = remoteDataSource.makeNetworkCallToGetCurrentWeather(
                     lat, lon,
-                    "meter",
+                    "standard",
                     "en"
                 )
                 val forecast = remoteDataSource.makeNetworkCallToGetForecast(
                     lat, lon,
-                    "meter",
+                    "standard",
                     "en"
                 )
 
@@ -217,13 +217,13 @@ class WeatherRepositoryImpl private constructor(
             val weatherResponse = remoteDataSource.makeNetworkCallToGetCurrentWeather(
                 location.latitude,
                 location.longitude,
-                "meter",
+                "standard",
                 "en"
             )
             val forecastResponse = remoteDataSource.makeNetworkCallToGetForecast(
                 location.latitude,
                 location.longitude,
-                "meter",
+                "standard",
                 "en" 
             )
             weatherResponse?.let {

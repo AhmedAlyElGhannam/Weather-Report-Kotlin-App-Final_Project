@@ -111,7 +111,6 @@ class HomeScreenFragment : Fragment(),
                 hasFetchedWeatherData = true
 
                 weather?.let {
-                    applyUnits()
                     updateWeatherUI()
                     updateExtraInfo()
                     binding.swipeRefreshLayout.isRefreshing = false
@@ -155,15 +154,25 @@ class HomeScreenFragment : Fragment(),
             }
         )
 
+        binding.weatherImg.playAnimation()
+
+        Log.i("TAG", "Logging temperature values for my sanity!")
+        Log.i("TAG", "max = ${weather!!.main.temp_max}")
+        Log.i("TAG", "min = ${weather!!.main.temp_min}")
+        Log.i("TAG", "avg = ${weather!!.main.temp}")
+        Log.i("TAG", "feel = ${weather!!.main.feels_like}")
+
+        // weather condition (maybe do a when-else and take from string resources)
         binding.weatherConditionTxt.text = weather!!.weather[0].main
 
+        // (maybe do a when-else and take from string resources)
         binding.locationTxt.text = weather!!.name
 
-        binding.highLowTempTxt.text = "↑ ${weather!!.main.temp_max}°${appliedSettings.getTempUnit().symbol} ↓ ${weather!!.main.temp_min}°${appliedSettings.getTempUnit().symbol}"
+        binding.highLowTempTxt.text = "↑ ${appliedSettings.convertToTempUnit(weather!!.main.temp_max)}°${appliedSettings.getTempUnit().symbol} ↓ ${appliedSettings.convertToTempUnit(weather!!.main.temp_min)}°${appliedSettings.getTempUnit().symbol}"
 
-        binding.tempTxt.text = "${weather!!.main.temp}°${appliedSettings.getTempUnit().symbol}"
+        binding.tempTxt.text = "${appliedSettings.convertToTempUnit(weather!!.main.temp)}°${appliedSettings.getTempUnit().symbol}"
 
-        binding.feelslikeTempTxt.text = "Feels Like ${weather!!.main.feels_like}°${appliedSettings.getTempUnit().symbol}"
+        binding.feelslikeTempTxt.text = "Feels Like ${appliedSettings.convertToTempUnit(weather!!.main.feels_like)}°${appliedSettings.getTempUnit().symbol}"
     }
 
     @SuppressLint("SetTextI18n")
@@ -174,40 +183,6 @@ class HomeScreenFragment : Fragment(),
         binding.humidityTxt.text = "${weather!!.main.humidity}%"
         binding.sunriseTxt.text = formatUnixTime.invoke(weather!!.sys.sunrise)
         binding.cloudCoverageTxt.text = "${weather!!.clouds.all}%"
-    }
-
-    private fun applyUnits() {
-        if (weather != null) {
-            when (appliedSettings.getUnitSystem()) {
-                UnitSystem.CUSTOM -> {
-                    weather!!.main.temp = convertTemperature(weather!!.main.temp)
-
-                    weather!!.main.temp_kf = convertTemperature(weather!!.main.temp_kf)
-
-                    weather!!.main.feels_like = convertTemperature(weather!!.main.feels_like)
-
-                    weather!!.main.temp_min = convertTemperature(weather!!.main.temp_min)
-
-                    weather!!.main.temp_max = convertTemperature(weather!!.main.temp_max)
-
-                    weather!!.wind.speed = when(appliedSettings.getSpeedUnit().symbol) {
-                        Units.KILOMETERS_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToKilometerPerHour(weather!!.wind.speed)
-                        Units.MILES_PER_HOUR.symbol -> UnitSystemsConversions.meterPerSecondToMilePerHour(weather!!.wind.speed)
-                        Units.FEET_PER_SECOND.symbol -> UnitSystemsConversions.meterPerSecondToFeetPerSecond(weather!!.wind.speed)
-                        else -> weather!!.wind.speed
-                    }
-
-                    weather!!.main.pressure = when(appliedSettings.getPressureUnit().symbol) {
-                        Units.ATMOSPHERE.symbol -> UnitSystemsConversions.hectopascalToAtm(weather!!.main.pressure.toDouble()).toInt()
-                        Units.BAR.symbol -> UnitSystemsConversions.hectopascalToBar(weather!!.main.pressure.toDouble()).toInt()
-                        Units.PSI.symbol -> UnitSystemsConversions.hectopascalToPsi(weather!!.main.pressure.toDouble()).toInt()
-                        else -> weather!!.main.pressure
-                    }
-                }
-                UnitSystem.IMPERIAL -> {} // should be applied automatically
-                UnitSystem.STANDARD -> {} // should be applied automatically
-            }
-        }
     }
 
     private fun convertTemperature(tempCelsius: Double): Double {

@@ -59,10 +59,7 @@ class FavouriteLocationsAdapter(
 
         holder.binding.locName.text = currObj.location.name
         holder.binding.locTempTextView.text = "${currObj.currentWeather?.main?.temp?.let {
-            appliedSettings.convertToTempUnit(
-                it,
-                isMain = true
-            )
+            appliedSettings.convertToTempUnit(it)
         }}°${appliedSettings.getTempUnit().symbol}"
 
         holder.binding.item.setOnClickListener {

@@ -96,37 +96,16 @@ class AppliedSystemSettings private constructor(context: Context) {
         prefs.edit { putString("notifications", value.desc) }
     }
 
-    fun convertToTempUnit(temp: Double, isMain: Boolean): Int {
-        if (isMain) {
-            return when (getTempUnit().symbol) {
-                Units.CELSIUS.symbol -> {
-                    setTempUnit(Units.CELSIUS)
-                    UnitSystemsConversions.kelvinToCelsius(temp).roundToInt()
-                }
-                Units.FAHRENHEIT.symbol -> {
-                    setTempUnit(Units.FAHRENHEIT)
-                    UnitSystemsConversions.kelvinToFahrenheit(temp).roundToInt()
-                }
-                else -> {
-                    setTempUnit(Units.KELVIN)
-                    temp.roundToInt()
-                }
+    fun convertToTempUnit(tempKelvin: Double): Int {
+        return when (getTempUnit().symbol) {
+            Units.CELSIUS.symbol -> {
+                UnitSystemsConversions.kelvinToCelsius(tempKelvin).roundToInt()
             }
-        }
-        else {
-            return when (getTempUnit().symbol) {
-                Units.FAHRENHEIT.symbol -> {
-                    setTempUnit(Units.FAHRENHEIT)
-                    UnitSystemsConversions.celsiusToFahrenheit(temp).roundToInt()
-                }
-                Units.KELVIN.symbol -> {
-                    setTempUnit(Units.KELVIN)
-                    UnitSystemsConversions.celsiusToKelvin(temp).roundToInt()
-                }
-                else -> {
-                    setTempUnit(Units.CELSIUS)
-                    temp.roundToInt()
-                }
+            Units.FAHRENHEIT.symbol -> {
+                UnitSystemsConversions.kelvinToFahrenheit(tempKelvin).roundToInt()
+            }
+            else -> {
+                tempKelvin.roundToInt()
             }
         }
     }
