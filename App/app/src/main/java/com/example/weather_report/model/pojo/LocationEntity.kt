@@ -14,7 +14,7 @@ data class LocationEntity(
     val latitude: Double,
     val longitude: Double,
     val isCurrent: Boolean = false,
-    val isFavorite: Boolean = false,
+    val isFavourite: Boolean = false,
     val address: String? = null,
     @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP")
     val timestamp: Long = System.currentTimeMillis()

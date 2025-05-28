@@ -32,8 +32,8 @@ class LocalDataSourceImpl(private val weatherDao: WeatherDao) : ILocalDataSource
         weatherDao.getCurrentLocation()
     }
 
-    override suspend fun getFavoriteLocations(): List<LocationEntity> = withContext(Dispatchers.IO) {
-        weatherDao.getFavoriteLocations()
+    override suspend fun getFavouriteLocations(): List<LocationEntity> = withContext(Dispatchers.IO) {
+        weatherDao.getFavouriteLocations()
     }
 
     override suspend fun clearCurrentLocationFlag() = withContext(Dispatchers.IO) {
@@ -44,9 +44,9 @@ class LocalDataSourceImpl(private val weatherDao: WeatherDao) : ILocalDataSource
         weatherDao.setCurrentLocation(locationId)
     }
 
-    override suspend fun setFavoriteStatus(locationId: String, isFavorite: Boolean) =
+    override suspend fun setFavouriteStatus(locationId: String, isFavourite: Boolean) =
         withContext(Dispatchers.IO) {
-            weatherDao.setFavoriteStatus(locationId, isFavorite)
+            weatherDao.setFavouriteStatus(locationId, isFavourite)
         }
 
     override suspend fun updateLocationName(locationId: String, name: String) =
@@ -121,9 +121,9 @@ class LocalDataSourceImpl(private val weatherDao: WeatherDao) : ILocalDataSource
         weatherDao.deleteStaleWeather(threshold)
     }
 
-    override suspend fun getFavoriteLocationsWithWeather(): List<LocationWithWeather> =
+    override suspend fun getFavouriteLocationsWithWeather(): List<LocationWithWeather> =
         withContext(Dispatchers.IO) {
-            weatherDao.getFavoriteLocations().mapNotNull { location ->
+            weatherDao.getFavouriteLocations().mapNotNull { location ->
                 weatherDao.getLocationWithWeather(location.id)?.let { dbData ->
                     LocationWithWeather(
                         location = dbData.location,

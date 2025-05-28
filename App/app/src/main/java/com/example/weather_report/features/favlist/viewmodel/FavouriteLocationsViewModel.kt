@@ -5,62 +5,51 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.weather_report.contracts.FavouriteLocationsContract
 import com.example.weather_report.model.pojo.LocationWithWeather
 import com.example.weather_report.model.repository.IWeatherRepository
 import kotlinx.coroutines.launch
 
-class FavouriteLocationsViewModel(private val repo: IWeatherRepository) : ViewModel() {
+class FavouriteLocationsViewModel(private val repo: IWeatherRepository)
+    : ViewModel(), FavouriteLocationsContract.ViewModel {
 
     private val _favoriteLocations = MutableLiveData<List<LocationWithWeather>>()
     val favoriteLocations: LiveData<List<LocationWithWeather>> = _favoriteLocations
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
-
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> = _errorMessage
-
-    fun loadFavoriteLocations() {
+    override fun loadFavouriteLocations() {
         viewModelScope.launch {
-            _isLoading.value = true
             try {
-                val favorites = repo.getFavoriteLocationsWithWeather()
+                val favorites = repo.getFavouriteLocationsWithWeather()
                 _favoriteLocations.postValue(favorites)
             } catch (e: Exception) {
-                _errorMessage.postValue("Error loading favorites: ${e.message}")
-            } finally {
-                _isLoading.postValue(false)
+                Log.i("TAG", "loadFavouriteLocations: could not get favourite locations with weather")
             }
         }
     }
 
-    fun addFavourite(lat: Double, lon: Double, name: String) {
+    override fun addFavourite(lat: Double, lon: Double, name: String) {
         viewModelScope.launch {
-            _isLoading.value = true
             try {
-                val res = repo.addFavoriteLocation(lat, lon, name)
+                val res = repo.addFavouriteLocation(lat, lon, name)
                 if (res) {
                     Log.i("TAG", "addFavourite: Success")
-                    loadFavoriteLocations()
+                    loadFavouriteLocations()
                 } else {
-                    _errorMessage.postValue("Failed to add favorite location")
                     Log.i("TAG", "addFavourite: Failure")
                 }
             } catch (e: Exception) {
-                _errorMessage.postValue("Error adding favorite: ${e.message}")
-            } finally {
-                _isLoading.postValue(false)
+                Log.i("TAG", "addFavourite: could not add to favourites")
             }
         }
     }
 
-    fun removeFavorite(locationId: String) {
+    override fun removeFavourite(locationId: String) {
         viewModelScope.launch {
             try {
-                repo.removeFavoriteLocation(locationId)
-                loadFavoriteLocations()
+                repo.removeFavouriteLocation(locationId)
+                loadFavouriteLocations()
             } catch (e: Exception) {
-                _errorMessage.postValue("Error removing favorite: ${e.message}")
+                Log.i("TAG", "removeFavourite: could not remove from favourites")
             }
         }
     }

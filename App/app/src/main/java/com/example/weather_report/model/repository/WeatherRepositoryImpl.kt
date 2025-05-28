@@ -1,5 +1,6 @@
 package com.example.weather_report.model.repository
 
+import com.example.weather_report.contracts.FavouriteLocationsContract
 import com.example.weather_report.model.local.ILocalDataSource
 import com.example.weather_report.model.pojo.ForecastResponse
 import com.example.weather_report.model.pojo.LocationEntity
@@ -13,7 +14,9 @@ import java.util.UUID
 class WeatherRepositoryImpl private constructor(
     private val remoteDataSource: IWeatherAndForecastRemoteDataSource,
     private val localDataSource: ILocalDataSource
-) : IWeatherRepository {
+)
+    : IWeatherRepository,
+        FavouriteLocationsContract.Model{
 
     companion object {
         @Volatile
@@ -128,11 +131,11 @@ class WeatherRepositoryImpl private constructor(
         }
     }
 
-    override suspend fun addFavoriteLocation(lat: Double, lon: Double, name: String): Boolean {
+    override suspend fun addFavouriteLocation(lat: Double, lon: Double, name: String): Boolean {
         return withContext(Dispatchers.IO) {
             val existingLocation = localDataSource.findLocationByCoordinates(lat, lon)
             val locationId = if (existingLocation != null) {
-                localDataSource.setFavoriteStatus(existingLocation.id, true)
+                localDataSource.setFavouriteStatus(existingLocation.id, true)
                 localDataSource.updateLocationName(existingLocation.id, name)
                 existingLocation.id
             } else {
@@ -141,7 +144,7 @@ class WeatherRepositoryImpl private constructor(
                     name = name, // Use the provided name
                     latitude = lat,
                     longitude = lon,
-                    isFavorite = true
+                    isFavourite = true
                 )
                 localDataSource.saveLocation(newLocation)
                 newLocation.id
@@ -170,15 +173,15 @@ class WeatherRepositoryImpl private constructor(
         }
     }
 
-    override suspend fun removeFavoriteLocation(locationId: String) {
+    override suspend fun removeFavouriteLocation(locationId: String) {
         withContext(Dispatchers.IO) {
-            localDataSource.setFavoriteStatus(locationId, false)
+            localDataSource.setFavouriteStatus(locationId, false)
         }
     }
 
-    override suspend fun getFavoriteLocationsWithWeather(): List<LocationWithWeather> {
+    override suspend fun getFavouriteLocationsWithWeather(): List<LocationWithWeather> {
         return withContext(Dispatchers.IO) {
-            localDataSource.getFavoriteLocationsWithWeather()
+            localDataSource.getFavouriteLocationsWithWeather()
         }
     }
 

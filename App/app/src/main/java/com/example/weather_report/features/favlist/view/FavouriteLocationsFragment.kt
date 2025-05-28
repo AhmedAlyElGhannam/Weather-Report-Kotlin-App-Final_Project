@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.weather_report.contracts.FavouriteLocationsContract
 import com.example.weather_report.utils.ISelectedCoordinatesOnMapCallback
 import com.example.weather_report.databinding.FragmentFavouritesBinding
 import com.example.weather_report.features.details.viewmodel.WeatherDetailsViewModel
@@ -28,7 +29,10 @@ import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourc
 import com.example.weather_report.model.repository.WeatherRepositoryImpl
 import java.util.Locale
 
-class FavouriteLocationsFragment : Fragment(), ISelectedCoordinatesOnMapCallback {
+class FavouriteLocationsFragment
+    : Fragment(),
+    ISelectedCoordinatesOnMapCallback,
+    FavouriteLocationsContract.View {
 
     private lateinit var binding: FragmentFavouritesBinding
     private lateinit var adapter: FavouriteLocationsAdapter
@@ -58,14 +62,17 @@ class FavouriteLocationsFragment : Fragment(), ISelectedCoordinatesOnMapCallback
 
         setupRecyclerView()
         setupObservers()
-        viewModel.loadFavoriteLocations()
+        viewModel.loadFavouriteLocations()
+        onAddNewLocationClickListener()
+    }
 
+    override fun onAddNewLocationClickListener() {
         binding.fabAdd.setOnClickListener {
             MapDialog(this).show(parentFragmentManager, "MapDialog")
         }
     }
 
-    private fun setupRecyclerView() {
+    override fun setupRecyclerView() {
         adapter = FavouriteLocationsAdapter(
             onItemClick = { locationWithWeather ->
                 if (locationWithWeather.currentWeather != null && locationWithWeather.forecast != null) {
@@ -78,7 +85,7 @@ class FavouriteLocationsFragment : Fragment(), ISelectedCoordinatesOnMapCallback
                 }
             },
             onRemoveClick = { locationId ->
-                viewModel.removeFavorite(locationId)
+                viewModel.removeFavourite(locationId)
             }
         )
 
@@ -88,7 +95,7 @@ class FavouriteLocationsFragment : Fragment(), ISelectedCoordinatesOnMapCallback
         }
     }
 
-    private fun setupObservers() {
+    override fun setupObservers() {
         viewModel.favoriteLocations.observe(viewLifecycleOwner, Observer { locations ->
             adapter.submitList(locations)
         })

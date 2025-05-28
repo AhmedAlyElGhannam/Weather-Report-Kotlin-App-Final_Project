@@ -60,8 +60,8 @@ interface WeatherDao {
     @Query("DELETE FROM current_weather WHERE lastUpdated < :threshold")
     suspend fun deleteStaleWeather(threshold: Long)
 
-    @Query("SELECT * FROM locations WHERE isFavorite = 1")
-    suspend fun getFavoriteLocations(): List<LocationEntity>
+    @Query("SELECT * FROM locations WHERE isFavourite = 1")
+    suspend fun getFavouriteLocations(): List<LocationEntity>
 
     //
     @Query(
@@ -73,8 +73,8 @@ interface WeatherDao {
     )
     suspend fun getLocationWithWeather(locationId: String): LocationWithWeatherDB?
 
-    @Query("UPDATE locations SET isFavorite = :isFavorite WHERE id = :locationId")
-    suspend fun setFavoriteStatus(locationId: String, isFavorite: Boolean)
+    @Query("UPDATE locations SET isFavourite = :isFavourite WHERE id = :locationId")
+    suspend fun setFavouriteStatus(locationId: String, isFavourite: Boolean)
 
     @Query(
         "SELECT * FROM locations WHERE latitude BETWEEN :lat-0.01 AND :lat+0.01 " +
