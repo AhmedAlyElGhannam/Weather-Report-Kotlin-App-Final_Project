@@ -34,11 +34,6 @@ class WeatherRepositoryImpl private constructor(
         }
     }
 
-    private var preferredUnits: String = "metric"
-    private var manualLocation: Pair<Double, Double>? = null
-    private var manualAddress: String? = null
-    private var locationMethod: String = "auto"
-
     override suspend fun fetchCurrentWeatherDataRemotely(
         lat: Double,
         lon: Double,
@@ -153,12 +148,12 @@ class WeatherRepositoryImpl private constructor(
             try {
                 val weather = remoteDataSource.makeNetworkCallToGetCurrentWeather(
                     lat, lon,
-                    getPreferredUnits(),
+                    "meter",
                     "en"
                 )
                 val forecast = remoteDataSource.makeNetworkCallToGetForecast(
                     lat, lon,
-                    getPreferredUnits(),
+                    "meter",
                     "en"
                 )
 
@@ -199,35 +194,13 @@ class WeatherRepositoryImpl private constructor(
         }
     }
 
-    override fun getPreferredUnits(): String {
-        return preferredUnits
-    }
-
-    override fun getManualLocation(): Pair<Double, Double>? {
-        return manualLocation
-    }
-
-    override fun getLocationMethod(): String {
-        return locationMethod
-    }
-
     override suspend fun setManualLocation(lat: Double, lon: Double, address: String) {
         withContext(Dispatchers.IO) {
-            manualLocation = Pair(lat, lon)
-            manualAddress = address
-            locationMethod = "manual"
+
             setCurrentLocation(lat, lon)
             val existingLocation = localDataSource.findLocationByCoordinates(lat, lon)
             existingLocation?.let {
                 localDataSource.updateLocationAddress(it.id, address)
-            }
-        }
-    }
-
-    override fun getManualLocationWithAddress(): Triple<Double, Double, String>? {
-        return manualLocation?.let { (lat, lon) ->
-            manualAddress?.let { address ->
-                Triple(lat, lon, address)
             }
         }
     }
@@ -244,13 +217,13 @@ class WeatherRepositoryImpl private constructor(
             val weatherResponse = remoteDataSource.makeNetworkCallToGetCurrentWeather(
                 location.latitude,
                 location.longitude,
-                getPreferredUnits(),
+                "meter",
                 "en"
             )
             val forecastResponse = remoteDataSource.makeNetworkCallToGetForecast(
                 location.latitude,
                 location.longitude,
-                getPreferredUnits(),
+                "meter",
                 "en" 
             )
             weatherResponse?.let {
