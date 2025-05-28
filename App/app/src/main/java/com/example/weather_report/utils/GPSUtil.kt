@@ -20,6 +20,10 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class GPSUtil(private val context: Context) {
 
@@ -59,13 +63,6 @@ class GPSUtil(private val context: Context) {
     fun requestPermissions(activity: Activity) {
         ActivityCompat.requestPermissions(
             activity,
-            LOCATION_PERMISSIONS,
-            LOCATION_PERMISSION_REQUEST_CODE
-        )
-    }
-
-    fun requestPermissions(fragment: Fragment) {
-        fragment.requestPermissions(
             LOCATION_PERMISSIONS,
             LOCATION_PERMISSION_REQUEST_CODE
         )
@@ -124,5 +121,25 @@ class GPSUtil(private val context: Context) {
                 onPermissionDenied()
             }
         }
+    }
+
+    @Throws(SecurityException::class, Exception::class)
+    suspend fun getCurrentLocationSync(): Pair<Double, Double>? = withContext(Dispatchers.IO) {
+        var result: Pair<Double, Double>? = null
+        val latch = CountDownLatch(1)
+
+        getCurrentLocation(object : GPSLocationCallback {
+            override fun onLocationResult(latitude: Double, longitude: Double) {
+                result = Pair(latitude, longitude)
+                latch.countDown()
+            }
+
+            override fun onLocationError(errorMessage: String) {
+                latch.countDown()
+            }
+        })
+
+        latch.await(10, TimeUnit.SECONDS)
+        result
     }
 }

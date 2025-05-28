@@ -95,18 +95,15 @@ class SettingsFragment : Fragment() {
                     appliedSettings.setUnitSystem(UnitSystem.STANDARD)
                     setCustomUnitsEnabled(false)
                     setDefaultUnitsForSystem(UnitSystem.STANDARD)
-                    (activity as? MainActivity)?.refreshDataWithCurrentSettings()
                 }
                 R.id.rb_imperial -> {
                     appliedSettings.setUnitSystem(UnitSystem.IMPERIAL)
                     setCustomUnitsEnabled(false)
                     setDefaultUnitsForSystem(UnitSystem.IMPERIAL)
-                    (activity as? MainActivity)?.refreshDataWithCurrentSettings()
                 }
                 R.id.rb_custom -> {
                     appliedSettings.setUnitSystem(UnitSystem.CUSTOM)
                     setCustomUnitsEnabled(true)
-                    (activity as? MainActivity)?.refreshDataWithCurrentSettings()
                 }
             }
         }

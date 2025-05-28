@@ -39,6 +39,7 @@ import com.example.weather_report.utils.GPSUtil
 import com.example.weather_report.utils.ISelectedCoordinatesOnMapCallback
 import com.example.weather_report.utils.InitialChoiceCallback
 import com.example.weather_report.utils.LocaleHelper
+import com.example.weather_report.utils.WorkScheduler
 import com.google.android.gms.location.FusedLocationProviderClient
 
 
@@ -86,6 +87,9 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
 
         mainActivityViewModel
+
+        // start data fetcher worker
+        WorkScheduler.scheduleDailyDataFetch(this@MainActivity)
 
         /*************************************************************************************************/
 
