@@ -1,6 +1,9 @@
 package com.example.weather_report.features.home.view
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -8,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,9 +19,17 @@ import com.example.weather_report.utils.ISelectedCoordinatesOnMapCallback
 import com.example.weather_report.main.view.MainActivity
 import com.example.weather_report.main.viewmodel.MainActivityViewModel
 import com.example.weather_report.R
+import com.example.weather_report.contracts.HomeScreenContract
 import com.example.weather_report.databinding.FragmentHomeScreenBinding
 import com.example.weather_report.features.mapdialog.view.MapDialog
+import com.example.weather_report.main.viewmodel.MainActivityViewModelFactory
+import com.example.weather_report.model.local.LocalDB
+import com.example.weather_report.model.local.LocalDataSourceImpl
 import com.example.weather_report.model.pojo.WeatherResponse
+import com.example.weather_report.model.remote.IWeatherService
+import com.example.weather_report.model.remote.RetrofitHelper
+import com.example.weather_report.model.remote.WeatherAndForecastRemoteDataSourceImpl
+import com.example.weather_report.model.repository.WeatherRepositoryImpl
 import com.example.weather_report.utils.AppliedSystemSettings
 import com.example.weather_report.utils.GPSUtil
 import com.example.weather_report.utils.UnitSystem
@@ -28,7 +40,9 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class HomeScreenFragment : Fragment(),
+class HomeScreenFragment
+    : Fragment(),
+    HomeScreenContract.View,
     ISelectedCoordinatesOnMapCallback {
     lateinit var binding: FragmentHomeScreenBinding
     lateinit var hourlyWeatherAdapter: HourlyWeatherAdapter
@@ -45,7 +59,15 @@ class HomeScreenFragment : Fragment(),
         format.timeZone = TimeZone.getDefault()
         format.format(date)
     }
-    private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
+    
+    private val mainActivityViewModel: MainActivityViewModel by activityViewModels() {
+        MainActivityViewModelFactory(
+            WeatherRepositoryImpl.getInstance(
+                WeatherAndForecastRemoteDataSourceImpl(
+                    RetrofitHelper.retrofit.create(IWeatherService::class.java))
+                , LocalDataSourceImpl(LocalDB.getInstance(requireContext()).weatherDao())
+            ))
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +80,39 @@ class HomeScreenFragment : Fragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupAdaptersAndRVs()
+        setupObservers()
+        onSwipeToRefreshData()
+    }
+    
+    override fun onSwipeToRefreshData() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            if (isConnectedToInternet()) {
+                if (appliedSettings.getSelectedLocationOption().optName == "GPS") {
+                    gpsUtils.getCurrentLocation(object : GPSUtil.GPSLocationCallback {
+                        override fun onLocationResult(latitude: Double, longitude: Double) {
+                            onCoordinatesSelected(latitude, longitude)
+                            binding.swipeRefreshLayout.isRefreshing = false
+                        }
+
+                        override fun onLocationError(errorMessage: String) {
+                            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+                            binding.swipeRefreshLayout.isRefreshing = false
+                        }
+                    })
+                } else {
+                    activity?.let { MapDialog(this).show(it.supportFragmentManager, "MapDialog") }
+                }
+                hasFetchedWeatherData = false
+                hasFetchedForecastData = false
+            }
+            else {
+                Toast.makeText(requireContext(), "Please connect to internet to refresh", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    
+    override fun setupAdaptersAndRVs() {
         // layout manager for hourly
         binding.hourlyWeatherRecyclerView.hasFixedSize()
         val layoutManagerHourly : LinearLayoutManager = LinearLayoutManager(requireContext())
@@ -79,31 +134,9 @@ class HomeScreenFragment : Fragment(),
         dailyWeatherForecastAdapter = DailyWeatherForecastAdapter()
         dailyWeatherForecastAdapter.submitList(listOf())
         binding.dailyWeatherRecyclerView.adapter = dailyWeatherForecastAdapter
-
-        setupObservers()
-
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            if (appliedSettings.getSelectedLocationOption().optName == "GPS") {
-                gpsUtils.getCurrentLocation(object : GPSUtil.GPSLocationCallback {
-                    override fun onLocationResult(latitude: Double, longitude: Double) {
-                        onCoordinatesSelected(latitude, longitude)
-                        binding.swipeRefreshLayout.isRefreshing = false
-                    }
-
-                    override fun onLocationError(errorMessage: String) {
-                        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
-                        binding.swipeRefreshLayout.isRefreshing = false
-                    }
-                })
-            } else {
-                activity?.let { MapDialog(this).show(it.supportFragmentManager, "MapDialog") }
-            }
-            hasFetchedWeatherData = false
-            hasFetchedForecastData = false
-        }
     }
 
-    private fun setupObservers() {
+    override fun setupObservers() {
         mainActivityViewModel.weatherResponse
             .observe(viewLifecycleOwner) {
                 if (!hasFetchedWeatherData) {
@@ -132,7 +165,7 @@ class HomeScreenFragment : Fragment(),
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateWeatherUI() {
+    override fun updateWeatherUI() {
         binding.weatherImg.setAnimation(
             when(weather!!.weather[0].main) {
                 "Thunderstorm" -> R.raw.thunderstorm
@@ -176,7 +209,7 @@ class HomeScreenFragment : Fragment(),
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateExtraInfo() {
+    override fun updateExtraInfo() {
         binding.windSpeedTxt.text = "${weather!!.wind.speed}${appliedSettings.getSpeedUnit().symbol}"
         binding.sunsetTxt.text = formatUnixTime.invoke(weather!!.sys.sunset)
         binding.pressureTxt.text = "${weather!!.main.pressure}${appliedSettings.getPressureUnit().symbol}"
@@ -185,16 +218,18 @@ class HomeScreenFragment : Fragment(),
         binding.cloudCoverageTxt.text = "${weather!!.clouds.all}%"
     }
 
-    private fun convertTemperature(tempCelsius: Double): Double {
-        return when (appliedSettings.getTempUnit()) {
-            Units.FAHRENHEIT -> UnitSystemsConversions.celsiusToFahrenheit(tempCelsius)
-            Units.KELVIN -> UnitSystemsConversions.celsiusToKelvin(tempCelsius)
-            else -> tempCelsius
-        }
-    }
-
     override fun onCoordinatesSelected(lat: Double, lon: Double) {
-        (activity as? MainActivity)?.onCoordinatesSelected(lat, lon)
+        mainActivityViewModel.fetchWeatherData(
+            isConnectedToInternet(),
+            lat,
+            lon
+        )
+
+        mainActivityViewModel.fetchForecastData(
+            isConnectedToInternet(),
+            lat,
+            lon
+        )
     }
 
     @Deprecated("Deprecated in Java")
@@ -226,5 +261,16 @@ class HomeScreenFragment : Fragment(),
                 binding.swipeRefreshLayout.isRefreshing = false
             }
         )
+    }
+
+    private fun isConnectedToInternet(): Boolean {
+        val connectivityManager = activity?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkCapabilities = connectivityManager.activeNetwork?.let {
+            connectivityManager.getNetworkCapabilities(it)
+        }
+        return networkCapabilities?.let {
+            it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                    it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+        } ?: false
     }
 }

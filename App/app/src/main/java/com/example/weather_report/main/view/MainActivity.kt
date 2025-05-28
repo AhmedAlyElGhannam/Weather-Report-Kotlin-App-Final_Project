@@ -150,21 +150,6 @@ class MainActivity : AppCompatActivity(),
 
     }
 
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//        if (requestCode == LOCATION_PERMISSION_REQUESTCODE) {
-//            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                getFreshLocation()
-//            } else {
-//                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//    }
-
     override fun onGpsChosen() {
         if (gpsUtils.checkPermissions()) {
             if (gpsUtils.isLocationEnabled()) {
@@ -281,65 +266,10 @@ class MainActivity : AppCompatActivity(),
                     bindingMainScreen.drawerLayout.closeDrawer(GravityCompat.START)
                     true
                 }
-                // Add other menu items here
                 else -> false
             }
         }
     }
-
-//    @OptIn(DelicateCoroutinesApi::class)
-//    fun getFreshLocation() {
-//        if (ActivityCompat.checkSelfPermission(
-//                this,
-//                Manifest.permission.ACCESS_FINE_LOCATION
-//            ) != PackageManager.PERMISSION_GRANTED &&
-//            ActivityCompat.checkSelfPermission(
-//                this,
-//                Manifest.permission.ACCESS_COARSE_LOCATION
-//            ) != PackageManager.PERMISSION_GRANTED
-//        ) {
-//            ActivityCompat.requestPermissions(
-//                this,
-//                LOCATION_PERMISSIONS,
-//                LOCATION_PERMISSION_REQUESTCODE
-//            )
-//            return
-//        }
-//
-//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-//
-//        fusedLocationProviderClient.requestLocationUpdates(
-//            LocationRequest.Builder(0).apply {
-//            setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-//        }.build(),
-//            object : LocationCallback() {
-//                override fun onLocationResult(locationResult: LocationResult) {
-//                    super.onLocationResult(locationResult)
-//                    if (locationResult.lastLocation != null) {
-//                        onCoordinatesSelected(
-//                            locationResult.lastLocation!!.latitude,
-//                            locationResult.lastLocation!!.longitude
-//                        )
-//                        // stop location updates
-//                        fusedLocationProviderClient.removeLocationUpdates(this)
-//                    }
-//                }}, Looper.myLooper())
-//    }
-//
-//    override fun onGpsChosen() {
-//        if (checkPermissions()) {
-//            if (isLocationEnable()) {
-//                getFreshLocation()
-//            }
-//            else {
-//                enableLocationServices()
-//            }
-//        }
-//        else {
-//            ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS,LOCATION_PERMISSION_REQUESTCODE)
-//        }
-//
-//    }
 
     override fun onMapChosen() {
         MapDialog(this@MainActivity).show(supportFragmentManager, "MapDialog")
@@ -385,15 +315,5 @@ class MainActivity : AppCompatActivity(),
         super.attachBaseContext(
             LocaleHelper.applyLanguage(newBase, appliedSettings.getLanguage().code)
         )
-    }
-
-    private fun isDataFresh(lastUpdated: Long): Boolean {
-        val currentTime = System.currentTimeMillis()
-        val twentyFourHoursInMillis = 24 * 60 * 60 * 1000
-        return (currentTime - lastUpdated) < twentyFourHoursInMillis
-    }
-
-    fun refreshDataWithCurrentSettings() {
-
     }
 }

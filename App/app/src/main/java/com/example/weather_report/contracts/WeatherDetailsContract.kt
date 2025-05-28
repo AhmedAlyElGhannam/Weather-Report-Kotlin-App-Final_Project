@@ -8,10 +8,13 @@ interface WeatherDetailsContract {
         fun setupObservers()
         fun updateWeatherUI()
         fun updateExtraInfo()
+        fun onSwipeToRefreshData()
     }
     interface ViewModel {
         fun setFavoriteLocationData(locationWithWeather: LocationWithWeather)
         fun refreshLocationData()
     }
-    interface Model
+    interface Model {
+
+    }
 }

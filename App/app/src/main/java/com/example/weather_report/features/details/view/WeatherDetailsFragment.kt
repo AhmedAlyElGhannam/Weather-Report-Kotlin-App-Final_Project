@@ -71,9 +71,11 @@ class WeatherDetailsFragment
         super.onViewCreated(view, savedInstanceState)
 
         setupAdaptersAndRVs()
-
         setupObservers()
+        onSwipeToRefreshData()
+    }
 
+    override fun onSwipeToRefreshData() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             weatherDetailsViewModel.refreshLocationData()
         }
