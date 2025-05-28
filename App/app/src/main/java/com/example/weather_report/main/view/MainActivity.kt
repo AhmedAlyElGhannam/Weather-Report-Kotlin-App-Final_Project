@@ -186,7 +186,7 @@ class MainActivity : AppCompatActivity(),
             when (menuItem.itemId) {
                 R.id.nav_home -> {
                     if (navController.currentDestination?.id != R.id.homeFragment) {
-                        bindingMainScreen.toolbar.title = "Home"
+//                        bindingMainScreen.toolbar.title = "Home"
                         navController.navigate(R.id.homeFragment)
                     }
                     bindingMainScreen.drawerLayout.closeDrawer(GravityCompat.START)
@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity(),
                 }
                 R.id.nav_settings -> {
                     if (navController.currentDestination?.id != R.id.settingsFragment) {
-                        bindingMainScreen.toolbar.title = "Settings"
+//                        bindingMainScreen.toolbar.title = "Settings"
                         navController.navigate(R.id.settingsFragment)
                     }
                     bindingMainScreen.drawerLayout.closeDrawer(GravityCompat.START)
@@ -202,7 +202,7 @@ class MainActivity : AppCompatActivity(),
                 }
                 R.id.nav_alert -> {
                     if (navController.currentDestination?.id != R.id.alarmFragment) {
-                        bindingMainScreen.toolbar.title = "Alerts"
+//                        bindingMainScreen.toolbar.title = "Alerts"
                         navController.navigate(R.id.alarmFragment)
                     }
                     bindingMainScreen.drawerLayout.closeDrawer(GravityCompat.START)
@@ -210,7 +210,7 @@ class MainActivity : AppCompatActivity(),
                 }
                 R.id.nav_fav -> {
                     if (navController.currentDestination?.id != R.id.favouriteLocationsFragment) {
-                        bindingMainScreen.toolbar.title = "Favourite Locations"
+//                        bindingMainScreen.toolbar.title = "Favourite Locations"
                         navController.navigate(R.id.favouriteLocationsFragment)
                     }
                     bindingMainScreen.drawerLayout.closeDrawer(GravityCompat.START)

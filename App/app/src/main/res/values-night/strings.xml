@@ -1,7 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Weather Report</string>
-    <string name="navigation_drawer_open" />
-    <string name="navigation_drawer_close" />
     <string name="initial_setup">Initial Setup</string>
     <string name="location_settings">Location Settings</string>
     <string name="gps">GPS</string>
