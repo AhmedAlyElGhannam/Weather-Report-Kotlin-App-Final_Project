@@ -128,6 +128,9 @@ dependencies {
     // singleton reflection
     testImplementation("org.jetbrains.kotlin:kotlin-reflect:1.9.0")
 
+    // instant task executor
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
     // jetpack compose
     implementation ("androidx.activity:activity-compose:1.8.0")
     implementation ("androidx.navigation:navigation-compose:2.7.5")

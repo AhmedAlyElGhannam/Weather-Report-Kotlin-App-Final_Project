@@ -6,6 +6,7 @@ import com.example.weather_report.model.pojo.sub.Clouds
 import com.example.weather_report.model.pojo.sub.Coordinates
 import com.example.weather_report.model.pojo.sub.ForecastItem
 import com.example.weather_report.model.pojo.response.ForecastResponse
+import com.example.weather_report.model.pojo.response.WeatherResponse
 import com.example.weather_report.model.pojo.sub.MainWeather
 import com.example.weather_report.model.pojo.sub.Sys
 import com.example.weather_report.model.pojo.sub.Weather
@@ -16,9 +17,10 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.jupiter.api.Assertions
 import org.junit.Test
+import java.util.UUID
 // imports necessary for singleton reflection
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.companionObject
@@ -157,6 +159,15 @@ class WeatherRepositoryImplTest {
         )
     )
 
+    val lat = 10.0
+    val lon = 20.0
+    val units = "metric"
+    val lang = "en"
+    val locationId = UUID.randomUUID().toString()
+
+    val mockWeatherResponse = mockk<WeatherResponse>(relaxed = true)
+
+
     private fun resetRepoInstanceByReflection() {
         // get the companion object instance
         val companionInstance = WeatherRepositoryImpl::class.companionObjectInstance
@@ -199,7 +210,18 @@ class WeatherRepositoryImplTest {
 
         val result = repository.fetchForecastDataRemotely(1.0, 1.0, "metric", "en")
 
-        Assertions.assertEquals(mockResponse, result)
+        assertEquals(mockResponse, result)
         coVerify { remote.makeNetworkCallToGetForecast(1.0, 1.0, "metric", "en") }
     }
+
+    @Test
+    fun fetchCurrentWeatherDataRemotely_takesValidCoordinates_returnsDataFromRemoteSource() = runTest {
+        coEvery { remote.makeNetworkCallToGetCurrentWeather(lat, lon, units, lang) } returns mockWeatherResponse
+
+        val result = repository.fetchCurrentWeatherDataRemotely(lat, lon, units, lang)
+
+        assertEquals(mockWeatherResponse, result)
+        coVerify { remote.makeNetworkCallToGetCurrentWeather(lat, lon, units, lang) }
+    }
+
 }

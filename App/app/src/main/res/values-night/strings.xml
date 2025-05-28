@@ -1,5 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Weather Report</string>
+    <string name="navigation_drawer_open" />
+    <string name="navigation_drawer_close" />
     <string name="initial_setup">Initial Setup</string>
     <string name="location_settings">Location Settings</string>
     <string name="gps">GPS</string>
@@ -45,4 +47,21 @@
     <string name="favourite_locations">Favourite Locations</string>
     <string name="settings">Settings</string>
     <string name="about">About</string>
+    <string name="feels_like">Feels Like</string>
+    <string name="condition_thunderstorm">Thunderstorm</string>
+    <string name="condition_drizzle">Drizzle</string>
+    <string name="condition_rain">Rain</string>
+    <string name="condition_snow">Snow</string>
+    <string name="condition_mist">Mist</string>
+    <string name="condition_smoke">Smoke</string>
+    <string name="condition_haze">Haze</string>
+    <string name="condition_dust">Dust</string>
+    <string name="condition_fog">Fog</string>
+    <string name="condition_sand">Sand</string>
+    <string name="condition_ash">Ash</string>
+    <string name="condition_squall">Squall</string>
+    <string name="condition_tornado">Tornado</string>
+    <string name="condition_clear">Clear</string>
+    <string name="condition_clouds">Clouds</string>
+    <string name="unknown">Unknown</string>
 </resources>
