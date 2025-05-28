@@ -7,6 +7,9 @@ class UnitSystemsConversions {
         public external fun celsiusToKelvin(temp : Double) : Double
         public external fun celsiusToFahrenheit(temp : Double) : Double
 
+        public external fun kelvinToCelsius(temp: Double): Double
+        public external fun kelvinToFahrenheit(temp: Double): Double
+
         // wind speed conversions from m/s to other units
         public external fun meterPerSecondToKilometerPerHour(windSpeed : Double) : Double
         public external fun meterPerSecondToMilePerHour(windSpeed : Double) : Double

@@ -3,6 +3,7 @@ package com.example.weather_report.utils
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import kotlin.math.roundToInt
 
 class AppliedSystemSettings private constructor(context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
@@ -25,6 +26,11 @@ class AppliedSystemSettings private constructor(context: Context) {
 
     fun setIsInitialSetup() {
         prefs.edit { putBoolean("initial_setup", false) }
+        setUnitSystem(UnitSystem.STANDARD)
+        setLanguage(AvailableLanguages.ENGLISH)
+        setTempUnit(Units.CELSIUS)
+        setPressureUnit(Units.HECTOPASCAL)
+        setSpeedUnit(Units.METERS_PER_SECOND)
     }
 
     fun getUnitSystem(): UnitSystem {
@@ -88,5 +94,80 @@ class AppliedSystemSettings private constructor(context: Context) {
 
     fun setSelectedNotificationOption(value: NotificationsOptions) {
         prefs.edit { putString("notifications", value.desc) }
+    }
+
+    fun convertToTempUnit(temp: Double, isMain: Boolean): Int {
+        if (isMain) {
+            return when (getTempUnit().symbol) {
+                Units.CELSIUS.symbol -> {
+                    setTempUnit(Units.CELSIUS)
+                    UnitSystemsConversions.kelvinToCelsius(temp).roundToInt()
+                }
+                Units.FAHRENHEIT.symbol -> {
+                    setTempUnit(Units.FAHRENHEIT)
+                    UnitSystemsConversions.kelvinToFahrenheit(temp).roundToInt()
+                }
+                else -> {
+                    setTempUnit(Units.KELVIN)
+                    temp.roundToInt()
+                }
+            }
+        }
+        else {
+            return when (getTempUnit().symbol) {
+                Units.FAHRENHEIT.symbol -> {
+                    setTempUnit(Units.FAHRENHEIT)
+                    UnitSystemsConversions.celsiusToFahrenheit(temp).roundToInt()
+                }
+                Units.KELVIN.symbol -> {
+                    setTempUnit(Units.KELVIN)
+                    UnitSystemsConversions.celsiusToKelvin(temp).roundToInt()
+                }
+                else -> {
+                    setTempUnit(Units.CELSIUS)
+                    temp.roundToInt()
+                }
+            }
+        }
+    }
+
+    fun convertToSpeedUnit(speed: Double): Int {
+        return when (getSpeedUnit().symbol) {
+            Units.KILOMETERS_PER_HOUR.symbol -> {
+                setSpeedUnit(Units.KILOMETERS_PER_HOUR)
+                UnitSystemsConversions.meterPerSecondToKilometerPerHour(speed).roundToInt()
+            }
+            Units.MILES_PER_HOUR.symbol -> {
+                setSpeedUnit(Units.MILES_PER_HOUR)
+                UnitSystemsConversions.meterPerSecondToMilePerHour(speed).roundToInt()
+            }
+            Units.FEET_PER_SECOND.symbol -> {
+                setSpeedUnit(Units.FEET_PER_SECOND)
+                UnitSystemsConversions.meterPerSecondToFeetPerSecond(speed).roundToInt()
+            }
+            else -> {
+                speed.roundToInt()
+            }
+        }
+    }
+
+    fun convertToPressureUnit(pressure: Double): Int {
+        return when (getPressureUnit().symbol) {
+            Units.PSI.symbol -> {
+                setSpeedUnit(Units.PSI)
+                UnitSystemsConversions.hectopascalToPsi(pressure).roundToInt()
+            }
+            Units.ATMOSPHERE.symbol -> {
+                setSpeedUnit(Units.ATMOSPHERE)
+                UnitSystemsConversions.hectopascalToAtm(pressure).roundToInt()
+            }
+            Units.BAR.symbol -> {
+                setSpeedUnit(Units.BAR)
+                UnitSystemsConversions.hectopascalToBar(pressure).roundToInt()
+            }
+            else -> {
+                pressure.roundToInt()
+            }
+        }
     }
 }
