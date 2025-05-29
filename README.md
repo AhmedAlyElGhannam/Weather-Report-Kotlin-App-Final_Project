@@ -13,3 +13,4 @@ This is the final project of the Android Mobile App Development Using Kotlin, An
 
 ## App Showcase
 Here are some screenshots of the app. :)
+![](./README_Photos/flyer/wezza.png)
