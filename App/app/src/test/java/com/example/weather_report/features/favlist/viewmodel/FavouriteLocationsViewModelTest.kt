@@ -44,6 +44,7 @@ class FavouriteLocationsViewModelTest {
     fun loadFavouriteLocations_shouldUpdateLiveData() = runTest {
         // Given
         val mockList = listOf<LocationWithWeather>(mockk(), mockk())
+        // stub returns mock list
         coEvery { repository.getFavouriteLocationsWithWeather() } returns mockList
 
         val observer = mockk<Observer<List<LocationWithWeather>>>(relaxed = true)
@@ -53,16 +54,19 @@ class FavouriteLocationsViewModelTest {
         viewModel.loadFavouriteLocations()
         advanceUntilIdle()
 
-        // Then
+        // Then (results are verified via observer)
         verify { observer.onChanged(mockList) }
     }
+
     @Test
     fun removeFavourite_shouldReloadFavouriteLocations() = runTest {
-        // Given
+        // Given:
         val locationId = "loc123"
         val mockList = listOf<LocationWithWeather>(mockk())
 
+        // stub returns nothing
         coEvery { repository.removeFavouriteLocation(locationId) } just Runs
+        // stub returns mock list
         coEvery { repository.getFavouriteLocationsWithWeather() } returns mockList
 
         val observer = mockk<Observer<List<LocationWithWeather>>>(relaxed = true)
@@ -72,7 +76,7 @@ class FavouriteLocationsViewModelTest {
         viewModel.removeFavourite(locationId)
         advanceUntilIdle()
 
-        // Then
+        // Then (results are verified via observer)
         coVerifySequence {
             repository.removeFavouriteLocation(locationId)
             repository.getFavouriteLocationsWithWeather()

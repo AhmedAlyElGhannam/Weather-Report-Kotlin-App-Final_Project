@@ -28,6 +28,5 @@ class SplashActivity : AppCompatActivity() {
 
         // start animation
         binding.splashAnimation.playAnimation()
-
     }
 }

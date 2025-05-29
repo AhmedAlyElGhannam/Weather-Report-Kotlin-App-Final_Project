@@ -206,6 +206,7 @@ class WeatherRepositoryImplTest {
 
     @Test
     fun fetchForecastDataRemotely_takesValidCoordinates_returnsDataFromRemoteSource() = runTest {
+        // stub returns mock forecast response
         coEvery { remote.makeNetworkCallToGetForecast(1.0, 1.0, "metric", "en") } returns mockResponse
 
         val result = repository.fetchForecastDataRemotely(1.0, 1.0, "metric", "en")
@@ -216,6 +217,7 @@ class WeatherRepositoryImplTest {
 
     @Test
     fun fetchCurrentWeatherDataRemotely_takesValidCoordinates_returnsDataFromRemoteSource() = runTest {
+        // stub returns mock weather response
         coEvery { remote.makeNetworkCallToGetCurrentWeather(lat, lon, units, lang) } returns mockWeatherResponse
 
         val result = repository.fetchCurrentWeatherDataRemotely(lat, lon, units, lang)
@@ -223,5 +225,4 @@ class WeatherRepositoryImplTest {
         assertEquals(mockWeatherResponse, result)
         coVerify { remote.makeNetworkCallToGetCurrentWeather(lat, lon, units, lang) }
     }
-
 }

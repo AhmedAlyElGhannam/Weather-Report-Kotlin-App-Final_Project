@@ -54,11 +54,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
             // Start overlay service
             val overlayIntent = Intent(ctx, OverlayService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                ctx.startForegroundService(overlayIntent)
-            } else {
-                ctx.startService(overlayIntent)
-            }
+            ctx.startForegroundService(overlayIntent)
         }
     }
 }
